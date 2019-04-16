@@ -20,7 +20,7 @@ import com.freddy.chat.utils.CThreadPoolExecutor;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements I_CEventListener {
-
+   //测试提交
     private EditText mEditText;
     private TextView mTextView;
 
