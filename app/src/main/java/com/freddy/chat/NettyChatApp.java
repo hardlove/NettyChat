@@ -1,5 +1,8 @@
 package com.freddy.chat;
 
+import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 
 /**
@@ -13,7 +16,7 @@ import android.support.multidex.MultiDexApplication;
  * <p>@date:            2019/04/07 23:58</p>
  * <p>@email:           chenshichao@outlook.com</p>
  */
-public class NettyChatApp extends MultiDexApplication {
+public class NettyChatApp extends Application {
 
     private static NettyChatApp instance;
 
@@ -22,6 +25,12 @@ public class NettyChatApp extends MultiDexApplication {
             throw new IllegalStateException("app not init...");
         }
         return instance;
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     @Override

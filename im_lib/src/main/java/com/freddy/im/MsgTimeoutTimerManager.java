@@ -2,6 +2,7 @@ package com.freddy.im;
 
 import com.freddy.im.interf.IMSClientInterface;
 import com.freddy.im.protobuf.MessageProtobuf;
+import com.freddy.im.protobuf.Utils;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -44,26 +45,27 @@ public class MsgTimeoutTimerManager {
         int clientReceivedReportMsgType = imsClient.getClientReceivedReportMsgType();
         MessageProtobuf.Msg handshakeMsg = imsClient.getHandshakeMsg();
         if (handshakeMsg != null && handshakeMsg.getHead() != null) {
-            handshakeMsgType = handshakeMsg.getHead().getMsgType();
+            handshakeMsgType = handshakeMsg.getHead().getType();
         }
         MessageProtobuf.Msg heartbeatMsg = imsClient.getHeartbeatMsg();
         if (heartbeatMsg != null && heartbeatMsg.getHead() != null) {
-            heartbeatMsgType = heartbeatMsg.getHead().getMsgType();
+            heartbeatMsgType = heartbeatMsg.getHead().getType();
         }
 
-        int msgType = msg.getHead().getMsgType();
+        int msgType = msg.getHead().getType();
         // 握手消息、心跳消息、客户端返回的状态报告消息，不用重发。
         if (msgType == handshakeMsgType || msgType == heartbeatMsgType || msgType == clientReceivedReportMsgType) {
             return;
         }
 
-        String msgId = msg.getHead().getMsgId();
+        String msgId = msg.getHead().getMessageId();
         if (!mMsgTimeoutMap.containsKey(msgId)) {
             MsgTimeoutTimer timer = new MsgTimeoutTimer(imsClient, msg);
             mMsgTimeoutMap.put(msgId, timer);
         }
-
-        System.out.println("添加消息超发送超时管理器，message=" + msg + "\t当前管理器消息数：" + mMsgTimeoutMap.size());
+        System.out.println("=============================");
+        System.out.println("添加消息到发送超时管理器，message=" + Utils.format(msg) + "\t当前管理器消息数：" + mMsgTimeoutMap.size());
+        System.out.println("=============================");
     }
 
     /**
@@ -84,7 +86,7 @@ public class MsgTimeoutTimerManager {
             timer = null;
         }
 
-        System.out.println("从发送消息管理器移除消息，message=" + msg);
+        System.out.println("从发送消息管理器移除消息，message=" + Utils.format(msg));
     }
 
     /**

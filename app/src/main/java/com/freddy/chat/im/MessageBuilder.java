@@ -2,6 +2,7 @@ package com.freddy.chat.im;
 
 import com.freddy.chat.bean.AppMessage;
 import com.freddy.chat.bean.BaseMessage;
+import com.freddy.chat.bean.Body;
 import com.freddy.chat.bean.ContentMessage;
 import com.freddy.chat.bean.Head;
 import com.freddy.chat.utils.StringUtil;
@@ -36,14 +37,19 @@ public class MessageBuilder {
                                              String toId, String extend, String content) {
         AppMessage message = new AppMessage();
         Head head = new Head();
-        head.setMsgId(msgId);
-        head.setMsgType(type);
-        head.setMsgContentType(subType);
-        head.setFromId(fromId);
-        head.setToId(toId);
-        head.setExtend(extend);
+        head.setMessageId(msgId);
+        head.setType(type);
+        head.setContentType(subType);
+        head.setSendUserId(fromId);
+        head.setId(toId);
+        head.setTime(System.currentTimeMillis());
+
         message.setHead(head);
-        message.setBody(content);
+
+        Body body = new Body();
+        body.setData(content);
+        body.setPrk("私钥");
+        message.setBody(body);
 
         return message;
     }
@@ -57,15 +63,20 @@ public class MessageBuilder {
     public static AppMessage buildAppMessage(ContentMessage msg) {
         AppMessage message = new AppMessage();
         Head head = new Head();
-        head.setMsgId(msg.getMsgId());
-        head.setMsgType(msg.getMsgType());
-        head.setMsgContentType(msg.getMsgContentType());
-        head.setFromId(msg.getFromId());
-        head.setToId(msg.getToId());
-        head.setTimestamp(msg.getTimestamp());
-        head.setExtend(msg.getExtend());
+        head.setMessageId(msg.getMsgId());
+        head.setType(msg.getMsgType());
+        head.setContentType(msg.getMsgContentType());
+        head.setSendUserId(msg.getFromId());
+        head.setId(msg.getToId());
+        head.setTime(msg.getTimestamp());
+        head.setToken("1475ae4964f9497c85f63f22c5a255ee");
+
         message.setHead(head);
-        message.setBody(msg.getContent());
+
+        Body body = new Body();
+        body.setData(msg.getContent());
+        body.setPrk("私钥");
+        message.setBody(body);
 
         return message;
     }
@@ -79,15 +90,19 @@ public class MessageBuilder {
     public static AppMessage buildAppMessage(BaseMessage msg) {
         AppMessage message = new AppMessage();
         Head head = new Head();
-        head.setMsgId(msg.getMsgId());
-        head.setMsgType(msg.getMsgType());
-        head.setMsgContentType(msg.getMsgContentType());
-        head.setFromId(msg.getFromId());
-        head.setToId(msg.getToId());
-        head.setExtend(msg.getExtend());
-        head.setTimestamp(msg.getTimestamp());
+        head.setMessageId(msg.getMsgId());
+        head.setType(msg.getMsgType());
+        head.setContentType(msg.getMsgContentType());
+        head.setSendUserId(msg.getFromId());
+        head.setId(msg.getToId());
+        head.setTime(msg.getTimestamp());
+
         message.setHead(head);
-        message.setBody(msg.getContent());
+
+        Body body = new Body();
+        body.setData(msg.getContent());
+        body.setPrk("私钥");
+        message.setBody(body);
 
         return message;
     }
@@ -101,22 +116,23 @@ public class MessageBuilder {
     public static MessageProtobuf.Msg.Builder getProtoBufMessageBuilderByAppMessage(AppMessage message) {
         MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
         MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
-        headBuilder.setMsgType(message.getHead().getMsgType());
-        headBuilder.setStatusReport(message.getHead().getStatusReport());
-        headBuilder.setMsgContentType(message.getHead().getMsgContentType());
-        if (!StringUtil.isEmpty(message.getHead().getMsgId()))
-            headBuilder.setMsgId(message.getHead().getMsgId());
-        if (!StringUtil.isEmpty(message.getHead().getFromId()))
-            headBuilder.setFromId(message.getHead().getFromId());
-        if (!StringUtil.isEmpty(message.getHead().getToId()))
-            headBuilder.setToId(message.getHead().getToId());
-        if (message.getHead().getTimestamp() != 0)
-            headBuilder.setTimestamp(message.getHead().getTimestamp());
-        if (!StringUtil.isEmpty(message.getHead().getExtend()))
-            headBuilder.setExtend(message.getHead().getExtend());
-        if (!StringUtil.isEmpty(message.getBody()))
-            builder.setBody(message.getBody());
+
+        headBuilder.setId(message.getHead().getId());
+        headBuilder.setMessageId(message.getHead().getMessageId());
+        headBuilder.setTime(message.getHead().getTime());
+        headBuilder.setToken(message.getHead().getToken());
+        headBuilder.setSource(message.getHead().getSource());
+        headBuilder.setContentType(message.getHead().getContentType());
+        headBuilder.setType(message.getHead().getType());
+
         builder.setHead(headBuilder);
+
+        MessageProtobuf.Body.Builder bodyBuilder = MessageProtobuf.Body.newBuilder();
+        bodyBuilder.setPrk(message.getBody().getPrk());
+        bodyBuilder.setData(message.getBody().getData());
+
+        builder.setBody(bodyBuilder);
+
         return builder;
     }
 
@@ -130,17 +146,26 @@ public class MessageBuilder {
             MessageProtobuf.Msg protobufMessage) {
         AppMessage message = new AppMessage();
         Head head = new Head();
+        Body body = new Body();
         MessageProtobuf.Head protoHead = protobufMessage.getHead();
-        head.setMsgType(protoHead.getMsgType());
-        head.setStatusReport(protoHead.getStatusReport());
-        head.setMsgContentType(protoHead.getMsgContentType());
-        head.setMsgId(protoHead.getMsgId());
-        head.setFromId(protoHead.getFromId());
-        head.setToId(protoHead.getToId());
-        head.setTimestamp(protoHead.getTimestamp());
-        head.setExtend(protoHead.getExtend());
+        MessageProtobuf.Body protoBody = protobufMessage.getBody();
+
+        head.setType(protoHead.getType());
+        head.setContentType(protoHead.getContentType());
+        head.setMessageId(protoHead.getMessageId());
+        head.setId(protoHead.getId());
+        head.setTime(protoHead.getTime());
+        head.setSendUserId(protoHead.getSendUserId());
+        head.setToken(protoHead.getToken());
+        head.setSource(protoHead.getSource());
+
+        body.setPrk(protoBody.getPrk());
+        body.setData(protoBody.getData());
+
         message.setHead(head);
-        message.setBody(protobufMessage.getBody());
+        message.setBody(body);
+
+
         return message;
     }
 }

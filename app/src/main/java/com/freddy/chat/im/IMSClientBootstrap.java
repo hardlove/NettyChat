@@ -1,11 +1,14 @@
 package com.freddy.chat.im;
 
+import android.util.Log;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.freddy.im.IMSClientFactory;
 import com.freddy.im.interf.IMSClientInterface;
 import com.freddy.im.protobuf.MessageProtobuf;
+import com.freddy.im.protobuf.Utils;
 
 import java.util.Vector;
 
@@ -73,6 +76,13 @@ public class IMSClientBootstrap {
     public void sendMessage(MessageProtobuf.Msg msg) {
         if (isActive) {
             imsClient.sendMsg(msg);
+            System.err.println("===========================");
+            System.err.println("[发送消息：" + Utils.format(msg) + "]");
+            System.err.println("===========================");
+        } else {
+            System.err.println("===========================");
+            System.err.println("发送消息失败,service 断开");
+            System.err.println("===========================");
         }
     }
 

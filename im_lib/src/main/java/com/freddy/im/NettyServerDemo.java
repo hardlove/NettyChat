@@ -126,63 +126,67 @@ class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        MessageProtobuf.Msg message = (MessageProtobuf.Msg) msg;
-        System.out.println("收到来自客户端的消息：" + message);
-        int msgType = message.getHead().getMsgType();
-        switch (msgType) {
-            // 握手消息
-            case 1001: {
-                String fromId = message.getHead().getFromId();
-                JSONObject jsonObj = JSON.parseObject(message.getHead().getExtend());
-                String token = jsonObj.getString("token");
-                JSONObject resp = new JSONObject();
-                if (token.equals("token_" + fromId)) {
-                    resp.put("status", 1);
-                    // 握手成功后，保存用户通道
-                    ChannelContainer.getInstance().saveChannel(new NettyChannel(fromId, ctx.channel()));
-                } else {
-                    resp.put("status", -1);
-                    ChannelContainer.getInstance().removeChannelIfConnectNoActive(ctx.channel());
-                }
-
-                message = message.toBuilder().setHead(message.getHead().toBuilder().setExtend(resp.toString()).build()).build();
-                ctx.channel().writeAndFlush(message);
-                break;
-            }
-
-            // 心跳消息
-            case 1002: {
-                // 收到心跳消息，原样返回
-                ctx.channel().writeAndFlush(message);
-                break;
-            }
-
-            case 2001: {
-                // 收到2001或3001消息，返回给客户端消息发送状态报告
-                String fromId = message.getHead().getFromId();
-                MessageProtobuf.Msg.Builder sentReportMsgBuilder = MessageProtobuf.Msg.newBuilder();
-                MessageProtobuf.Head.Builder sentReportHeadBuilder = MessageProtobuf.Head.newBuilder();
-                sentReportHeadBuilder.setMsgId(message.getHead().getMsgId());
-                sentReportHeadBuilder.setMsgType(1010);
-                sentReportHeadBuilder.setTimestamp(System.currentTimeMillis());
-                sentReportHeadBuilder.setStatusReport(1);
-                sentReportMsgBuilder.setHead(sentReportHeadBuilder.build());
-                ChannelContainer.getInstance().getActiveChannelByUserId(fromId).getChannel().writeAndFlush(sentReportMsgBuilder.build());
-
-                // 同时转发消息到接收方
-                String toId = message.getHead().getToId();
-                ChannelContainer.getInstance().getActiveChannelByUserId(toId).getChannel().writeAndFlush(message);
-                break;
-            }
-
-            case 3001: {
-                // todo 群聊，自己实现吧，toId可以是群id，根据群id查找所有在线用户的id，循环遍历channel发送即可。
-                break;
-            }
-
-            default:
-                break;
-        }
+//
+//
+//        MessageProtobuf.Msg message = (MessageProtobuf.Msg) msg;
+//        System.out.println("收到来自客户端的消息：" + message);
+//        int msgType = message.getHead().getType();
+//        switch (msgType) {
+//            // 握手消息
+//            case 1001: {
+//                String fromId = message.getHead().getFromId();
+//                JSONObject jsonObj = JSON.parseObject(message.getHead().getExtend());
+//                String token = jsonObj.getString("token");
+//                JSONObject resp = new JSONObject();
+//                if (token.equals("token_" + fromId)) {
+//                    resp.put("status", 1);
+//                    // 握手成功后，保存用户通道
+//                    ChannelContainer.getInstance().saveChannel(new NettyChannel(fromId, ctx.channel()));
+//                } else {
+//                    resp.put("status", -1);
+//                    ChannelContainer.getInstance().removeChannelIfConnectNoActive(ctx.channel());
+//                }
+//
+//                message = message.toBuilder().setHead(message.getHead().toBuilder().setExtend(resp.toString()).build()).build();
+//                ctx.channel().writeAndFlush(message);
+//                break;
+//            }
+//
+//            // 心跳消息
+//            case 1002: {
+//                // 收到心跳消息，原样返回
+//                ctx.channel().writeAndFlush(message);
+//                break;
+//            }
+//
+//            case 2001: {
+//                // 收到2001或3001消息，返回给客户端消息发送状态报告
+//                String fromId = message.getHead().getFromId();
+//                MessageProtobuf.Msg.Builder sentReportMsgBuilder = MessageProtobuf.Msg.newBuilder();
+//                MessageProtobuf.Head.Builder sentReportHeadBuilder = MessageProtobuf.Head.newBuilder();
+//                sentReportHeadBuilder.setMsgId(message.getHead().getMsgId());
+//                sentReportHeadBuilder.setMsgType(1010);
+//                sentReportHeadBuilder.setTimestamp(System.currentTimeMillis());
+//                sentReportHeadBuilder.setStatusReport(1);
+//                sentReportMsgBuilder.setHead(sentReportHeadBuilder.build());
+//                ChannelContainer.getInstance().getActiveChannelByUserId(fromId).getChannel().writeAndFlush(sentReportMsgBuilder.build());
+//
+//                // 同时转发消息到接收方
+//                String toId = message.getHead().getToId();
+//                ChannelContainer.getInstance().getActiveChannelByUserId(toId).getChannel().writeAndFlush(message);
+//                break;
+//            }
+//
+//            case 3001: {
+//                // todo 群聊，自己实现吧，toId可以是群id，根据群id查找所有在线用户的id，循环遍历channel发送即可。
+//                break;
+//            }
+//
+//            default:
+//                break;
+//        }
+//
+//
     }
 
     public static class ChannelContainer {

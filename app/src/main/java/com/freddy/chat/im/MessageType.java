@@ -16,12 +16,12 @@ public enum MessageType {
     /*
      * 握手消息
      */
-    HANDSHAKE(1001),
+    HANDSHAKE(5),
 
     /*
      * 心跳消息
      */
-    HEARTBEAT(1002),
+    HEARTBEAT(0),
 
     /*
      * 客户端提交的消息接收状态报告
@@ -36,12 +36,12 @@ public enum MessageType {
     /**
      * 单聊消息
      */
-    SINGLE_CHAT(2001),
+    SINGLE_CHAT(1),
 
     /**
      * 群聊消息
      */
-    GROUP_CHAT(3001);
+    GROUP_CHAT(2);
 
     private int msgType;
 
@@ -55,9 +55,9 @@ public enum MessageType {
 
     public enum MessageContentType {
 
-        TEXT(101),
-        IMAGE(102),
-        VOICE(103);
+        TEXT(1),
+        IMAGE(2),
+        VOICE(3);
 
         private int msgContentType;
 

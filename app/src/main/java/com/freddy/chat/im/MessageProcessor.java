@@ -47,11 +47,11 @@ public class MessageProcessor implements IMessageProcessor {
             @Override
             public void run() {
                 try {
-                    IMessageHandler messageHandler = MessageHandlerFactory.getHandlerByMsgType(message.getHead().getMsgType());
+                    IMessageHandler messageHandler = MessageHandlerFactory.getHandlerByMsgType(message.getHead().getType());
                     if (messageHandler != null) {
                         messageHandler.execute(message);
                     } else {
-                        Log.e(TAG, "未找到消息处理handler，msgType=" + message.getHead().getMsgType());
+                        Log.e(TAG, "未找到消息处理handler，msgType=" + message.getHead().getType());
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "消息处理出错，reason=" + e.getMessage());

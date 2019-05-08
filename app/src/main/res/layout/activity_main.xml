@@ -7,7 +7,41 @@
     tools:context=".MainActivity">
 
     <EditText
+        android:id="@+id/edtUserId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="UserId" />
+
+    <EditText
+        android:id="@+id/edtToken"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Token" />
+    <Button
+        android:onClick="ChangeUser"
+        android:id="@+id/btnChangeUser"
+        android:text="ChangeUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:onClick="loginIm"
+        android:id="@+id/btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login" />
+
+    <EditText
         android:id="@+id/et_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="请输入发送的消息内容" />
+
+    <EditText
+        android:enabled="false"
+        android:id="@+id/edtToUser"
+        android:hint="toUserId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

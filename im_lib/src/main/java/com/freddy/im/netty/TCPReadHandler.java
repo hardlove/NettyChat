@@ -4,12 +4,16 @@ import com.alibaba.fastjson.JSONObject;
 import com.freddy.im.IMSConfig;
 import com.freddy.im.interf.IMSClientInterface;
 import com.freddy.im.protobuf.MessageProtobuf;
+import com.freddy.im.protobuf.Utils;
 
+import java.net.Proxy;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.internal.StringUtil;
 
 /**
@@ -39,22 +43,29 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         if (channel != null) {
             channel.close();
             ctx.close();
+            System.err.println("close~~~channelInactive");
+
         }
 
         // 触发重连
         imsClient.resetConnect(false);
     }
 
+    @Override
+    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+        super.handlerRemoved(ctx);
 
+    }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
-        System.err.println("TCPReadHandler exceptionCaught()");
+        System.err.println("TCPReadHandler exceptionCaught()" + " error:" + cause.getLocalizedMessage());
         Channel channel = ctx.channel();
         if (channel != null) {
             channel.close();
             ctx.close();
+            System.err.println("close~~~exceptionCaught");
         }
 
         // 触发重连
@@ -68,23 +79,31 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        int msgType = message.getHead().getMsgType();
-        if (msgType == imsClient.getServerSentReportMsgType()) {
-            int statusReport = message.getHead().getStatusReport();
-            System.out.println(String.format("服务端状态报告：「%d」, 1代表成功，0代表失败", statusReport));
-            if (statusReport == IMSConfig.DEFAULT_REPORT_SERVER_SEND_MSG_SUCCESSFUL) {
-                System.out.println("收到服务端消息发送状态报告，message=" + message + "，从超时管理器移除");
-                imsClient.getMsgTimeoutTimerManager().remove(message.getHead().getMsgId());
-            }
-        } else {
-            // 其它消息
-            // 收到消息后，立马给服务端回一条消息接收状态报告
-            System.out.println("收到消息，message=" + message);
-            MessageProtobuf.Msg receivedReportMsg = buildReceivedReportMsg(message.getHead().getMsgId());
-            if(receivedReportMsg != null) {
-                imsClient.sendMsg(receivedReportMsg);
-            }
+        System.err.println("====================================");
+        System.err.println("收到服务端发送过来的消息：" + Utils.format(message));
+        System.err.println("====================================");
+        int msgType = message.getHead().getType();
+
+        switch (msgType) {
+            case 5001://单聊消息回执
+            case 5002://群聊消息回执
+            case 5003://朋友圈消息回
+            case 5004://系统通知回执
+            case 5005://登录验证失败，系统会掐掉连接
+            case 5006://登陆验证成功
+                System.out.println("收到服务端消息发送状态报告,msyType:" + msgType + "  ，message=" + Utils.format(message) + "，从超时管理器移除");
+                imsClient.getMsgTimeoutTimerManager().remove(message.getHead().getMessageId());
+                break;
+            default:
+                // 其它消息
+                // 收到消息后，立马给服务端回一条消息接收状态报告
+                MessageProtobuf.Msg receivedReportMsg = buildReceivedReportMsg(message);
+                if (receivedReportMsg != null) {
+                    imsClient.sendMsg(receivedReportMsg);
+                }
+
         }
+
 
         // 接收消息，由消息转发器转发到应用层
         imsClient.getMsgDispatcher().receivedMsg(message);
@@ -92,6 +111,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * 构建客户端消息接收状态报告
+     *
      * @param msgId
      * @return
      */
@@ -102,14 +122,54 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
 
         MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
         MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
-        headBuilder.setMsgId(UUID.randomUUID().toString());
-        headBuilder.setMsgType(imsClient.getClientReceivedReportMsgType());
-        headBuilder.setTimestamp(System.currentTimeMillis());
-        JSONObject jsonObj = new JSONObject();
-        jsonObj.put("msgId", msgId);
-        headBuilder.setExtend(jsonObj.toString());
+        headBuilder.setMessageId(UUID.randomUUID().toString());
+        headBuilder.setType(imsClient.getClientReceivedReportMsgType());
+        headBuilder.setTime(System.currentTimeMillis());
+
+
+        return builder.build();
+    }
+
+    /**
+     * 构建客户端消息接收状态报告
+     *
+     * @param msg
+     * @return
+     */
+    private MessageProtobuf.Msg buildReceivedReportMsg(MessageProtobuf.Msg msg) {
+        if (msg == null || msg.getHead() == null) {
+            return null;
+        }
+        MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
+        MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
+        headBuilder.setMessageId(UUID.randomUUID().toString());
+        if (msg.getHead().getType() == 1) {
+            headBuilder.setType(5001);
+        } else if (msg.getHead().getType() == 2){
+            headBuilder.setType(5002);
+        } else if (msg.getHead().getType() == 3){
+            headBuilder.setType(5003);
+        } else if (msg.getHead().getType() == 4){
+            headBuilder.setType(5004);
+        }
+        headBuilder.setTime(System.currentTimeMillis());
         builder.setHead(headBuilder.build());
 
         return builder.build();
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent event = (IdleStateEvent) evt;
+//            if (event.state().equals(IdleState.WRITER_IDLE)){//如果写通道处于空闲状态,就发送心跳命令
+//                //System.out.println("发送心跳包");
+////                String token = ctx.channel().attr(Constant.TOKEN).get();
+//                MessageProtobuf.Head head = MessageProtobuf.Head.newBuilder().setType(0).setToken("1475ae4964f9497c85f63f22c5a255ee").build();
+//                MessageProtobuf.Msg msg = MessageProtobuf.Msg.newBuilder().setHead(head).build();
+//                ctx.channel().writeAndFlush(msg);
+//            }
+
+        }
     }
 }

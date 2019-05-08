@@ -1,102 +1,117 @@
 package com.freddy.chat.bean;
 
+import android.util.Log;
+
 /**
- * <p>@ProjectName:     NettyChat</p>
- * <p>@ClassName:       Head.java</p>
- * <p>@PackageName:     com.freddy.chat.bean</p>
- * <b>
- * <p>@Description:     消息头</p>
- * </b>
- * <p>@author:          FreddyChen</p>
- * <p>@date:            2019/04/10 00:00</p>
- * <p>@email:           chenshichao@outlook.com</p>
+ * Created by CL on 2019/5/8.
+ *
+ * @description: 消息头
  */
 public class Head {
+    /*类型*/
+    private int type;
+    /*内容类型*/
+    private int contentType;
+    /*登陆用户的token*/
+    private String token;
+    /*秘钥版本*/
+    private int version;
+    /*接收者*/
+    private  String id;
+    /*发送者*/
+    private String sendUserId;
+    /*消息id*/
+    private String messageId;
+    /*发送时间*/
+    private Long time;
+    /*来源, android，ios，windowPc, macPc*/
+    private String source;
 
-    private String msgId;
-    private int msgType;
-    private int msgContentType;
-    private String fromId;
-    private String toId;
-    private long timestamp;
-    private int statusReport;
-    private String extend;
 
-    public String getMsgId() {
-        return msgId;
+    public int getType() {
+        return type;
     }
 
-    public void setMsgId(String msgId) {
-        this.msgId = msgId;
+    public void setType(int type) {
+        this.type = type;
     }
 
-    public int getMsgType() {
-        return msgType;
+    public int getContentType() {
+        return contentType;
     }
 
-    public void setMsgType(int msgType) {
-        this.msgType = msgType;
+    public void setContentType(int contentType) {
+        this.contentType = contentType;
     }
 
-    public int getMsgContentType() {
-        return msgContentType;
+    public String getToken() {
+        return token;
     }
 
-    public void setMsgContentType(int msgContentType) {
-        this.msgContentType = msgContentType;
+    public void setToken(String token) {
+        this.token = token;
     }
 
-    public String getFromId() {
-        return fromId;
+    public int getVersion() {
+        return version;
     }
 
-    public void setFromId(String fromId) {
-        this.fromId = fromId;
+    public void setVersion(int version) {
+        this.version = version;
     }
 
-    public String getToId() {
-        return toId;
+    public String getId() {
+        return id;
     }
 
-    public void setToId(String toId) {
-        this.toId = toId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public String getSendUserId() {
+        return sendUserId;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public void setSendUserId(String sendUserId) {
+        this.sendUserId = sendUserId;
     }
 
-    public int getStatusReport() {
-        return statusReport;
+    public String getMessageId() {
+        return messageId;
     }
 
-    public void setStatusReport(int statusReport) {
-        this.statusReport = statusReport;
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
-    public String getExtend() {
-        return extend;
+    public Long getTime() {
+        return time;
     }
 
-    public void setExtend(String extend) {
-        this.extend = extend;
+    public void setTime(Long time) {
+        this.time = time;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 
     @Override
     public String toString() {
         return "Head{" +
-                "msgId='" + msgId + '\'' +
-                ", msgType=" + msgType +
-                ", msgContentType=" + msgContentType +
-                ", fromId='" + fromId + '\'' +
-                ", toId='" + toId + '\'' +
-                ", timestamp=" + timestamp +
-                ", statusReport=" + statusReport +
-                ", extend='" + extend + '\'' +
+                "type=" + type +
+                ", contentType=" + contentType +
+                ", token='" + token + '\'' +
+                ", version=" + version +
+                ", id='" + id + '\'' +
+                ", sendUserId='" + sendUserId + '\'' +
+                ", messageId='" + messageId + '\'' +
+                ", time=" + time +
+                ", source='" + source + '\'' +
                 '}';
     }
 }

@@ -14,7 +14,7 @@ package com.freddy.chat.bean;
 public class AppMessage {
 
     private Head head;  // 消息头
-    private String body;// 消息体
+    private Body body;// 消息体
 
     public Head getHead() {
         return head;
@@ -24,11 +24,11 @@ public class AppMessage {
         this.head = head;
     }
 
-    public String getBody() {
+    public Body getBody() {
         return body;
     }
 
-    public void setBody(String body) {
+    public void setBody(Body body) {
         this.body = body;
     }
 
@@ -36,7 +36,7 @@ public class AppMessage {
     public String toString() {
         return "AppMessage{" +
                 "head=" + head +
-                ", body='" + body + '\'' +
+                ", body=" + body +
                 '}';
     }
 }

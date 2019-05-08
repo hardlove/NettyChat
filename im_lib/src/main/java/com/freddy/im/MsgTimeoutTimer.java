@@ -2,6 +2,7 @@ package com.freddy.im;
 
 import com.freddy.im.interf.IMSClientInterface;
 import com.freddy.im.protobuf.MessageProtobuf;
+import com.freddy.im.protobuf.Utils;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -40,7 +41,8 @@ public class MsgTimeoutTimer extends Timer {
         public void run() {
             if (imsClient.isClosed()) {
                 if (imsClient.getMsgTimeoutTimerManager() != null) {
-                    imsClient.getMsgTimeoutTimerManager().remove(msg.getHead().getMsgId());
+                    System.out.print("imsClient.isClosed(),从发送消息管理器移除消息："+Utils.format(msg));
+                    imsClient.getMsgTimeoutTimerManager().remove(msg.getHead().getMessageId());
                 }
 
                 return;
@@ -52,17 +54,21 @@ public class MsgTimeoutTimer extends Timer {
                 try {
                     MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
                     MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
-                    headBuilder.setMsgId(msg.getHead().getMsgId());
-                    headBuilder.setMsgType(imsClient.getServerSentReportMsgType());
-                    headBuilder.setTimestamp(System.currentTimeMillis());
-                    headBuilder.setStatusReport(IMSConfig.DEFAULT_REPORT_SERVER_SEND_MSG_FAILURE);
+                    headBuilder.setMessageId(msg.getHead().getMessageId());
+                    headBuilder.setType(imsClient.getServerSentReportMsgType());
+                    headBuilder.setTime(System.currentTimeMillis());
+//                    headBuilder.setStatusReport(IMSConfig.DEFAULT_REPORT_SERVER_SEND_MSG_FAILURE);
                     builder.setHead(headBuilder.build());
 
+                    System.err.println("消息发送3次都失败，msg：" + Utils.format(msg));
                     // 通知应用层消息发送失败
                     imsClient.getMsgDispatcher().receivedMsg(builder.build());
+                } catch (Error error) {
+                    System.err.println("重复消息异常，断开连接。。。。，msg：" + Utils.format(msg) + "   error:" + error.getLocalizedMessage());
                 } finally {
+
                     // 从消息发送超时管理器移除该消息
-                    imsClient.getMsgTimeoutTimerManager().remove(msg.getHead().getMsgId());
+                    imsClient.getMsgTimeoutTimerManager().remove(msg.getHead().getMessageId());
                     // 执行到这里，认为连接已断开或不稳定，触发重连
                     imsClient.resetConnect();
                     currentResendCount = 0;
@@ -75,7 +81,7 @@ public class MsgTimeoutTimer extends Timer {
     }
 
     public void sendMsg() {
-        System.out.println("正在重发消息，message=" + msg);
+        System.out.println("正在重发消息，message=" + Utils.format(msg));
         imsClient.sendMsg(msg, false);
     }
 

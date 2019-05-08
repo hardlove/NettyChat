@@ -27,14 +27,13 @@ public class SingleChatMessageHandler extends AbstractMessageHandler {
         Log.d(TAG, "收到单聊消息，message=" + message);
 
         SingleMessage msg = new SingleMessage();
-        msg.setMsgId(message.getHead().getMsgId());
-        msg.setMsgType(message.getHead().getMsgType());
-        msg.setMsgContentType(message.getHead().getMsgContentType());
-        msg.setFromId(message.getHead().getFromId());
-        msg.setToId(message.getHead().getToId());
-        msg.setTimestamp(message.getHead().getTimestamp());
-        msg.setExtend(message.getHead().getExtend());
-        msg.setContent(message.getBody());
+        msg.setMsgId(message.getHead().getMessageId());
+        msg.setMsgType(message.getHead().getType());
+        msg.setMsgContentType(message.getHead().getContentType());
+        msg.setFromId(message.getHead().getSendUserId());
+        msg.setToId(message.getHead().getId());
+        msg.setTimestamp(message.getHead().getTime());
+        msg.setContent(message.getBody().toString());
 
 
         CEventCenter.dispatchEvent(Events.CHAT_SINGLE_MESSAGE, 0, 0, msg);

@@ -37,9 +37,9 @@ public class HeartbeatRespHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        int heartbeatMsgType = heartbeatMsg.getHead().getMsgType();
-        if (heartbeatMsgType == heartbeatRespMsg.getHead().getMsgType()) {
-            System.out.println("收到服务端心跳响应消息，message=" + heartbeatRespMsg);
+        int heartbeatMsgType = heartbeatMsg.getHead().getType();
+        if (heartbeatMsgType == heartbeatRespMsg.getHead().getType()) {
+            System.out.println("收到服务端心跳响应消息，message=" + heartbeatRespMsg.getHead().getType());
         } else {
             // 消息透传
             ctx.fireChannelRead(msg);

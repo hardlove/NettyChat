@@ -1,0 +1,43 @@
+syntax = "proto3";// 指定protobuf版本
+option java_package = "com.freddy.im.protobuf";// 指定包名
+option java_outer_classname = "MessageProtobuf";// 指定生成的类名
+
+message Msg {
+    Head head = 1;// 消息头
+    Body body = 2;// 消息体
+}
+
+message Head {
+    //类型
+    int32 type = 1;
+
+    //内容类型
+    int32 contentType =2;
+
+    //登陆用户的token
+    string token = 3;
+
+    //秘钥版本
+    string version = 4;
+
+    //接收者
+    string id = 5;
+
+    //发送者
+    string sendUserId = 6;
+
+    //消息id
+    string messageId = 7;
+
+    //发送时间
+    sint64 time = 8;
+
+    //来源, android，ios，windowPc, macPc
+    string source = 9;
+}
+
+message Body {
+    string prk = 1; //私钥
+
+    string data = 2; //消息体
+}

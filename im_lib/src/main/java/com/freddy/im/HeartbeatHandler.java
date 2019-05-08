@@ -2,6 +2,7 @@ package com.freddy.im;
 
 import com.freddy.im.netty.NettyTcpClient;
 import com.freddy.im.protobuf.MessageProtobuf;
+import com.freddy.im.protobuf.Utils;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -67,8 +68,9 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
                 if (heartbeatMsg == null) {
                     return;
                 }
-                System.out.println("发送心跳消息，message=" + heartbeatMsg + "当前心跳间隔为：" + imsClient.getHeartbeatInterval() + "ms\n");
+                System.out.println("发送心跳消息，message=" + Utils.format(heartbeatMsg) + "当前心跳间隔为：" + imsClient.getHeartbeatInterval() + "ms\n");
                 imsClient.sendMsg(heartbeatMsg, false);
+
             }
         }
     }

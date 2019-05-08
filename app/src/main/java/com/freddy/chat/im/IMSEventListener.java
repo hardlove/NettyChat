@@ -103,15 +103,21 @@ public class IMSEventListener implements OnEventListener {
     public MessageProtobuf.Msg getHandshakeMsg() {
         MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
         MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
-        headBuilder.setMsgId(UUID.randomUUID().toString());
-        headBuilder.setMsgType(MessageType.HANDSHAKE.getMsgType());
-        headBuilder.setFromId(userId);
-        headBuilder.setTimestamp(System.currentTimeMillis());
+        headBuilder.setMessageId(UUID.randomUUID().toString());
 
-        JSONObject jsonObj = new JSONObject();
-        jsonObj.put("token", token);
-        headBuilder.setExtend(jsonObj.toString());
+        headBuilder.setType(MessageType.HANDSHAKE.getMsgType());
+//        headBuilder.setSendUserId(userId);
+        headBuilder.setToken(token);
+        headBuilder.setId(userId);
+        headBuilder.setTime(System.currentTimeMillis());
+        headBuilder.setSource("android");
+        headBuilder.setVersion("1.5.1");
         builder.setHead(headBuilder.build());
+
+        MessageProtobuf.Body.Builder bodyBuilder = MessageProtobuf.Body.newBuilder();
+        bodyBuilder.setPrk("私钥");
+        bodyBuilder.setData("消息体");
+        builder.setBody(bodyBuilder.build());
 
         return builder.build();
     }
@@ -125,12 +131,20 @@ public class IMSEventListener implements OnEventListener {
     public MessageProtobuf.Msg getHeartbeatMsg() {
         MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
         MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
-        headBuilder.setMsgId(UUID.randomUUID().toString());
-        headBuilder.setMsgType(MessageType.HEARTBEAT.getMsgType());
-        headBuilder.setFromId(userId);
-        headBuilder.setTimestamp(System.currentTimeMillis());
+        headBuilder.setMessageId(UUID.randomUUID().toString());
+
+        headBuilder.setType(MessageType.HEARTBEAT.getMsgType());
+        headBuilder.setSendUserId(userId);
+        headBuilder.setToken(token);
+        headBuilder.setTime(System.currentTimeMillis());
+        headBuilder.setSource("android");
+        headBuilder.setVersion("1.5.1");
         builder.setHead(headBuilder.build());
 
+        MessageProtobuf.Body.Builder bodyBuilder = MessageProtobuf.Body.newBuilder();
+        bodyBuilder.setPrk("私钥");
+        bodyBuilder.setData("消息体");
+        builder.setBody(bodyBuilder.build());
         return builder.build();
     }
 

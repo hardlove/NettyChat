@@ -236,7 +236,7 @@ public class NettyTcpClient implements IMSClientInterface {
             return;
         }
 
-        if(!StringUtil.isNullOrEmpty(msg.getHead().getMsgId())) {
+        if(!StringUtil.isNullOrEmpty(msg.getHead().getMessageId())) {
             if(isJoinTimeoutManager) {
                 msgTimeoutTimerManager.add(msg);
             }
@@ -499,7 +499,7 @@ public class NettyTcpClient implements IMSClientInterface {
 
             case IMSConfig.CONNECT_STATE_FAILURE:
             default: {
-                System.out.println("ims连接失败");
+                System.out.println("ims连接失败  " + connectStatus);
                 if (mIMSConnectStatusCallback != null) {
                     mIMSConnectStatusCallback.onConnectFailed();
                 }
