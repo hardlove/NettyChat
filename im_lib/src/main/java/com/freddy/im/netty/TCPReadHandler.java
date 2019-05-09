@@ -98,8 +98,9 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
                 // 其它消息
                 // 收到消息后，立马给服务端回一条消息接收状态报告
                 MessageProtobuf.Msg receivedReportMsg = buildReceivedReportMsg(message);
+                System.out.println("收到服务端发送过来的消息,type:" + msgType + "  ,发送消息回执：" + receivedReportMsg.getHead().getType());
                 if (receivedReportMsg != null) {
-                    imsClient.sendMsg(receivedReportMsg);
+                    imsClient.sendMsg(receivedReportMsg,false);
                 }
 
         }
@@ -152,6 +153,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         } else if (msg.getHead().getType() == 4){
             headBuilder.setType(5004);
         }
+        headBuilder.setMessageId(msg.getHead().getMessageId());
         headBuilder.setTime(System.currentTimeMillis());
         builder.setHead(headBuilder.build());
 

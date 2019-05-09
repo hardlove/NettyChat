@@ -64,12 +64,13 @@ public class MsgTimeoutTimer extends Timer {
                     // 通知应用层消息发送失败
                     imsClient.getMsgDispatcher().receivedMsg(builder.build());
                 } catch (Error error) {
-                    System.err.println("重复消息异常，断开连接。。。。，msg：" + Utils.format(msg) + "   error:" + error.getLocalizedMessage());
+                    System.err.println("重发消息异常，断开连接。。。。，msg：" + Utils.format(msg) + "   error:" + error.getLocalizedMessage());
                 } finally {
 
                     // 从消息发送超时管理器移除该消息
                     imsClient.getMsgTimeoutTimerManager().remove(msg.getHead().getMessageId());
                     // 执行到这里，认为连接已断开或不稳定，触发重连
+                    System.err.println("从发送消息管理器移除消息, 重新连接。。。。");
                     imsClient.resetConnect();
                     currentResendCount = 0;
                 }
