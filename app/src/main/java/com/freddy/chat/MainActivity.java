@@ -1,5 +1,7 @@
 package com.freddy.chat;
 
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,13 +13,11 @@ import com.freddy.chat.bean.AppMessage;
 import com.freddy.chat.bean.Body;
 import com.freddy.chat.bean.Head;
 import com.freddy.chat.bean.SingleMessage;
-import com.freddy.chat.event.CEvent;
 import com.freddy.chat.event.CEventCenter;
 import com.freddy.chat.event.Events;
 import com.freddy.chat.event.I_CEventListener;
 import com.freddy.chat.im.IMSClientBootstrap;
 import com.freddy.chat.im.MessageProcessor;
-import com.freddy.chat.im.MessageType;
 import com.freddy.chat.utils.CThreadPoolExecutor;
 import com.freddy.im.IMSClientFactory;
 
@@ -30,12 +30,15 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     private EditText mEditUserId;
     private EditText mEditToken;
     private Button mBtnLogin;
+    private TextView mTvSignleMsgCount;
+    private int singMsgReciveCount;//收到的单聊消息数量
+    private int signMsgSendCount;//
 
     String userId;
     String token;
     private String toUserId;
 
-//    String hosts = "[{\"host\":\"192.168.0.160\", \"port\":54321}]";
+//    String hosts = "[{\"host\":\"192.168.0.145\", \"port\":54321}]";
     String hosts = "[{\"host\":\"47.52.255.159\", \"port\":54321}]";
 
 //10001    1475ae4964f9497c85f63f22c5a255ee
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
         mEditToken = findViewById(R.id.edtToken);
         mBtnLogin = findViewById(R.id.btnLogin);
         mEditToUser = findViewById(R.id.edtToUser);
+        mTvSignleMsgCount = findViewById(R.id.tvSingleMsgCount);
 
 
         userId = userIds[0];
@@ -121,6 +125,13 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
         }
         mEditToUser.setText(toUserId);
 
+        resetUI();
+
+    }
+
+    private void resetUI() {
+        mTvSignleMsgCount.setText("收到到单聊消息总数：" + singMsgReciveCount);
+        mTextView.setText("");
     }
 
     public void loginIm(View view) {
@@ -142,9 +153,38 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
 
     }
 
+    public void ClearMsg(View view) {
+        singMsgReciveCount = 0;
+        signMsgSendCount = 0;
+        NettyChatApp.instance.getMsgContainer().clear();
+        resetUI();
+
+
+    }
 
     public void sendMsg(View view) {
 
+        sendSingleMsg();
+
+    }
+    public void sendMultiMsg(View view) {
+        handler.sendEmptyMessageDelayed(1, 300);
+    }
+
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (signMsgSendCount<1000) {
+                sendSingleMsg();
+                handler.sendEmptyMessageDelayed(1, 300);
+            }
+
+
+
+        }
+    };
+    private void sendSingleMsg() {
         AppMessage appMessage = new AppMessage();
         Head head = new Head();
         Body body = new Body();
@@ -164,7 +204,13 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
         appMessage.setBody(body);
         MessageProcessor.getInstance().sendMsg(appMessage);
 
+        signMsgSendCount++;
+
+        TextView sendCount = findViewById(R.id.tvSingleMsgSendCount);
+        sendCount.setText("已发单聊消息总数：" + signMsgSendCount);
     }
+
+
 
     @Override
     protected void onDestroy() {
@@ -181,7 +227,11 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
 
                     @Override
                     public void run() {
-                        mTextView.setText(message.getContent());
+                        mTextView.append("\n");
+                        mTextView.append(message.getContent());
+                        singMsgReciveCount++;
+                        mTvSignleMsgCount.setText("收到到单聊消息总数：" + singMsgReciveCount);
+
                     }
                 });
                 break;

@@ -51,7 +51,7 @@ public interface OnEventListener {
     int getForegroundHeartbeatInterval();
 
     /**
-     * 获取应用在前台时心跳间隔时间
+     * 获取应用在后台时心跳间隔时间
      *
      * @return
      */
@@ -72,7 +72,7 @@ public interface OnEventListener {
     MessageProtobuf.Msg getHeartbeatMsg();
 
     /**
-     * 获取应用层消息发送状态报告消息类型
+     * 获取服务端消息发送状态报告消息类型
      *
      * @return
      */

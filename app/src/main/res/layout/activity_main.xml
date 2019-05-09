@@ -17,19 +17,49 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Token" />
-    <Button
-        android:onClick="ChangeUser"
-        android:id="@+id/btnChangeUser"
-        android:text="ChangeUser"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 
-    <Button
-        android:onClick="loginIm"
-        android:id="@+id/btnLogin"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Login" />
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btnClear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="ClearMsg"
+            android:text="清除" />
+
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btnChangeUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="ChangeUser"
+            android:text="切换" />
+
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btnLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="loginIm"
+            android:text="登录" />
+
+        <Button
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="sendMsg"
+            android:text="发送" />
+        <Button
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="sendMultiMsg"
+            android:text="批发" />
+
+    </LinearLayout>
 
     <EditText
         android:id="@+id/et_content"
@@ -38,24 +68,52 @@
         android:layout_marginTop="20dp"
         android:hint="请输入发送的消息内容" />
 
-    <EditText
-        android:enabled="false"
-        android:id="@+id/edtToUser"
-        android:hint="toUserId"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="发送给："
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/edtToUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:hint="toUserId" />
+    </LinearLayout>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="sendMsg"
-        android:text="发送消息" />
 
-    <TextView
-        android:id="@+id/tv_msg"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="收到的消息会显示在这里"
-        android:textColor="#000000"
-        android:textSize="18sp" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvSingleMsgCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="收到单聊消息总数：" />
+
+            <TextView
+                android:id="@+id/tvSingleMsgSendCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="已发单聊消息总数：" />
+
+            <TextView
+                android:id="@+id/tv_msg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="收到的消息会显示在这里"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>

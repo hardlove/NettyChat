@@ -2,10 +2,13 @@ package com.freddy.chat.im.handler;
 
 import android.util.Log;
 
+import com.freddy.chat.NettyChatApp;
 import com.freddy.chat.bean.AppMessage;
 import com.freddy.chat.bean.SingleMessage;
 import com.freddy.chat.event.CEventCenter;
 import com.freddy.chat.event.Events;
+
+import java.util.Map;
 
 /**
  * <p>@ProjectName:     NettyChat</p>
@@ -25,6 +28,16 @@ public class SingleChatMessageHandler extends AbstractMessageHandler {
     @Override
     protected void action(AppMessage message) {
         Log.d(TAG, "收到单聊消息，message=" + message);
+
+        //需要去重
+        Map<String, AppMessage> msgContainer = NettyChatApp.instance.getMsgContainer();
+        if (msgContainer.containsKey(message.getHead().getMessageId())) {
+            Log.e(TAG, "收到重复消息，messageId：" + message.getHead().getMessageId());
+            return;
+        }
+        msgContainer.put(message.getHead().getMessageId(), message);
+        Log.e(TAG, "添加消息到msgContainer,messageId:" + message.getHead().getMessageId() + " 消息总数：" + msgContainer.size());
+
 
         SingleMessage msg = new SingleMessage();
         msg.setMsgId(message.getHead().getMessageId());

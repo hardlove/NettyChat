@@ -54,7 +54,13 @@ public class MsgTimeoutTimerManager {
 
         int msgType = msg.getHead().getType();
         // 握手消息、心跳消息、客户端返回的状态报告消息，不用重发。
-        if (msgType == handshakeMsgType || msgType == heartbeatMsgType || msgType == clientReceivedReportMsgType) {
+        if (msgType == handshakeMsgType || msgType == heartbeatMsgType || msgType == clientReceivedReportMsgType
+                ||msgType==5001
+                ||msgType==5002
+                ||msgType==5003
+                ||msgType==5004
+                ||msgType==5005
+                ||msgType==5006) {
             return;
         }
 
@@ -86,7 +92,7 @@ public class MsgTimeoutTimerManager {
             timer = null;
         }
 
-        System.out.println("从发送消息管理器移除消息，message=" + Utils.format(msg));
+        System.out.println("从发送消息管理器移除消息，message=" + msg);
     }
 
     /**

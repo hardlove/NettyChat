@@ -89,8 +89,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
             case 5002://群聊消息回执
             case 5003://朋友圈消息回
             case 5004://系统通知回执
-            case 5005://登录验证失败，系统会掐掉连接
-            case 5006://登陆验证成功
+
                 System.out.println("收到服务端消息发送状态报告,msyType:" + msgType + "  ，message=" + Utils.format(message) + "，从超时管理器移除");
                 imsClient.getMsgTimeoutTimerManager().remove(message.getHead().getMessageId());
                 break;
@@ -104,9 +103,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
                 }
 
         }
-
-
-        // 接收消息，由消息转发器转发到应用层
+        // 接收消息，由消息转发器转发到应用层( 包含服务端的消息回执)
         imsClient.getMsgDispatcher().receivedMsg(message);
     }
 

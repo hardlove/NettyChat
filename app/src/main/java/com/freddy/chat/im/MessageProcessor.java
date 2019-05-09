@@ -47,12 +47,22 @@ public class MessageProcessor implements IMessageProcessor {
             @Override
             public void run() {
                 try {
-                    IMessageHandler messageHandler = MessageHandlerFactory.getHandlerByMsgType(message.getHead().getType());
-                    if (messageHandler != null) {
-                        messageHandler.execute(message);
-                    } else {
-                        Log.e(TAG, "未找到消息处理handler，msgType=" + message.getHead().getType());
+                    switch (message.getHead().getType()) {
+                        case 5001://单聊回执
+                        case 5002://群聊回执
+                        case 5003:///朋友圈消息回
+                        case 5004://系统通知回执
+                            break;
+                        default://接收到其他消息
+
+                            IMessageHandler messageHandler = MessageHandlerFactory.getHandlerByMsgType(message.getHead().getType());
+                            if (messageHandler != null) {
+                                messageHandler.execute(message);
+                            } else {
+                                Log.e(TAG, "未找到消息处理handler，msgType=" + message.getHead().getType());
+                            }
                     }
+
                 } catch (Exception e) {
                     Log.e(TAG, "消息处理出错，reason=" + e.getMessage());
                 }
