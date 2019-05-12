@@ -27,7 +27,7 @@ public class IMSClientBootstrap {
 
     private static final IMSClientBootstrap INSTANCE = new IMSClientBootstrap();
     private IMSClientInterface imsClient;
-    private boolean isActive;
+    private boolean isActive;//imsClient是否可用的标示
 
     private IMSClientBootstrap() {
 
@@ -45,6 +45,15 @@ public class IMSClientBootstrap {
         bootstrap.init(userId, token, hosts, 0);
     }
 
+    /**
+     * 初始化msClient启动器
+     * @param userId
+     * @param token
+     * @param hosts
+     * @param appStatus {@link com.freddy.im.IMSConfig#APP_STATUS_FOREGROUND,
+     * com.freddy.im.IMSConfig#APP_STATUS_BACKGROUND}
+     *
+     */
     public synchronized void init(String userId, String token, String hosts, int appStatus) {
         if (!isActive()) {
             Vector<String> serverUrlList = convertHosts(hosts);
@@ -52,7 +61,6 @@ public class IMSClientBootstrap {
                 System.out.println("init IMLibClientBootstrap error,ims hosts is null");
                 return;
             }
-
             isActive = true;
             System.out.println("init IMLibClientBootstrap, servers=" + hosts);
             if (null != imsClient) {
@@ -61,6 +69,16 @@ public class IMSClientBootstrap {
             imsClient = IMSClientFactory.getIMSClient();
             updateAppStatus(appStatus);
             imsClient.init(serverUrlList, new IMSEventListener(userId, token), new IMSConnectStatusListener());
+        }
+    }
+    /**
+     * 关闭连接，同时释放资源
+     */
+    public void close() {
+        if (isActive) {
+            isActive = false;
+            imsClient.close();
+            imsClient = null;
         }
     }
 
@@ -110,4 +128,6 @@ public class IMSClientBootstrap {
 
         imsClient.setAppStatus(appStatus);
     }
+
+
 }

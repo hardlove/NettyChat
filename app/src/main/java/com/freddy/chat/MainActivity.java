@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.freddy.chat.bean.AppMessage;
 import com.freddy.chat.bean.Body;
@@ -20,6 +21,7 @@ import com.freddy.chat.im.IMSClientBootstrap;
 import com.freddy.chat.im.MessageProcessor;
 import com.freddy.chat.utils.CThreadPoolExecutor;
 import com.freddy.im.IMSClientFactory;
+import com.freddy.im.netty.NettyTcpClient;
 
 import java.util.UUID;
 
@@ -38,10 +40,10 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     String token;
     private String toUserId;
 
-//    String hosts = "[{\"host\":\"192.168.0.145\", \"port\":54321}]";
+//        String hosts = "[{\"host\":\"192.168.0.145\", \"port\":54321}]";
     String hosts = "[{\"host\":\"47.52.255.159\", \"port\":54321}]";
 
-//10001    1475ae4964f9497c85f63f22c5a255ee
+    //10001    1475ae4964f9497c85f63f22c5a255ee
 //10002     8dfee02f76d744ffa9091c03b999a1fc
 //10003     de58eeab6ddc433786871cf93e077303
 //10004     035742776f784945b308cdce7ab93a0b
@@ -52,8 +54,8 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
 //10009      331e5e6449e24337883f975cc679be43
 //10010      22a7a900f0c54278b048c2f1932fd6e1
     private String[] userIds = {
-        "10001",
-        "10002",
+            "10001",
+            "10002",
 //        "10003",
 //        "10004",
 //        "10005",
@@ -78,11 +80,11 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     };
 
 
-
     private static final String[] EVENTS = {
-            Events.CHAT_SINGLE_MESSAGE
+            Events.CHAT_SINGLE_MESSAGE, Events.IM_LOGIN
     };
     private EditText mEditToUser;
+    private TextView mtvLoginStatusText;
 
 
     @Override
@@ -97,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
         mBtnLogin = findViewById(R.id.btnLogin);
         mEditToUser = findViewById(R.id.edtToUser);
         mTvSignleMsgCount = findViewById(R.id.tvSingleMsgCount);
+        mtvLoginStatusText = findViewById(R.id.tvLoginStatus);
 
 
         userId = userIds[0];
@@ -110,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     }
 
     int index;
+
     public void ChangeUser(View view) {
         index++;
         index = index % userIds.length;
@@ -130,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     }
 
     private void resetUI() {
-        mTvSignleMsgCount.setText("收到到单聊消息总数：" + singMsgReciveCount);
+        mTvSignleMsgCount.setText("收到单聊消息总数：" + singMsgReciveCount);
         mTextView.setText("");
     }
 
@@ -148,7 +152,9 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
         }
 //        userId = mEditUserId.getText().toString().trim();
 //        token = mEditToken.getText().toString().trim();
-        IMSClientBootstrap.getInstance().init(userId, token, hosts, 1);
+
+        IMSClientBootstrap.getInstance().close();
+        IMSClientBootstrap.getInstance().init(userId, token, hosts, 0);
         CEventCenter.registerEventListener(this, EVENTS);
 
     }
@@ -167,23 +173,24 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
         sendSingleMsg();
 
     }
+
     public void sendMultiMsg(View view) {
         handler.sendEmptyMessageDelayed(1, 300);
     }
 
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (signMsgSendCount<1000) {
+            if (signMsgSendCount < 1000) {
                 sendSingleMsg();
                 handler.sendEmptyMessageDelayed(1, 300);
             }
 
 
-
         }
     };
+
     private void sendSingleMsg() {
         AppMessage appMessage = new AppMessage();
         Head head = new Head();
@@ -211,7 +218,6 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     }
 
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -236,7 +242,19 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
                 });
                 break;
             }
-
+            case Events.IM_LOGIN:
+                final Boolean status = (Boolean) obj;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (status) {
+                            mtvLoginStatusText.setText("登录成功");
+                        } else {
+                            mtvLoginStatusText.setText("登录失败");
+                        }
+                    }
+                });
+                break;
             default:
                 break;
         }
