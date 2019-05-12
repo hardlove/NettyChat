@@ -10,6 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <Spinner
+            android:id="@+id/spinner_login_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/userIds">
+
+        </Spinner>
+
         <EditText
             android:id="@+id/edtUserId"
             android:layout_width="wrap_content"
@@ -44,13 +52,7 @@
             android:onClick="ClearMsg"
             android:text="清除" />
 
-        <Button
-            android:id="@+id/btnChangeUser"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="ChangeUser"
-            android:text="切换" />
+
 
         <Button
             android:id="@+id/btnLogin"
@@ -91,6 +93,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="发送给：" />
+
+        <Spinner
+            android:id="@+id/spinner_to_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/userIds">
+        </Spinner>
 
         <EditText
             android:id="@+id/edtToUser"

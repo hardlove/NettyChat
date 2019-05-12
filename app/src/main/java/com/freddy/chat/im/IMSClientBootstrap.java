@@ -74,12 +74,15 @@ public class IMSClientBootstrap {
     /**
      * 关闭连接，同时释放资源
      */
-    public void close() {
+    public void closeImsClient() {
         if (isActive) {
             isActive = false;
             imsClient.close();
             imsClient = null;
         }
+    }
+    public boolean isImsClientClosed() {
+        return false;
     }
 
     public boolean isActive() {
@@ -128,6 +131,7 @@ public class IMSClientBootstrap {
 
         imsClient.setAppStatus(appStatus);
     }
+
 
 
 }
