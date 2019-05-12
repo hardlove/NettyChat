@@ -32,6 +32,7 @@ public class MsgDispatcher {
      */
     public void receivedMsg(MessageProtobuf.Msg msg) {
         if(mOnEventListener == null) {
+            System.err.println("请添加imsClient与应用层交互的listener，否则应用层将无法收到消息！");
             return;
         }
 

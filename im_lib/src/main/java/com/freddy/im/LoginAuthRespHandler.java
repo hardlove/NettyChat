@@ -55,16 +55,17 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
                 return;
             }
             System.out.println("登录成功======》发送心跳消息：" + heartbeatMsg + "当前心跳间隔为：" + imsClient.getHeartbeatInterval() + "ms\n");
+            System.out.println("====================================");
             imsClient.sendMsg(heartbeatMsg);
             // 添加心跳消息管理handler
             imsClient.addHeartbeatHandler();
 
             // 握手成功，检查消息发送超时管理器里是否有发送超时的消息，如果有，则全部重发
-            imsClient.getMsgTimeoutTimerManager().onResetConnected();
             System.out.println("检查是否有发送超时的消息，如果有，则全部重发");
+            imsClient.getMsgTimeoutTimerManager().onResetConnected();
 
-
-            //通知应用层登录成功
+            //通知应用层登录成
+            System.out.println("通知应用层登录成功。");
             imsClient.getMsgDispatcher().receivedMsg(handshakeRespMsg);
         } else if (5005 == handshakeRespMsg.getHead().getType()) {
             System.out.println("收到服务端握手响应消息，登录失败。 message=" + handshakeRespMsg);

@@ -33,14 +33,16 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
         if (evt instanceof IdleStateEvent) {
             IdleState state = ((IdleStateEvent) evt).state();
             switch (state) {
-                case READER_IDLE: {
+                case READER_IDLE: {//如果写通道处于空闲状态,就发送心跳命令
                     // 规定时间内没收到服务端心跳包响应，进行重连操作
+                    System.out.println("规定时间内没收到服务端心跳包响应，进行重连操作。。。");
                     imsClient.resetConnect(false);
                     break;
                 }
 
                 case WRITER_IDLE: {
                     // 规定时间内没向服务端发送心跳包，即发送一个心跳包
+                    System.out.println("规定时间内没向服务端发送心跳包，即将发送一个心跳包");
                     if (heartbeatTask == null) {
                         heartbeatTask = new HeartbeatTask(ctx);
                     }
