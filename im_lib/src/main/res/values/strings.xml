@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">IMLib</string>
+
+    <string-array name="userIds">
+        <item>10001</item>
+        <item>10002</item>
+        <item>10003</item>
+        <item>10004</item>
+        <item>10005</item>
+        <item>10006</item>
+        <item>10007</item>
+        <item>10008</item>
+        <item>10009</item>
+        <item>10010</item>
+    </string-array>
+    <string-array name="userTokens" >
+        <item>1475ae4964f9497c85f63f22c5a255ee</item>
+        <item>8dfee02f76d744ffa9091c03b999a1fc</item>
+        <item>de58eeab6ddc433786871cf93e077303</item>
+        <item>035742776f784945b308cdce7ab93a0b</item>
+        <item>b67ec4ba19d0449f996ac4212099bfa0</item>
+        <item>a035520c2f4d4131bcce6b6572f0153a</item>
+        <item>e9c53687e4b84aab8749dec0e2bf4dc4</item>
+        <item>0c68c971673a4fcfa9434f76519ae4f3</item>
+        <item>331e5e6449e24337883f975cc679be43</item>
+        <item>22a7a900f0c54278b048c2f1932fd6e1</item>
+    </string-array>
+
 </resources>

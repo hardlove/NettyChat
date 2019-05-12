@@ -1,10 +1,13 @@
 package com.freddy.chat;
 
+import android.content.Context;
+import android.inputmethodservice.InputMethodService;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,7 +32,6 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
 
     private EditText mEditContent;
     private TextView mTextView;
-    private EditText mEditUserId;
     private EditText mEditToken;
     private Button mBtnLogin;
     private TextView mTvSignleMsgCount;
@@ -39,8 +41,9 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     String fromUserId;
     String fromUserToken;
     private String toUserId;
+    private static int SEND_MSG_COUNT = 100;//设置消息发送的数量
 
-//        String hosts = "[{\"host\":\"192.168.0.145\", \"port\":54321}]";
+    //        String hosts = "[{\"host\":\"192.168.0.145\", \"port\":54321}]";
     String hosts = "[{\"host\":\"47.52.255.159\", \"port\":54321}]";//10001    1475ae4964f9497c85f63f22c5a255ee
 
     private String[] userIds;
@@ -52,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     };
     private EditText mEditToUser;
     private TextView mtvLoginStatusText;
+    private EditText mEdtSendMsgCount;
 
 
     @Override
@@ -61,22 +65,24 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
 
         mEditContent = findViewById(R.id.et_content);
         mTextView = findViewById(R.id.tv_msg);
-        mEditUserId = findViewById(R.id.edtUserId);
         mEditToken = findViewById(R.id.edtToken);
         mBtnLogin = findViewById(R.id.btnLogin);
-        mEditToUser = findViewById(R.id.edtToUser);
         mTvSignleMsgCount = findViewById(R.id.tvSingleMsgCount);
         mtvLoginStatusText = findViewById(R.id.tvLoginStatus);
+        mEdtSendMsgCount = findViewById(R.id.edtSendMsgCount);
+        mEdtSendMsgCount.setText("100");
 
         Spinner loginUser = findViewById(R.id.spinner_login_user);
         Spinner toUser = findViewById(R.id.spinner_to_user);
-        loginUser.setSelection(0, true);
-        toUser.setSelection(1, true);
+
+        userIds = getResources().getStringArray(R.array.userIds);
         tokens = getResources().getStringArray(R.array.userTokens);
+        loginUser.setPrompt("请选择要登录的用户");
         loginUser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 fromUserId = userIds[position];
+                fromUserToken = tokens[position];
                 mEditToken.setText(tokens[position]);
             }
 
@@ -86,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
 
             }
         });
+        toUser.setPrompt("请选择要接收消息的用户");
         toUser.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -98,8 +105,10 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
             }
         });
 
+        loginUser.setSelection(0);
+        toUser.setSelection(1);
 
-
+        mtvLoginStatusText.setText("当前账号未登录");
 
 
     }
@@ -110,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     }
 
     public void loginIm(View view) {
+        mtvLoginStatusText.setText("正在登录");
 
         if (!IMSClientBootstrap.getInstance().isActive()) {
             IMSClientBootstrap.getInstance().closeImsClient();
@@ -117,6 +127,12 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
         IMSClientBootstrap.getInstance().closeImsClient();
         IMSClientBootstrap.getInstance().init(fromUserId, fromUserToken, hosts, IMSConfig.APP_STATUS_FOREGROUND);
         CEventCenter.registerEventListener(this, EVENTS);
+
+    }
+
+    public void btnlogOut(View view) {
+        mtvLoginStatusText.setText("已退出登录");
+        IMSClientBootstrap.getInstance().closeImsClient();
 
     }
 
@@ -130,20 +146,37 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     }
 
     public void sendMsg(View view) {
-
         sendSingleMsg();
+        closeInputMethod();
 
     }
 
+
+
     public void sendMultiMsg(View view) {
-        handler.sendEmptyMessageDelayed(1, 300);
+        String count = mEdtSendMsgCount.getText().toString().replace(" ", "");
+
+        try {
+            SEND_MSG_COUNT = Integer.valueOf(count);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        handler.sendEmptyMessageDelayed(1, 100);
+        closeInputMethod();
+
+    }
+
+    private void closeInputMethod() {
+        InputMethodManager inputService = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputService.hideSoftInputFromWindow(mEditContent.getWindowToken(), 0);
     }
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (signMsgSendCount < 1000) {
+            if (signMsgSendCount < SEND_MSG_COUNT) {
                 sendSingleMsg();
                 handler.sendEmptyMessageDelayed(1, 300);
             }
@@ -153,6 +186,8 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     };
 
     private void sendSingleMsg() {
+        signMsgSendCount++;
+
         AppMessage appMessage = new AppMessage();
         Head head = new Head();
         Body body = new Body();
@@ -166,13 +201,11 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
         head.setContentType(1);//文本
 
         body.setPrk("私钥123");
-        body.setData(mEditContent.getText().toString().trim());
-
+        body.setData(mEditContent.getText().toString().trim() + "---" + signMsgSendCount);
         appMessage.setHead(head);
         appMessage.setBody(body);
         MessageProcessor.getInstance().sendMsg(appMessage);
 
-        signMsgSendCount++;
 
         TextView sendCount = findViewById(R.id.tvSingleMsgSendCount);
         sendCount.setText("已发单聊消息总数：" + signMsgSendCount);
