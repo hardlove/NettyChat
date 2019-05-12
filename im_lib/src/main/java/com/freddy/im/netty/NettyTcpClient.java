@@ -13,7 +13,6 @@ import com.freddy.im.protobuf.MessageProtobuf;
 
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -72,6 +71,17 @@ public class NettyTcpClient implements IMSClientInterface {
     private int currentPort = -1;// 当前连接port
 
     private MsgTimeoutTimerManager msgTimeoutTimerManager;
+    private boolean isAutoReconnect = true;//链路断开后是否需要自动重连;
+
+    public boolean isAutoReconnect() {
+        return isAutoReconnect;
+    }
+
+    public void setAutoReconnect(boolean autoReconnect) {
+        isAutoReconnect = autoReconnect;
+    }
+
+
 
     private NettyTcpClient() {
     }
@@ -98,7 +108,7 @@ public class NettyTcpClient implements IMSClientInterface {
     @Override
     public void init(Vector<String> serverUrlList, OnEventListener listener, IMSConnectStatusCallback callback) {
         close();
-        isClosed = false;
+        isClosed = false;//必须重置为false
         this.serverUrlList = serverUrlList;
         this.mOnEventListener = listener;
         this.mIMSConnectStatusCallback = callback;
@@ -129,43 +139,44 @@ public class NettyTcpClient implements IMSClientInterface {
      */
     @Override
     public void resetConnect(boolean isFirst) {
-        System.out.println("=========resetConnect(boolean isFirst) isFirst:" + isFirst + " ================");
-        if (!isFirst) {//不是第一次连接，睡一段时间后开始连接
-            try {
-                Thread.sleep(IMSConfig.DEFAULT_RECONNECT_INTERVAL);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+        // 只有第一个调用者才能赋值并调用重连
+        synchronized (this) {//多个线程同时调用时会出现安全问题，必须同步
+            System.out.println("=========resetConnect(boolean isFirst) isFirst:" + isFirst + " ================");
+            if (!isFirst) {//不是第一次连接，睡一段时间后开始连接
+                try {
+                    Thread.sleep(IMSConfig.DEFAULT_RECONNECT_INTERVAL);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (!isClosed && !isReconnecting) {
+                // 先关闭channel
+                System.out.println("检查之前的channel是否关闭。。。");
+                closeChannel();
+                // 标识正在进行重连
+                isReconnecting = true;
+                // 回调ims连接状态
+                onConnectStatusCallback(IMSConfig.CONNECT_STATE_CONNECTING);
+                // 执行重连任务
+                loopGroup.execBossTask(new ResetConnectRunnable(isFirst));
             }
         }
 
-        // 只有第一个调用者才能赋值并调用重连
-        if (!isClosed && !isReconnecting) {
-            synchronized (this) {
-                if (!isClosed && !isReconnecting) {
-                    // 标识正在进行重连
-                    isReconnecting = true;
-                    // 回调ims连接状态
-                    onConnectStatusCallback(IMSConfig.CONNECT_STATE_CONNECTING);
-                    // 先关闭channel
-                    System.out.println("检查之前的channel是否关闭。。。");
-                    closeChannel();
-                    // 执行重连任务
-                    loopGroup.execBossTask(new ResetConnectRunnable(isFirst));
-                }
-            }
-        }
     }
 
     /**
      * 关闭连接，同时释放资源
+     * 重载
      */
     @Override
-    public void close() {
+    public void close(boolean isAutoReconnect) {
         if (isClosed) {
             return;
         }
-        System.out.println("NettyTcpClient.close().....");
         isClosed = true;
+        this.isAutoReconnect = isAutoReconnect;//close 后是否需要重新连接
+        System.out.println("NettyTcpClient.close().....关闭连接，同时释放资源，关闭后是否需要重新连接：" + isAutoReconnect);
 
         // 关闭channel
         try {
@@ -203,6 +214,13 @@ public class NettyTcpClient implements IMSClientInterface {
             channel = null;
             bootstrap = null;
         }
+    }
+    /**
+     * 关闭连接，同时释放资源
+     */
+    @Override
+    public void close() {
+        close(true);
     }
 
     /**
@@ -449,6 +467,11 @@ public class NettyTcpClient implements IMSClientInterface {
     @Override
     public MsgTimeoutTimerManager getMsgTimeoutTimerManager() {
         return msgTimeoutTimerManager;
+    }
+
+    @Override
+    public boolean isAutoReConnect() {
+        return isAutoReconnect;
     }
 
     /**

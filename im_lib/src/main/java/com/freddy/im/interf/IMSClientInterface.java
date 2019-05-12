@@ -51,6 +51,19 @@ public interface IMSClientInterface {
     void close();
 
     /**
+     * 关闭连接，同时释放资源
+     * @param isAutoReconnect  关闭后是否自动重新连接
+     * 重载
+     */
+    void close(boolean isAutoReconnect);
+
+    /**
+     * 链路断开后是否需要自动重连（正常情况下自动重连，用户主动断开不需要重连）
+     * @return
+     */
+    boolean isAutoReConnect();
+
+    /**
      * 标识ims是否已关闭
      *
      * @return
@@ -165,4 +178,6 @@ public interface IMSClientInterface {
      * @return
      */
     MsgTimeoutTimerManager getMsgTimeoutTimerManager();
+
+
 }

@@ -77,7 +77,7 @@ public class IMSClientBootstrap {
     public void closeImsClient() {
         if (isActive) {
             isActive = false;
-            imsClient.close();
+            imsClient.close(false);//关闭后，不自动重新连接
             imsClient = null;
         }
     }

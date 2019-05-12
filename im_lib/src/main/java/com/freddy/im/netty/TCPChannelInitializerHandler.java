@@ -44,24 +44,18 @@ public class TCPChannelInitializerHandler extends ChannelInitializer<Channel> {
         // netty提供的自定义长度解码器，解决TCP拆包/粘包问题
         channel.pipeline().addLast(new ProtobufVarint32FrameDecoder());
         channel.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
-//        // 增加protobuf编解码支持
-//        pipeline.addLast(new ProtobufEncoder());
-//        pipeline.addLast(new ProtobufDecoder(MessageProtobuf.Msg.getDefaultInstance()));
 
 //        channel.pipeline().addLast(
 //                new IdleStateHandler(60, 60, 75, TimeUnit.SECONDS));
 
-
-
-        channel.pipeline().addLast(new ProtobufDecoder(MessageProtobuf.Msg.getDefaultInstance()));
+        // 增加protobuf编解码支持
         channel.pipeline().addLast(new ProtobufEncoder());
+        channel.pipeline().addLast(new ProtobufDecoder(MessageProtobuf.Msg.getDefaultInstance()));
 
         // 心跳消息响应处理handler
         pipeline.addLast(HeartbeatRespHandler.class.getSimpleName(), new HeartbeatRespHandler(imsClient));
         // 握手认证消息响应处理handler
         pipeline.addLast(LoginAuthRespHandler.class.getSimpleName(), new LoginAuthRespHandler(imsClient));
-
-
         // 接收消息处理handler
         pipeline.addLast(TCPReadHandler.class.getSimpleName(), new TCPReadHandler(imsClient));
     }

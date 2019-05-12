@@ -71,7 +71,7 @@ public class MsgTimeoutTimer extends Timer {
                     imsClient.getMsgTimeoutTimerManager().remove(msg.getHead().getMessageId());
                     // 执行到这里，认为连接已断开或不稳定，触发重连
                     System.err.println("从发送消息管理器移除消息, 重新连接。。。。");
-                    imsClient.resetConnect();
+                    imsClient.resetConnect(false);
                     currentResendCount = 0;
                 }
             } else {

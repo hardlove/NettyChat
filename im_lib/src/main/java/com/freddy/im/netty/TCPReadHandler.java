@@ -1,18 +1,13 @@
 package com.freddy.im.netty;
 
-import com.alibaba.fastjson.JSONObject;
-import com.freddy.im.IMSConfig;
-import com.freddy.im.interf.IMSClientInterface;
 import com.freddy.im.protobuf.MessageProtobuf;
 import com.freddy.im.protobuf.Utils;
 
-import java.net.Proxy;
 import java.util.UUID;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.internal.StringUtil;
 
@@ -36,19 +31,37 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+        System.out.println(String.format("当前链路[%s]已经 激活 了。", ctx.channel() != null ? ctx.channel().id() : "-1"));
+
+
+    }
+
+    /**
+     * 当链路断开的时候会触发channelInactive这个方法，也就说触发重连的导火索是从这边开始的
+     *
+     * @param ctx
+     * @throws Exception
+     */
+    @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        System.err.println("TCPReadHandler channelInactive()");
+        System.err.println("====================================");
+        System.err.println(String.format("当前链路[%s]已经 断开 了。", ctx.channel() != null ? ctx.channel().id() : "-1"));
         Channel channel = ctx.channel();
         if (channel != null) {
             channel.close();
             ctx.close();
-            System.err.println("close~~~channelInactive");
-
         }
-
-        // 触发重连
-        imsClient.resetConnect(false);
+        if (imsClient.isAutoReConnect()) {
+            System.err.println("链路断开，自动重启连接。。。");
+            // 触发重连
+            imsClient.resetConnect(false);
+        } else {
+            System.out.println("用户主动断开链路，不需要重连");
+        }
+        System.err.println("====================================");
     }
 
     @Override
@@ -60,14 +73,15 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
-        System.err.println("TCPReadHandler exceptionCaught()" + " error:" + cause.getLocalizedMessage());
+        System.err.println("====================================");
+        System.err.println(String.format("当前链路[%s]出现异常了。 error:%s", ctx.channel() != null ? ctx.channel().id() : "-1", cause.getMessage()));
         Channel channel = ctx.channel();
         if (channel != null) {
             channel.close();
             ctx.close();
-            System.err.println("close~~~exceptionCaught");
         }
-
+        System.err.println("出现异常，重启连接。");
+        System.err.println("====================================");
         // 触发重连
         imsClient.resetConnect(false);
     }
@@ -79,9 +93,9 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        System.err.println("====================================");
-        System.err.println("收到服务端发送过来的消息：" + Utils.format(message));
-        System.err.println("====================================");
+        System.out.println("====================================");
+        System.out.println("收到服务端发送过来的消息：" + Utils.format(message));
+        System.out.println("====================================");
         int msgType = message.getHead().getType();
 
         switch (msgType) {
@@ -99,7 +113,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
                 MessageProtobuf.Msg receivedReportMsg = buildReceivedReportMsg(message);
                 System.out.println("收到服务端发送过来的消息,type:" + msgType + "  ,发送消息回执：" + receivedReportMsg.getHead().getType());
                 if (receivedReportMsg != null) {
-                    imsClient.sendMsg(receivedReportMsg,false);
+                    imsClient.sendMsg(receivedReportMsg, false);
                 }
 
         }
@@ -142,11 +156,11 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
         if (msg.getHead().getType() == 1) {
             headBuilder.setType(5001);
-        } else if (msg.getHead().getType() == 2){
+        } else if (msg.getHead().getType() == 2) {
             headBuilder.setType(5002);
-        } else if (msg.getHead().getType() == 3){
+        } else if (msg.getHead().getType() == 3) {
             headBuilder.setType(5003);
-        } else if (msg.getHead().getType() == 4){
+        } else if (msg.getHead().getType() == 4) {
             headBuilder.setType(5004);
         }
         headBuilder.setId(msg.getHead().getId());
