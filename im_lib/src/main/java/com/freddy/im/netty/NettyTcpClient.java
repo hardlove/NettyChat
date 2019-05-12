@@ -13,6 +13,7 @@ import com.freddy.im.protobuf.MessageProtobuf;
 
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -56,9 +57,9 @@ public class NettyTcpClient implements IMSClientInterface {
     private int connectTimeout = IMSConfig.DEFAULT_CONNECT_TIMEOUT;
     // 心跳间隔时间
     private int heartbeatInterval = IMSConfig.DEFAULT_HEARTBEAT_INTERVAL_FOREGROUND;
-    // 应用在后台时心跳间隔时间
-    private int foregroundHeartbeatInterval = IMSConfig.DEFAULT_HEARTBEAT_INTERVAL_FOREGROUND;
     // 应用在前台时心跳间隔时间
+    private int foregroundHeartbeatInterval = IMSConfig.DEFAULT_HEARTBEAT_INTERVAL_FOREGROUND;
+    // 应用在后台时心跳间隔时间
     private int backgroundHeartbeatInterval = IMSConfig.DEFAULT_HEARTBEAT_INTERVAL_BACKGROUND;
     // app前后台状态
     private int appStatus = IMSConfig.APP_STATUS_FOREGROUND;
@@ -128,7 +129,8 @@ public class NettyTcpClient implements IMSClientInterface {
      */
     @Override
     public void resetConnect(boolean isFirst) {
-        if (!isFirst) {
+        System.out.println("=========resetConnect(boolean isFirst) isFirst:" + isFirst + " ================");
+        if (!isFirst) {//不是第一次连接，睡一段时间后开始连接
             try {
                 Thread.sleep(IMSConfig.DEFAULT_RECONNECT_INTERVAL);
             } catch (InterruptedException e) {
@@ -145,6 +147,7 @@ public class NettyTcpClient implements IMSClientInterface {
                     // 回调ims连接状态
                     onConnectStatusCallback(IMSConfig.CONNECT_STATE_CONNECTING);
                     // 先关闭channel
+                    System.out.println("检查之前的channel是否关闭。。。");
                     closeChannel();
                     // 执行重连任务
                     loopGroup.execBossTask(new ResetConnectRunnable(isFirst));
@@ -161,7 +164,7 @@ public class NettyTcpClient implements IMSClientInterface {
         if (isClosed) {
             return;
         }
-
+        System.out.println("NettyTcpClient.close().....");
         isClosed = true;
 
         // 关闭channel
@@ -214,7 +217,7 @@ public class NettyTcpClient implements IMSClientInterface {
 
     /**
      * 发送消息
-     *
+     *默认加入发送超时管理器
      * @param msg
      */
     @Override
@@ -486,6 +489,18 @@ public class NettyTcpClient implements IMSClientInterface {
                 if (mIMSConnectStatusCallback != null) {
                     mIMSConnectStatusCallback.onConnected();
                 }
+
+
+                // ims连接成功，马上先发送一条心跳消息，至于心跳机制管理，交由HeartbeatHandler
+                MessageProtobuf.Msg heartbeatMsg = instance.getHeartbeatMsg();
+                if (heartbeatMsg == null) {
+                    return;
+                }
+                System.out.println("ims连接成功======》发送心跳消息：" + heartbeatMsg + "当前心跳间隔为：" + instance.getHeartbeatInterval() + "ms\n");
+                instance.sendMsg(heartbeatMsg);
+                // 添加心跳消息管理handler
+                instance.addHeartbeatHandler();
+
                 // 连接成功，发送握手消息
                 MessageProtobuf.Msg handshakeMsg = getHandshakeMsg();
                 if (handshakeMsg != null) {
@@ -534,7 +549,6 @@ public class NettyTcpClient implements IMSClientInterface {
                         new HeartbeatHandler(this));
             }
         } catch (Exception e) {
-            e.printStackTrace();
             System.err.println("添加心跳消息管理handler失败，reason：" + e.getMessage());
         }
     }
@@ -561,11 +575,11 @@ public class NettyTcpClient implements IMSClientInterface {
     private void closeChannel() {
         try {
             if (channel != null) {
+                System.out.println("关闭channel～～～～～～");
                 channel.close();
                 channel.eventLoop().shutdownGracefully();
             }
         } catch (Exception e) {
-            e.printStackTrace();
             System.err.println("关闭channel出错，reason:" + e.getMessage());
         } finally {
             channel = null;
@@ -591,6 +605,7 @@ public class NettyTcpClient implements IMSClientInterface {
     private void toServer() {
         try {
             channel = bootstrap.connect(currentHost, currentPort).sync().channel();
+            System.out.println("服务器连接中。。。");
         } catch (Exception e) {
             try {
                 Thread.sleep(500);
@@ -617,6 +632,7 @@ public class NettyTcpClient implements IMSClientInterface {
         public void run() {
             // 非首次进行重连，执行到这里即代表已经连接失败，回调连接状态到应用层
             if (!isFirst) {
+                System.out.println("=====非首次进行重连，执行到这里即代表已经连接失败，回调连接状态到应用层====");
                 onConnectStatusCallback(IMSConfig.CONNECT_STATE_FAILURE);
             }
 
@@ -625,7 +641,7 @@ public class NettyTcpClient implements IMSClientInterface {
                 loopGroup.destroyWorkLoopGroup();
 
                 while (!isClosed) {
-                    if(!isNetworkAvailable()) {
+                    if(!isNetworkAvailable()) {//检查网络，如果网络不可用，一直等待，直到网络可用时才执行后面的代码
                         try {
                             Thread.sleep(2000);
                         } catch (InterruptedException e) {
@@ -641,7 +657,7 @@ public class NettyTcpClient implements IMSClientInterface {
                         // 连接成功，跳出循环
                         break;
                     }
-
+                    System.out.println("ims连接。。。status："+status);
                     if (status == IMSConfig.CONNECT_STATE_FAILURE) {
                         onConnectStatusCallback(status);
                         try {
@@ -663,6 +679,7 @@ public class NettyTcpClient implements IMSClientInterface {
          * @return
          */
         private int reConnect() {
+            System.out.println("======reConnect===========");
             // 未关闭才去连接
             if (!isClosed) {
                 try {
@@ -687,6 +704,7 @@ public class NettyTcpClient implements IMSClientInterface {
          * @return
          */
         private int connectServer() {
+            System.out.println("=========connectServer()==========");
             // 如果服务器地址无效，直接回调连接状态，不再进行连接
             // 有效的服务器地址示例：127.0.0.1 8860
             if (serverUrlList == null || serverUrlList.size() == 0) {
@@ -723,9 +741,11 @@ public class NettyTcpClient implements IMSClientInterface {
                             return IMSConfig.CONNECT_STATE_SUCCESSFUL;
                         } else {
                             // 连接失败，则线程休眠n * 重连间隔时长
+                            System.out.println("连接失败，线程休眠后重连");
                             Thread.sleep(j * getReconnectInterval());
                         }
                     } catch (InterruptedException e) {
+                        System.out.println("=====关闭连接，同时释放资源======");
                         close();
                         break;// 线程被中断，则强制关闭
                     }

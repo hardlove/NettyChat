@@ -140,7 +140,6 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         }
         MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
         MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
-        headBuilder.setMessageId(UUID.randomUUID().toString());
         if (msg.getHead().getType() == 1) {
             headBuilder.setType(5001);
         } else if (msg.getHead().getType() == 2){
@@ -150,8 +149,10 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         } else if (msg.getHead().getType() == 4){
             headBuilder.setType(5004);
         }
+        headBuilder.setId(msg.getHead().getId());
+        headBuilder.setToken(msg.getHead().getToken());
         headBuilder.setMessageId(msg.getHead().getMessageId());
-        headBuilder.setTime(System.currentTimeMillis());
+
         builder.setHead(headBuilder.build());
 
         return builder.build();

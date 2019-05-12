@@ -5,6 +5,8 @@ import android.util.Log;
 import com.freddy.chat.bean.AppMessage;
 import com.freddy.chat.bean.BaseMessage;
 import com.freddy.chat.bean.ContentMessage;
+import com.freddy.chat.event.CEventCenter;
+import com.freddy.chat.event.Events;
 import com.freddy.chat.im.handler.IMessageHandler;
 import com.freddy.chat.im.handler.MessageHandlerFactory;
 import com.freddy.chat.utils.CThreadPoolExecutor;
@@ -53,8 +55,13 @@ public class MessageProcessor implements IMessageProcessor {
                         case 5003:///朋友圈消息回
                         case 5004://系统通知回执
                             break;
+                        case 5005://登录失败
+                            CEventCenter.dispatchEvent(Events.IM_LOGIN, 0, 0, false);
+                            break;
+                        case 5006:
+                            CEventCenter.dispatchEvent(Events.IM_LOGIN, 0, 0, true);
+                            break;//登录成功
                         default://接收到其他消息
-
                             IMessageHandler messageHandler = MessageHandlerFactory.getHandlerByMsgType(message.getHead().getType());
                             if (messageHandler != null) {
                                 messageHandler.execute(message);

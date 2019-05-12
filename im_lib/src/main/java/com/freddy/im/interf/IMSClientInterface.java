@@ -109,7 +109,7 @@ public interface IMSClientInterface {
     void setAppStatus(int appStatus);
 
     /**
-     * 获取由应用层构造的握手消息
+     * 获取由应用层构造的握手消息(登录认证消息)
      *
      * @return
      */
@@ -123,14 +123,16 @@ public interface IMSClientInterface {
     MessageProtobuf.Msg getHeartbeatMsg();
 
     /**
-     * 获取应用层消息发送状态报告消息类型
+     * 获取应用层消息 发送 状态报告消息类型
+     * (即服务端返回给客户端的消息状态报告消息类型)
      *
      * @return
      */
     int getServerSentReportMsgType();
 
     /**
-     * 获取应用层消息接收状态报告消息类型
+     * 获取应用层消息 接收 状态报告消息类型
+     * （即客户端接收到服务端消息后返回给服务端消息状态报告消息类型）
      *
      * @return
      */
@@ -158,7 +160,7 @@ public interface IMSClientInterface {
     MsgDispatcher getMsgDispatcher();
 
     /**
-     * 获取消息发送超时定时器
+     * 获取消息发送超时管理器
      *
      * @return
      */

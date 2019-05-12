@@ -56,10 +56,10 @@ public class TCPChannelInitializerHandler extends ChannelInitializer<Channel> {
         channel.pipeline().addLast(new ProtobufDecoder(MessageProtobuf.Msg.getDefaultInstance()));
         channel.pipeline().addLast(new ProtobufEncoder());
 
-        // 握手认证消息响应处理handler
-        pipeline.addLast(LoginAuthRespHandler.class.getSimpleName(), new LoginAuthRespHandler(imsClient));
         // 心跳消息响应处理handler
         pipeline.addLast(HeartbeatRespHandler.class.getSimpleName(), new HeartbeatRespHandler(imsClient));
+        // 握手认证消息响应处理handler
+        pipeline.addLast(LoginAuthRespHandler.class.getSimpleName(), new LoginAuthRespHandler(imsClient));
 
 
         // 接收消息处理handler

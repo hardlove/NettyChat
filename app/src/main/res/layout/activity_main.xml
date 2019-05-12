@@ -6,11 +6,25 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/edtUserId"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="UserId" />
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/edtUserId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="UserId" />
+
+        <TextView
+            android:id="@+id/tvLoginStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="登录状态" />
+    </LinearLayout>
 
     <EditText
         android:id="@+id/edtToken"
@@ -23,39 +37,40 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:layout_weight="1"
             android:id="@+id/btnClear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:onClick="ClearMsg"
             android:text="清除" />
 
         <Button
-            android:layout_weight="1"
             android:id="@+id/btnChangeUser"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:onClick="ChangeUser"
             android:text="切换" />
 
         <Button
-            android:layout_weight="1"
             android:id="@+id/btnLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:onClick="loginIm"
             android:text="登录" />
 
         <Button
-            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:onClick="sendMsg"
             android:text="发送" />
+
         <Button
-            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:onClick="sendMultiMsg"
             android:text="批发" />
 
@@ -71,10 +86,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <TextView
-            android:text="发送给："
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="发送给：" />
+
         <EditText
             android:id="@+id/edtToUser"
             android:layout_width="wrap_content"

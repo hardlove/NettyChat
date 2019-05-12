@@ -8,6 +8,7 @@ import com.freddy.im.interf.IMSClientInterface;
 import com.freddy.im.netty.NettyTcpClient;
 import com.freddy.im.protobuf.MessageProtobuf;
 
+import java.util.EventObject;
 import java.util.UUID;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -53,18 +54,23 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
             if (heartbeatMsg == null) {
                 return;
             }
+            System.out.println("登录成功======》发送心跳消息：" + heartbeatMsg + "当前心跳间隔为：" + imsClient.getHeartbeatInterval() + "ms\n");
+            imsClient.sendMsg(heartbeatMsg);
+            // 添加心跳消息管理handler
+            imsClient.addHeartbeatHandler();
 
             // 握手成功，检查消息发送超时管理器里是否有发送超时的消息，如果有，则全部重发
             imsClient.getMsgTimeoutTimerManager().onResetConnected();
+            System.out.println("检查是否有发送超时的消息，如果有，则全部重发");
 
-            System.out.println("登录成功======发送心跳消息：" + heartbeatMsg + "当前心跳间隔为：" + imsClient.getHeartbeatInterval() + "ms\n");
-            imsClient.sendMsg(heartbeatMsg);
 
-            // 添加心跳消息管理handler
-            imsClient.addHeartbeatHandler();
+            //通知应用层登录成功
+            imsClient.getMsgDispatcher().receivedMsg(handshakeRespMsg);
         } else if (5005 == handshakeRespMsg.getHead().getType()) {
             System.out.println("收到服务端握手响应消息，登录失败。 message=" + handshakeRespMsg);
             imsClient.resetConnect(false);// 握手失败，触发重连
+            //通知应用层登录失败
+            imsClient.getMsgDispatcher().receivedMsg(handshakeRespMsg);
         } else {
             // 消息透传
             ctx.fireChannelRead(msg);

@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 
 import com.alibaba.fastjson.JSONObject;
 import com.freddy.chat.NettyChatApp;
+import com.freddy.im.IMSConfig;
 import com.freddy.im.listener.OnEventListener;
 import com.freddy.im.protobuf.MessageProtobuf;
 
@@ -61,7 +62,7 @@ public class IMSEventListener implements OnEventListener {
      */
     @Override
     public int getReconnectInterval() {
-        return 0;
+        return IMSConfig.DEFAULT_RECONNECT_INTERVAL;
     }
 
     /**
@@ -71,7 +72,7 @@ public class IMSEventListener implements OnEventListener {
      */
     @Override
     public int getConnectTimeout() {
-        return 0;
+        return IMSConfig.DEFAULT_CONNECT_TIMEOUT;
     }
 
     /**
@@ -81,7 +82,7 @@ public class IMSEventListener implements OnEventListener {
      */
     @Override
     public int getForegroundHeartbeatInterval() {
-        return 0;
+        return IMSConfig.DEFAULT_HEARTBEAT_INTERVAL_FOREGROUND;
     }
 
     /**
@@ -91,7 +92,7 @@ public class IMSEventListener implements OnEventListener {
      */
     @Override
     public int getBackgroundHeartbeatInterval() {
-        return 0;
+        return IMSConfig.DEFAULT_HEARTBEAT_INTERVAL_BACKGROUND;
     }
 
     /**
