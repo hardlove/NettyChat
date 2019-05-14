@@ -1,7 +1,6 @@
 package com.freddy.chat;
 
 import android.content.Context;
-import android.inputmethodservice.InputMethodService;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -31,10 +30,10 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity implements I_CEventListener {
 
     private EditText mEditContent;
-    private TextView mTextView;
+    private TextView mTvReciceMsg;
     private EditText mEditToken;
     private Button mBtnLogin;
-    private TextView mTvSignleMsgCount;
+    private TextView mTvReciveMsgCount;
     private int singMsgReciveCount;//收到的单聊消息数量
     private int signMsgSendCount;//
 
@@ -56,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     private EditText mEditToUser;
     private TextView mtvLoginStatusText;
     private EditText mEdtSendMsgCount;
+    private TextView mTextSendMsg;
+    private TextView mTvSendMsgCount;
 
 
     @Override
@@ -64,12 +65,13 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
         setContentView(R.layout.activity_main);
 
         mEditContent = findViewById(R.id.et_content);
-        mTextView = findViewById(R.id.tv_msg);
+        mTvReciceMsg = findViewById(R.id.tv_receiveMsg);
         mEditToken = findViewById(R.id.edtToken);
         mBtnLogin = findViewById(R.id.btnLogin);
-        mTvSignleMsgCount = findViewById(R.id.tvSingleMsgCount);
+        mTvReciveMsgCount = findViewById(R.id.tvSingleMsgCount);
         mtvLoginStatusText = findViewById(R.id.tvLoginStatus);
         mEdtSendMsgCount = findViewById(R.id.edtSendMsgCount);
+        mTextSendMsg = findViewById(R.id.tv_sendMsg);
         mEdtSendMsgCount.setText("100");
 
         Spinner loginUser = findViewById(R.id.spinner_login_user);
@@ -114,8 +116,11 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     }
 
     private void resetUI() {
-        mTvSignleMsgCount.setText("收到单聊消息总数：" + singMsgReciveCount);
-        mTextView.setText("");
+        mTvReciveMsgCount.setText("收到单聊消息总数：" + singMsgReciveCount);
+        mTvReciceMsg.setText("");
+
+        mTvSendMsgCount.setText("已发单聊消息总数" + signMsgSendCount);
+        mTextSendMsg.setText("");
     }
 
     public void loginIm(View view) {
@@ -201,14 +206,17 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
         head.setContentType(1);//文本
 
         body.setPrk("私钥123");
-        body.setData(mEditContent.getText().toString().trim() + "---" + signMsgSendCount);
+        String sendContent = mEditContent.getText().toString().trim() + "---" + signMsgSendCount;
+        body.setData("Android"+sendContent);
         appMessage.setHead(head);
         appMessage.setBody(body);
         MessageProcessor.getInstance().sendMsg(appMessage);
 
 
-        TextView sendCount = findViewById(R.id.tvSingleMsgSendCount);
-        sendCount.setText("已发单聊消息总数：" + signMsgSendCount);
+        mTvSendMsgCount = findViewById(R.id.tvSingleMsgSendCount);
+        mTvSendMsgCount.setText("已发单聊消息总数：" + signMsgSendCount);
+        mTextSendMsg.append(sendContent+"\n");
+
     }
 
 
@@ -227,10 +235,10 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
 
                     @Override
                     public void run() {
-                        mTextView.append("\n");
-                        mTextView.append(message.getContent());
+                        mTvReciceMsg.append("\n");
+                        mTvReciceMsg.append(message.getContent());
                         singMsgReciveCount++;
-                        mTvSignleMsgCount.setText("收到到单聊消息总数：" + singMsgReciveCount);
+                        mTvReciveMsgCount.setText("收到到单聊消息总数：" + singMsgReciveCount);
 
                     }
                 });
