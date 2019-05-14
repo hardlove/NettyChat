@@ -55,9 +55,8 @@ public class MsgTimeoutTimer extends Timer {
                     MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
                     MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
                     headBuilder.setMessageId(msg.getHead().getMessageId());
-                    headBuilder.setType(imsClient.getServerSentReportMsgType());
+                    headBuilder.setType(imsClient.getServerSentReportMsgType());//消息发送失败
                     headBuilder.setTime(System.currentTimeMillis());
-//                    headBuilder.setStatusReport(IMSConfig.DEFAULT_REPORT_SERVER_SEND_MSG_FAILURE);
                     builder.setHead(headBuilder.build());
 
                     System.err.println("消息发送3次都失败，msg：" + Utils.format(msg));

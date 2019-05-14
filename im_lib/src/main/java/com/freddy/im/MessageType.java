@@ -1,15 +1,8 @@
 package com.freddy.im;
 
 /**
- * <p>@ProjectName:     NettyChat</p>
- * <p>@ClassName:       MessageType.java</p>
- * <p>@PackageName:     com.freddy.chat.im</p>
- * <b>
- * <p>@Description:     消息类型</p>
- * </b>
- * <p>@author:          FreddyChen</p>
- * <p>@date:            2019/04/08 00:04</p>
- * <p>@email:           chenshichao@outlook.com</p>
+ * @author CL
+ * 消息类型
  */
 public interface MessageType {
     //=========================消息类型=========================
@@ -37,9 +30,9 @@ public interface MessageType {
      */
     int SYSTEM_NOTIFY = 4;
     /*
-     * 握手消息(登录认证)
+     * 登录认证消息
      */
-    int HANDSHAKE = 5;
+    int LOGIN_AUTH = 5;
     /**
      * 好友添加通知
      */
@@ -57,9 +50,6 @@ public interface MessageType {
      */
     int PC_KICK_OUT = 9;
     //=========================消息类型=========================
-
-
-
 
 
     //=========================消息回执=========================
@@ -118,23 +108,21 @@ public interface MessageType {
     * 消息发送失败的报告
     */
     int MSG_SENT_FAILED_REPORT = 1011;
+    /**
+     * 登录状态报告（status：0 正在登录，1 登录成功，2 登录失败）
+     */
+    int LOGIN_AUTH_STATUS_REPORT = 1000;
     //=========================消息状态报告======================
 
 
-    public enum MessageContentType {
+    /**
+     * 内容类型
+     */
+    interface MessageContentType {
+        int TEXT = 1;
+        int IMAGE = 2;
+        int VOICE = 3;
 
-        TEXT(1),
-        IMAGE(2),
-        VOICE(3);
 
-        private int msgContentType;
-
-        MessageContentType(int msgContentType) {
-            this.msgContentType = msgContentType;
-        }
-
-        public int getMsgContentType() {
-            return this.msgContentType;
-        }
     }
 }

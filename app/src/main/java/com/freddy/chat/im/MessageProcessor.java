@@ -10,6 +10,12 @@ import com.freddy.chat.event.Events;
 import com.freddy.chat.im.handler.IMessageHandler;
 import com.freddy.chat.im.handler.MessageHandlerFactory;
 import com.freddy.chat.utils.CThreadPoolExecutor;
+import com.freddy.im.MessageType;
+import com.freddy.im.constant.IMConstant;
+import com.freddy.im.protobuf.MessageProtobuf;
+import com.freddy.im.protobuf.Utils;
+
+import org.json.JSONObject;
 
 /**
  * <p>@ProjectName:     NettyChat</p>
@@ -49,19 +55,41 @@ public class MessageProcessor implements IMessageProcessor {
             @Override
             public void run() {
                 try {
-                    switch (message.getHead().getType()) {
-                        case 5001://单聊回执
-                        case 5002://群聊回执
-                        case 5003:///朋友圈消息回
-                        case 5004://系统通知回执
+                    String messageId = message.getHead().getMessageId();
+
+                    int msgType = message.getHead().getType();
+                    switch (msgType) {
+                        //接收到回执（代表客户端发送的消息已经发送成功）
+                        case MessageType.SINGLE_CHAT_RECEIPT://单聊消息回执 5001
+                        case MessageType.GROUP_CHAT_RECEIPT://群聊消息回执  5002
+                        case MessageType.MOMENTS_RECEIPT://朋友圈消息回  5003
+                            Log.e(TAG, "收到服务器消息回执，消息发送成功,message:" + message);
+                            // TODO: 2019/5/13 将数据库中对应的消息状态改为 成功
                             break;
-                        case 5005://登录失败
-                            CEventCenter.dispatchEvent(Events.IM_LOGIN, 0, 0, false);
+
+                        case MessageType.SYSTEM_NOTIFY_RECEIPT://系统通知回执  5004
                             break;
-                        case 5006:
-                            CEventCenter.dispatchEvent(Events.IM_LOGIN, 0, 0, true);
-                            break;//登录成功
-                        default://接收到其他消息
+                        case MessageType.LOGIN_AUTH_STATUS_REPORT://登录状态变更报告 1000
+                            String json = message.getBody().getData();
+                            JSONObject jsonObject = new JSONObject(json);
+                            //登录状态报告（status：0 正在登录，1 登录成功，2 登录失败）
+                            int status = jsonObject.getInt(IMConstant.STATUS);
+                            CEventCenter.dispatchEvent(Events.IM_LOGIN, MessageType.LOGIN_AUTH, status, null);//0 :登录失败
+                            break;
+                        case MessageType.ADD_FRIEND_RECEIPT://好友添加回执  5008
+                        case MessageType.GROUP_INVITE_RECEIPT://群邀请回执  5009
+                            break;
+                        case MessageType.PC_LOGIN_RECEIPT://pc登陆回执  5010
+                        case MessageType.PC_KICK_OUT_RECEIPT://pc强退回执  5011
+                            break;
+
+                        case MessageType.MSG_SENT_FAILED_REPORT://消息发送失败
+                            Log.e(TAG, "消息发送失败,message:" + message);
+                            // TODO: 2019/5/13 将数据库中对应的消息状态改为 失败
+                            break;
+
+                        // 接收到消息
+                        default:
                             IMessageHandler messageHandler = MessageHandlerFactory.getHandlerByMsgType(message.getHead().getType());
                             if (messageHandler != null) {
                                 messageHandler.execute(message);

@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
     }
 
     @Override
-    public void onCEvent(String topic, int msgCode, int resultCode, Object obj) {
+    public void onCEvent(String topic, final int msgCode, final int resultCode, Object obj) {
         switch (topic) {
             case Events.CHAT_SINGLE_MESSAGE: {
                 final SingleMessage message = (SingleMessage) obj;
@@ -237,13 +237,12 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
                 break;
             }
             case Events.IM_LOGIN:
-                final Boolean status = (Boolean) obj;
-                runOnUiThread(new Runnable() {
+                CThreadPoolExecutor.runOnMainThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (status) {
+                        if (resultCode==1) {
                             mtvLoginStatusText.setText("登录成功");
-                        } else {
+                        } else if (msgCode == 0) {
                             mtvLoginStatusText.setText("登录失败");
                         }
                     }

@@ -1,5 +1,6 @@
 package com.freddy.im.netty;
 
+import com.freddy.im.MessageType;
 import com.freddy.im.protobuf.MessageProtobuf;
 import com.freddy.im.protobuf.Utils;
 
@@ -97,50 +98,36 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         System.out.println("收到服务端发送过来的消息：" + Utils.format(message));
         System.out.println("====================================");
         int msgType = message.getHead().getType();
-
         switch (msgType) {
-            case 5001://单聊消息回执
-            case 5002://群聊消息回执
-            case 5003://朋友圈消息回
-            case 5004://系统通知回执
-
-                System.out.println("收到服务端消息发送状态报告,msyType:" + msgType + "  ，message=" + Utils.format(message) + "，从超时管理器移除");
+            //接收到回执（代表客户端发送的消息已经发送成功）
+            case MessageType.SINGLE_CHAT_RECEIPT://单聊消息回执 5001
+            case MessageType.GROUP_CHAT_RECEIPT://群聊消息回执  5002
+            case MessageType.MOMENTS_RECEIPT://朋友圈消息回  5003
+            case MessageType.SYSTEM_NOTIFY_RECEIPT://系统通知回执  5004
+            case MessageType.ADD_FRIEND_RECEIPT://好友添加回执  5008
+            case MessageType.GROUP_INVITE_RECEIPT://群邀请回执  5009
+            case MessageType.PC_LOGIN_RECEIPT://pc登陆回执  5010
+            case MessageType.PC_KICK_OUT_RECEIPT://pc强退回执  5011
+                System.out.println("消息发送成功，收到服务端消息发送状态报告,msyType:" + msgType + "  ，message=" + Utils.format(message) + "，从超时管理器移除");
                 imsClient.getMsgTimeoutTimerManager().remove(message.getHead().getMessageId());
+                // 接收消息，由消息转发器转发到应用层
+                imsClient.getMsgDispatcher().receivedMsg(message);
                 break;
+
+            // 接收到消息
             default:
-                // 其它消息
                 // 收到消息后，立马给服务端回一条消息接收状态报告
                 MessageProtobuf.Msg receivedReportMsg = buildReceivedReportMsg(message);
                 System.out.println("收到服务端发送过来的消息,type:" + msgType + "  ,发送消息回执：" + receivedReportMsg.getHead().getType());
                 if (receivedReportMsg != null) {
                     imsClient.sendMsg(receivedReportMsg, false);
                 }
-
-        }
-        // 接收消息，由消息转发器转发到应用层( 包含服务端的消息回执)
-        imsClient.getMsgDispatcher().receivedMsg(message);
-    }
-
-    /**
-     * 构建客户端消息接收状态报告
-     *
-     * @param msgId
-     * @return
-     */
-    private MessageProtobuf.Msg buildReceivedReportMsg(String msgId) {
-        if (StringUtil.isNullOrEmpty(msgId)) {
-            return null;
+                // 接收消息，由消息转发器转发到应用层
+                imsClient.getMsgDispatcher().receivedMsg(message);
         }
 
-        MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
-        MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
-        headBuilder.setMessageId(UUID.randomUUID().toString());
-        headBuilder.setType(imsClient.getClientReceivedReportMsgType());
-        headBuilder.setTime(System.currentTimeMillis());
-
-
-        return builder.build();
     }
+
 
     /**
      * 构建客户端消息接收状态报告
@@ -178,7 +165,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
             IdleStateEvent event = (IdleStateEvent) evt;
 //            if (event.state().equals(IdleState.WRITER_IDLE)){//如果写通道处于空闲状态,就发送心跳命令
 //                //System.out.println("发送心跳包");
-////                String token = ctx.channel().attr(Constant.TOKEN).get();
+////                String token = ctx.channel().attr(IMConstant.TOKEN).get();
 //                MessageProtobuf.Head head = MessageProtobuf.Head.newBuilder().setType(0).setToken("1475ae4964f9497c85f63f22c5a255ee").build();
 //                MessageProtobuf.Msg msg = MessageProtobuf.Msg.newBuilder().setHead(head).build();
 //                ctx.channel().writeAndFlush(msg);

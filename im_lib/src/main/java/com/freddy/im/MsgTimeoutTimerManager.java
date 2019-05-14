@@ -40,12 +40,12 @@ public class MsgTimeoutTimerManager {
             return;
         }
 
-        int handshakeMsgType = -1;
+        int loginAuthMsgType = -1;
         int heartbeatMsgType = -1;
         int clientReceivedReportMsgType = imsClient.getClientReceivedReportMsgType();
-        MessageProtobuf.Msg handshakeMsg = imsClient.getHandshakeMsg();
-        if (handshakeMsg != null && handshakeMsg.getHead() != null) {
-            handshakeMsgType = handshakeMsg.getHead().getType();
+        MessageProtobuf.Msg loginAuthMsg = imsClient.getLoginAuthMsg();
+        if (loginAuthMsg != null && loginAuthMsg.getHead() != null) {
+            loginAuthMsgType = loginAuthMsg.getHead().getType();
         }
         MessageProtobuf.Msg heartbeatMsg = imsClient.getHeartbeatMsg();
         if (heartbeatMsg != null && heartbeatMsg.getHead() != null) {
@@ -53,8 +53,8 @@ public class MsgTimeoutTimerManager {
         }
 
         int msgType = msg.getHead().getType();
-        // 握手消息、心跳消息、客户端返回的状态报告消息，不用重发。
-        if (msgType == handshakeMsgType || msgType == heartbeatMsgType || msgType == clientReceivedReportMsgType
+        // 登录认证消息、心跳消息、客户端返回的回执消息，不用重发。
+        if (msgType == loginAuthMsgType || msgType == heartbeatMsgType || msgType == clientReceivedReportMsgType
                 ||msgType==5001
                 ||msgType==5002
                 ||msgType==5003
@@ -96,7 +96,7 @@ public class MsgTimeoutTimerManager {
     }
 
     /**
-     * 重连成功回调，重连并握手成功时，重发消息发送超时管理器中所有的消息
+     * 重连成功回调，重连并登录认证成功时，重发消息发送超时管理器中所有的消息
      */
     public synchronized void onResetConnected() {
         for(Iterator<Map.Entry<String, MsgTimeoutTimer>> it = mMsgTimeoutMap.entrySet().iterator(); it.hasNext();) {

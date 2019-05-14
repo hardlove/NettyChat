@@ -6,6 +6,7 @@ import com.freddy.im.HeartbeatHandler;
 import com.freddy.im.IMSConfig;
 import com.freddy.im.MsgDispatcher;
 import com.freddy.im.MsgTimeoutTimerManager;
+import com.freddy.im.constant.IMConstant;
 import com.freddy.im.interf.IMSClientInterface;
 import com.freddy.im.listener.IMSConnectStatusCallback;
 import com.freddy.im.listener.OnEventListener;
@@ -348,14 +349,28 @@ public class NettyTcpClient implements IMSClientInterface {
     }
 
     /**
-     * 获取由应用层构造的握手消息
+     * 获取由应用层构造的登录认证消息
      *
      * @return
      */
     @Override
-    public MessageProtobuf.Msg getHandshakeMsg() {
+    public MessageProtobuf.Msg getLoginAuthMsg() {
         if (mOnEventListener != null) {
-            return mOnEventListener.getHandshakeMsg();
+            return mOnEventListener.getLoginAuthMsg();
+        }
+
+        return null;
+    }
+
+    /**
+     * 获取登录状态报告的消息
+     * @param status 0:正在登录；1：登录成功；2：登录失败
+     * @return
+     */
+    @Override
+    public MessageProtobuf.Msg getLoginAuthStatusReportMsg(int status) {
+        if (mOnEventListener != null) {
+            return mOnEventListener.getLoginAuthStatusReportMsg(status);
         }
 
         return null;
@@ -524,13 +539,17 @@ public class NettyTcpClient implements IMSClientInterface {
                 // 添加心跳消息管理handler
                 instance.addHeartbeatHandler();
 
-                // 连接成功，发送握手消息
-                MessageProtobuf.Msg handshakeMsg = getHandshakeMsg();
-                if (handshakeMsg != null) {
-                    System.out.println("发送握手消息，message=" + handshakeMsg);
-                    sendMsg(handshakeMsg, false);
+                // 连接成功，发送登录认证消息
+                MessageProtobuf.Msg loginAuthMsg = getLoginAuthMsg();
+                if (loginAuthMsg != null) {
+                    System.out.println("发送登录认证消息，message=" + loginAuthMsg);
+                    sendMsg(loginAuthMsg, false);
+
+                    //通知应用层正在登录
+                    getMsgDispatcher().receivedMsg(getLoginAuthStatusReportMsg(IMConstant.LOGIN_AUTH_PROGRESSING));
+
                 } else {
-                    System.err.println("请应用层构建握手消息！");
+                    System.err.println("请应用层构建登录认证消息！");
                 }
                 break;
             }

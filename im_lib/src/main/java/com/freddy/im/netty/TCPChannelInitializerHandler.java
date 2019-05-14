@@ -54,7 +54,7 @@ public class TCPChannelInitializerHandler extends ChannelInitializer<Channel> {
 
         // 心跳消息响应处理handler
         pipeline.addLast(HeartbeatRespHandler.class.getSimpleName(), new HeartbeatRespHandler(imsClient));
-        // 握手认证消息响应处理handler
+        // 登录认证消息响应处理handler
         pipeline.addLast(LoginAuthRespHandler.class.getSimpleName(), new LoginAuthRespHandler(imsClient));
         // 接收消息处理handler
         pipeline.addLast(TCPReadHandler.class.getSimpleName(), new TCPReadHandler(imsClient));

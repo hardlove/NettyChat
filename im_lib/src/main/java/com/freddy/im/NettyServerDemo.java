@@ -132,7 +132,7 @@ class ServerHandler extends ChannelInboundHandlerAdapter {
 //        System.out.println("收到来自客户端的消息：" + message);
 //        int msgType = message.getHead().getType();
 //        switch (msgType) {
-//            // 握手消息
+//            // 登录认证消息
 //            case 1001: {
 //                String fromId = message.getHead().getFromId();
 //                JSONObject jsonObj = JSON.parseObject(message.getHead().getExtend());
@@ -140,7 +140,7 @@ class ServerHandler extends ChannelInboundHandlerAdapter {
 //                JSONObject resp = new JSONObject();
 //                if (token.equals("token_" + fromId)) {
 //                    resp.put("status", 1);
-//                    // 握手成功后，保存用户通道
+//                    // 登录认证成功后，保存用户通道
 //                    ChannelContainer.getInstance().saveChannel(new NettyChannel(fromId, ctx.channel()));
 //                } else {
 //                    resp.put("status", -1);

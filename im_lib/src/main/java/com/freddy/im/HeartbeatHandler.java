@@ -33,14 +33,14 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
         if (evt instanceof IdleStateEvent) {
             IdleState state = ((IdleStateEvent) evt).state();
             switch (state) {
-                case READER_IDLE: {//如果写通道处于空闲状态,就发送心跳命令
+                case READER_IDLE: {//读超时. 即当在指定的事件间隔内没有从 Channel 读取到数据时, 会触发一个 READER_IDLE 的 IdleStateEvent 事件.
                     // 规定时间内没收到服务端心跳包响应，进行重连操作
                     System.out.println("规定时间内没收到服务端心跳包响应，进行重连操作。。。");
                     imsClient.resetConnect(false);
                     break;
                 }
 
-                case WRITER_IDLE: {
+                case WRITER_IDLE: {//写超时. 即当在指定的事件间隔内没有数据写入到 Channel 时, 会触发一个 WRITER_IDLE 的 IdleStateEvent 事件.
                     // 规定时间内没向服务端发送心跳包，即发送一个心跳包
                     System.out.println("规定时间内没向服务端发送心跳包，即将发送一个心跳包");
                     if (heartbeatTask == null) {
@@ -49,7 +49,11 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 
                     imsClient.getLoopGroup().execWorkTask(heartbeatTask);
                     break;
+
                 }
+                case ALL_IDLE://读/写超时. 即当在指定的事件间隔内没有读或写操作时, 会触发一个 ALL_IDLE 的 IdleStateEvent 事件.
+                    System.out.println("在指定的事件间隔内没有读或写操作时,触发IdleState.ALL_IDLE状态");
+                    break;
             }
         }
     }

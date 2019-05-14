@@ -4,11 +4,15 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.alibaba.fastjson.JSONObject;
 import com.freddy.chat.NettyChatApp;
 import com.freddy.im.IMSConfig;
+import com.freddy.im.MessageType;
+import com.freddy.im.constant.IMConstant;
 import com.freddy.im.listener.OnEventListener;
 import com.freddy.im.protobuf.MessageProtobuf;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.UUID;
 
@@ -96,28 +100,47 @@ public class IMSEventListener implements OnEventListener {
     }
 
     /**
-     * 构建握手消息
+     * 构建登录认证消息
      *
      * @return
      */
     @Override
-    public MessageProtobuf.Msg getHandshakeMsg() {
+    public MessageProtobuf.Msg getLoginAuthMsg() {
         MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
         MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
-        headBuilder.setMessageId(UUID.randomUUID().toString());
 
-        headBuilder.setType(MessageType.HANDSHAKE.getMsgType());
-//        headBuilder.setSendUserId(userId);
+        headBuilder.setType(MessageType.LOGIN_AUTH);
         headBuilder.setToken(token);
-        headBuilder.setId(userId);
-        headBuilder.setTime(System.currentTimeMillis());
-        headBuilder.setSource("android");
-        headBuilder.setVersion("1.5.1");
         builder.setHead(headBuilder.build());
 
         MessageProtobuf.Body.Builder bodyBuilder = MessageProtobuf.Body.newBuilder();
-        bodyBuilder.setPrk("私钥");
-        bodyBuilder.setData("消息体");
+        builder.setBody(bodyBuilder.build());
+
+        return builder.build();
+    }
+
+    /**
+     * 获取登录状态报告的消息
+     * @param status 0:正在登录；1：登录成功；2：登录失败
+     * @return
+     */
+    @Override
+    public MessageProtobuf.Msg getLoginAuthStatusReportMsg(int status) {
+        MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
+        MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
+
+        headBuilder.setType(MessageType.LOGIN_AUTH_STATUS_REPORT);
+        headBuilder.setToken(token);
+        builder.setHead(headBuilder.build());
+
+        MessageProtobuf.Body.Builder bodyBuilder = MessageProtobuf.Body.newBuilder();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put(IMConstant.STATUS, status);
+        } catch (JSONException e) {
+            System.out.println("构建Json数据异常：" + e.getMessage());
+        }
+        bodyBuilder.setData(jsonObject.toString());
         builder.setBody(bodyBuilder.build());
 
         return builder.build();
@@ -134,12 +157,12 @@ public class IMSEventListener implements OnEventListener {
         MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
         headBuilder.setMessageId(UUID.randomUUID().toString());
 
-        headBuilder.setType(MessageType.HEARTBEAT.getMsgType());
+        headBuilder.setType(MessageType.HEARTBEAT);
         headBuilder.setSendUserId(userId);
         headBuilder.setToken(token);
         headBuilder.setTime(System.currentTimeMillis());
         headBuilder.setSource("android");
-        headBuilder.setVersion("1.5.1");
+
         builder.setHead(headBuilder.build());
 
         MessageProtobuf.Body.Builder bodyBuilder = MessageProtobuf.Body.newBuilder();
@@ -156,7 +179,7 @@ public class IMSEventListener implements OnEventListener {
      */
     @Override
     public int getServerSentReportMsgType() {
-        return MessageType.SERVER_MSG_SENT_STATUS_REPORT.getMsgType();
+        return 0;
     }
 
     /**
@@ -166,7 +189,7 @@ public class IMSEventListener implements OnEventListener {
      */
     @Override
     public int getClientReceivedReportMsgType() {
-        return MessageType.CLIENT_MSG_RECEIVED_STATUS_REPORT.getMsgType();
+        return 0;
     }
 
     /**
@@ -188,4 +211,6 @@ public class IMSEventListener implements OnEventListener {
     public int getResendInterval() {
         return 0;
     }
+
+
 }

@@ -58,11 +58,11 @@ public interface OnEventListener {
     int getBackgroundHeartbeatInterval();
 
     /**
-     * 获取由应用层构造的握手消息
+     * 获取由应用层构造的登录认证消息
      *
      * @return
      */
-    MessageProtobuf.Msg getHandshakeMsg();
+    MessageProtobuf.Msg getLoginAuthMsg();
 
     /**
      * 获取由应用层构造的心跳消息
@@ -98,4 +98,11 @@ public interface OnEventListener {
      * @return
      */
     int getResendInterval();
+
+    /**
+     * 获取登录状态报告的消息
+     * @param status 0:正在登录；1：登录成功；2：登录失败
+     * @return
+     */
+    MessageProtobuf.Msg getLoginAuthStatusReportMsg(int status);
 }
