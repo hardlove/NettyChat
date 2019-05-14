@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.freddy.im.IMSClientFactory;
 import com.freddy.im.interf.IMSClientInterface;
+import com.freddy.im.listener.IMSConnectStatusCallback;
 import com.freddy.im.protobuf.MessageProtobuf;
 import com.freddy.im.protobuf.Utils;
 
@@ -42,7 +43,7 @@ public class IMSClientBootstrap {
         String token = "token_" + userId;
         IMSClientBootstrap bootstrap = IMSClientBootstrap.getInstance();
         String hosts = "[{\"host\":\"127.0.0.1\", \"port\":8866}]";
-        bootstrap.init(userId, token, hosts, 0);
+        bootstrap.init(userId, token, hosts, 0,new IMSConnectStatusListener());
     }
 
     /**
@@ -54,7 +55,7 @@ public class IMSClientBootstrap {
      * com.freddy.im.IMSConfig#APP_STATUS_BACKGROUND}
      *
      */
-    public synchronized void init(String userId, String token, String hosts, int appStatus) {
+    public synchronized void init(String userId, String token, String hosts, int appStatus,IMSConnectStatusCallback imsConnectStatusCallback) {
         if (!isActive()) {
             Vector<String> serverUrlList = convertHosts(hosts);
             if (serverUrlList == null || serverUrlList.size() == 0) {
@@ -68,7 +69,7 @@ public class IMSClientBootstrap {
             }
             imsClient = IMSClientFactory.getIMSClient();
             updateAppStatus(appStatus);
-            imsClient.init(serverUrlList, new IMSEventListener(userId, token), new IMSConnectStatusListener());
+            imsClient.init(serverUrlList, new IMSEventListener(userId, token), imsConnectStatusCallback);
         }
     }
     /**

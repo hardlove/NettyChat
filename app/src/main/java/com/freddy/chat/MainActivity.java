@@ -24,10 +24,11 @@ import com.freddy.chat.im.IMSClientBootstrap;
 import com.freddy.chat.im.MessageProcessor;
 import com.freddy.chat.utils.CThreadPoolExecutor;
 import com.freddy.im.IMSConfig;
+import com.freddy.im.listener.IMSConnectStatusCallback;
 
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements I_CEventListener {
+public class MainActivity extends AppCompatActivity implements I_CEventListener, IMSConnectStatusCallback {
 
     private EditText mEditContent;
     private TextView mTvReciceMsg;
@@ -130,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
             IMSClientBootstrap.getInstance().closeImsClient();
         }
         IMSClientBootstrap.getInstance().closeImsClient();
-        IMSClientBootstrap.getInstance().init(fromUserId, fromUserToken, hosts, IMSConfig.APP_STATUS_FOREGROUND);
+        IMSClientBootstrap.getInstance().init(fromUserId, fromUserToken, hosts, IMSConfig.APP_STATUS_FOREGROUND,this );
         CEventCenter.registerEventListener(this, EVENTS);
 
     }
@@ -259,5 +260,38 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener 
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onConnecting() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mtvLoginStatusText.setText("正在连接");
+
+            }
+        });
+    }
+
+    @Override
+    public void onConnected() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mtvLoginStatusText.setText("连接成功");
+
+            }
+        });
+    }
+
+    @Override
+    public void onConnectFailed() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mtvLoginStatusText.setText("连接失败");
+
+            }
+        });
     }
 }
