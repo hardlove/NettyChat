@@ -74,11 +74,11 @@ public interface MessageType {
     /**
      * 登录验证失败
      */
-    int LOGIN_AUTH_SUCCEED_RECEIPT = 5005;
+    int LOGIN_AUTH_FAILED_RECEIPT = 5005;
     /**
      * 登录认证成功
      */
-    int LOGIN_AUTH_FAILED_RECEIPT = 5006;
+    int LOGIN_AUTH_SUCCEED_RECEIPT = 5006;
     /**
      * 好友添加回执
      */
