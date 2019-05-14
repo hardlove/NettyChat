@@ -44,7 +44,7 @@ public class IMSEventListener implements OnEventListener {
      */
     @Override
     public void dispatchMsg(MessageProtobuf.Msg msg) {
-        MessageProcessor.getInstance().receiveMsg(MessageBuilder.getMessageByProtobuf(msg));
+        MessageProcessor.getInstance().receiveMsg(MessageBuilder.getAppMessageByProtobuf(msg));
     }
 
     /**
@@ -111,7 +111,9 @@ public class IMSEventListener implements OnEventListener {
 
         headBuilder.setType(MessageType.LOGIN_AUTH);
         headBuilder.setToken(token);
+        headBuilder.setSource(IMConstant.SOURCE);
         builder.setHead(headBuilder.build());
+
 
         MessageProtobuf.Body.Builder bodyBuilder = MessageProtobuf.Body.newBuilder();
         builder.setBody(bodyBuilder.build());
@@ -130,7 +132,9 @@ public class IMSEventListener implements OnEventListener {
         MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
 
         headBuilder.setType(MessageType.LOGIN_AUTH_STATUS_REPORT);
+        headBuilder.setId(userId);
         headBuilder.setToken(token);
+        headBuilder.setSource(IMConstant.SOURCE);
         builder.setHead(headBuilder.build());
 
         MessageProtobuf.Body.Builder bodyBuilder = MessageProtobuf.Body.newBuilder();
@@ -158,10 +162,10 @@ public class IMSEventListener implements OnEventListener {
         headBuilder.setMessageId(UUID.randomUUID().toString());
 
         headBuilder.setType(MessageType.HEARTBEAT);
-        headBuilder.setSendUserId(userId);
+        headBuilder.setId(userId);
         headBuilder.setToken(token);
         headBuilder.setTime(System.currentTimeMillis());
-        headBuilder.setSource("android");
+        headBuilder.setSource(IMConstant.SOURCE);
 
         builder.setHead(headBuilder.build());
 

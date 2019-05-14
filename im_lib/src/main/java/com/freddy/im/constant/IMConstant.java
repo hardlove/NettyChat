@@ -8,6 +8,7 @@ package com.freddy.im.constant;
 
 public interface IMConstant {
     String STATUS = "status";
+    String SOURCE = "android";
     int LOGIN_AUTH_SUCCEED = 1;
     int LOGIN_AUTH_FAILED = 2;
     int LOGIN_AUTH_PROGRESSING = 0;

@@ -12,6 +12,7 @@ import com.freddy.chat.im.handler.MessageHandlerFactory;
 import com.freddy.chat.utils.CThreadPoolExecutor;
 import com.freddy.im.MessageType;
 import com.freddy.im.constant.IMConstant;
+import com.freddy.im.netty.NettyTcpClient;
 import com.freddy.im.protobuf.MessageProtobuf;
 import com.freddy.im.protobuf.Utils;
 

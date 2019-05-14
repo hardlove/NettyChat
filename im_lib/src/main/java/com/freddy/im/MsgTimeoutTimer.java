@@ -1,5 +1,6 @@
 package com.freddy.im;
 
+import com.freddy.im.constant.IMConstant;
 import com.freddy.im.interf.IMSClientInterface;
 import com.freddy.im.protobuf.MessageProtobuf;
 import com.freddy.im.protobuf.Utils;
@@ -54,10 +55,19 @@ public class MsgTimeoutTimer extends Timer {
                 try {
                     MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
                     MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
-                    headBuilder.setMessageId(msg.getHead().getMessageId());
                     headBuilder.setType(imsClient.getServerSentReportMsgType());//消息发送失败
+                    headBuilder.setId(msg.getHead().getId());
+                    headBuilder.setMessageId(msg.getHead().getMessageId());
+                    headBuilder.setToken(msg.getHead().getToken());
+                    headBuilder.setContentType(msg.getHead().getContentType());
                     headBuilder.setTime(System.currentTimeMillis());
+                    headBuilder.setSource(IMConstant.SOURCE);
                     builder.setHead(headBuilder.build());
+
+                    MessageProtobuf.Body.Builder bodyBuilder = MessageProtobuf.Body.newBuilder();
+                    bodyBuilder.setData(msg.getBody().getData());
+                    bodyBuilder.setPrk(msg.getBody().getPrk());
+                    builder.setBody(bodyBuilder.build());
 
                     System.err.println("消息发送3次都失败，msg：" + Utils.format(msg));
                     // 通知应用层消息发送失败

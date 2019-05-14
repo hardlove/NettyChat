@@ -22,6 +22,8 @@ public class BaseMessage {
     protected String toId;        // 接收者id
     protected long timestamp;     // 消息时间戳
     protected int statusReport;   // 消息状态报告
+    protected String token;
+    protected String source;      ////来源, android，ios，windowPc, macPc
     protected String extend;      // 扩展字段，以key/value形式存放json
     protected String content;     // 消息内容
 
@@ -81,6 +83,22 @@ public class BaseMessage {
         this.statusReport = statusReport;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
     public String getExtend() {
         return extend;
     }
@@ -101,7 +119,7 @@ public class BaseMessage {
     public int hashCode() {
         try {
             return this.msgId.hashCode();
-        }catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
 
@@ -110,7 +128,7 @@ public class BaseMessage {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == null || !(obj instanceof BaseMessage)) {
+        if (obj == null || !(obj instanceof BaseMessage)) {
             return false;
         }
 

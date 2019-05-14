@@ -1,11 +1,14 @@
 package com.freddy.chat.im;
 
+import android.text.Html;
+
 import com.freddy.chat.bean.AppMessage;
 import com.freddy.chat.bean.BaseMessage;
 import com.freddy.chat.bean.Body;
 import com.freddy.chat.bean.ContentMessage;
 import com.freddy.chat.bean.Head;
 import com.freddy.chat.utils.StringUtil;
+import com.freddy.im.constant.IMConstant;
 import com.freddy.im.protobuf.MessageProtobuf;
 
 /**
@@ -29,12 +32,12 @@ public class MessageBuilder {
      * @param subType
      * @param fromId
      * @param toId
-     * @param extend
+     * @param token
      * @param content
      * @return
      */
     public static AppMessage buildAppMessage(String msgId, int type, int subType, String fromId,
-                                             String toId, String extend, String content) {
+                                             String toId, String token, String content) {
         AppMessage message = new AppMessage();
         Head head = new Head();
         head.setMessageId(msgId);
@@ -42,6 +45,8 @@ public class MessageBuilder {
         head.setContentType(subType);
         head.setSendUserId(fromId);
         head.setId(toId);
+        head.setSource(IMConstant.SOURCE);
+        head.setToken(token);
         head.setTime(System.currentTimeMillis());
 
         message.setHead(head);
@@ -69,7 +74,8 @@ public class MessageBuilder {
         head.setSendUserId(msg.getFromId());
         head.setId(msg.getToId());
         head.setTime(msg.getTimestamp());
-        head.setToken("1475ae4964f9497c85f63f22c5a255ee");
+        head.setToken(msg.getToken());
+        head.setSource(IMConstant.SOURCE);
 
         message.setHead(head);
 
@@ -95,7 +101,9 @@ public class MessageBuilder {
         head.setContentType(msg.getMsgContentType());
         head.setSendUserId(msg.getFromId());
         head.setId(msg.getToId());
+        head.setToken(msg.getToken());
         head.setTime(msg.getTimestamp());
+        head.setSource(IMConstant.SOURCE);
 
         message.setHead(head);
 
@@ -142,7 +150,7 @@ public class MessageBuilder {
      * @param protobufMessage
      * @return
      */
-    public static AppMessage getMessageByProtobuf(
+    public static AppMessage getAppMessageByProtobuf(
             MessageProtobuf.Msg protobufMessage) {
         AppMessage message = new AppMessage();
         Head head = new Head();

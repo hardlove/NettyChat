@@ -1,6 +1,7 @@
 package com.freddy.im.netty;
 
 import com.freddy.im.MessageType;
+import com.freddy.im.constant.IMConstant;
 import com.freddy.im.protobuf.MessageProtobuf;
 import com.freddy.im.protobuf.Utils;
 
@@ -153,6 +154,9 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         headBuilder.setId(msg.getHead().getId());
         headBuilder.setToken(msg.getHead().getToken());
         headBuilder.setMessageId(msg.getHead().getMessageId());
+        headBuilder.setContentType(msg.getHead().getContentType());
+        headBuilder.setSource(IMConstant.SOURCE);
+
 
         builder.setHead(headBuilder.build());
 

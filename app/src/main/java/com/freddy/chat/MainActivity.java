@@ -24,6 +24,7 @@ import com.freddy.chat.im.IMSClientBootstrap;
 import com.freddy.chat.im.MessageProcessor;
 import com.freddy.chat.utils.CThreadPoolExecutor;
 import com.freddy.im.IMSConfig;
+import com.freddy.im.constant.IMConstant;
 import com.freddy.im.listener.IMSConnectStatusCallback;
 
 import java.util.UUID;
@@ -199,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         Body body = new Body();
         head.setId(toUserId);
         head.setToken(fromUserToken);
-        head.setSource("android");
+        head.setSource(IMConstant.SOURCE);
         head.setSendUserId(fromUserId);
         head.setMessageId(UUID.randomUUID().toString());
         head.setTime(System.currentTimeMillis());
@@ -207,8 +208,8 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         head.setContentType(1);//文本
 
         body.setPrk("私钥123");
-        String sendContent = mEditContent.getText().toString().trim() + "---" + signMsgSendCount;
-        body.setData("Android"+sendContent);
+        String sendContent = mEditContent.getText().toString().trim() + "  " + signMsgSendCount;
+        body.setData("Android  "+sendContent);
         appMessage.setHead(head);
         appMessage.setBody(body);
         MessageProcessor.getInstance().sendMsg(appMessage);
