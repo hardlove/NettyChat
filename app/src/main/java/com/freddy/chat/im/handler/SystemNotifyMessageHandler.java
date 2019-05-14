@@ -7,6 +7,9 @@ import com.freddy.chat.bean.AppMessage;
 import com.freddy.chat.bean.SingleMessage;
 import com.freddy.chat.event.CEventCenter;
 import com.freddy.chat.event.Events;
+import com.freddy.chat.im.IMSClientBootstrap;
+import com.freddy.im.MessageType;
+import com.freddy.im.constant.IMConstant;
 
 import java.util.Map;
 
@@ -21,5 +24,21 @@ public class SystemNotifyMessageHandler extends AbstractMessageHandler {
     @Override
     protected void action(AppMessage message) {
         Log.d(TAG, "action: 收到系统通知消息：" + message);
+        int contentType = message.getHead().getContentType();
+        if (contentType == 0) {//0:表示消息
+            handleSystemNotify(message);
+        } else if (contentType==1) {//1:表示被踢下线
+            CEventCenter.dispatchEvent(Events.IM_LOGIN, MessageType.LOGIN_AUTH, IMConstant.LOGIN_AUTH_KICK_OUT, null);//3 :被踢下线
+            System.out.println("被踢下线了。。。");
+            IMSClientBootstrap.getInstance().closeImsClient();//关闭ImsClient，否则会进行重连
+        }
+    }
+
+    /**
+     * 处理其他系统通知消息
+     * @param message
+     */
+    private void handleSystemNotify(AppMessage message) {
+
     }
 }
