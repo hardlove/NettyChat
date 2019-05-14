@@ -14,6 +14,6 @@ public class MomentsMessageHandler extends AbstractMessageHandler {
 
     @Override
     protected void action(AppMessage message) {
-        Log.d(TAG, "收到朋友圈消息，message=" + message);
+        Log.d(TAG, "action: 收到朋友圈消息："+message);
     }
 }

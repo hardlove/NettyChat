@@ -2,7 +2,8 @@ package com.freddy.chat.im.handler;
 
 import android.util.SparseArray;
 
-import com.freddy.chat.im.MessageType;
+import com.freddy.im.MessageType;
+
 
 /**
  * <p>@ProjectName:     NettyChat</p>
@@ -25,9 +26,19 @@ public class MessageHandlerFactory {
 
     static {
         /** 单聊消息处理handler */
-        HANDLERS.put(MessageType.SINGLE_CHAT.getMsgType(), new SingleChatMessageHandler());
+        HANDLERS.put(MessageType.SINGLE_CHAT, new SingleChatMessageHandler());
         /** 群聊消息处理handler */
-        HANDLERS.put(MessageType.GROUP_CHAT.getMsgType(), new GroupChatMessageHandler());
+        HANDLERS.put(MessageType.GROUP_CHAT, new GroupChatMessageHandler());
+        /**朋友圈消息处理handler*/
+        HANDLERS.put(MessageType.MOMENTS, new MomentsMessageHandler());
+        /**系统通知消息处理handler*/
+        HANDLERS.put(MessageType.SYSTEM_NOTIFY, new SystemNotifyMessageHandler());
+        /**好友添加通知消息处理handler*/
+        HANDLERS.put(MessageType.ADD_FRIEND, new AddFriendMessageHandler());
+        /**群邀请通知消息处理handler*/
+        HANDLERS.put(MessageType.GROUP_INVITE, new GroupInviteMessageHandler());
+
+
     }
 
     /**

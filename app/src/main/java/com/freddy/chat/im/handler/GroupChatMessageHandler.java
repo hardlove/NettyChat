@@ -15,6 +15,6 @@ public class GroupChatMessageHandler extends AbstractMessageHandler {
 
     @Override
     protected void action(AppMessage message) {
-        Log.d(TAG, "收到群聊消息，message=" + message);
+        Log.d(TAG, "action: 收到群聊消息：" + message);
     }
 }

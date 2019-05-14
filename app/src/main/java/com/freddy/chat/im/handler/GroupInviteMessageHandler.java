@@ -14,6 +14,6 @@ public class GroupInviteMessageHandler extends AbstractMessageHandler {
     private static final String TAG = GroupInviteMessageHandler.class.getSimpleName();
     @Override
     protected void action(AppMessage message) {
-        Log.d(TAG, "收到群邀请通知消息：" + message);
+        Log.d(TAG, "action: 收到群邀请通知消息：" + message);
     }
 }

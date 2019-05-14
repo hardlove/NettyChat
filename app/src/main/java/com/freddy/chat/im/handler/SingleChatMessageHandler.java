@@ -20,6 +20,7 @@ public class SingleChatMessageHandler extends AbstractMessageHandler {
 
     @Override
     protected void action(AppMessage message) {
+        Log.d(TAG, "action: 收到单聊消息：" + message);
 
         //需要去重
         Map<String, AppMessage> msgContainer = NettyChatApp.instance.getMsgContainer();
