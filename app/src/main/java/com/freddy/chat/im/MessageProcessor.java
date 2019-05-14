@@ -59,6 +59,7 @@ public class MessageProcessor implements IMessageProcessor {
                     String messageId = message.getHead().getMessageId();
 
                     int msgType = message.getHead().getType();
+                    int contentType = message.getHead().getContentType();
                     switch (msgType) {
                         //接收到回执（代表客户端发送的消息已经发送成功）
                         case MessageType.SINGLE_CHAT_RECEIPT://单聊消息回执 5001
@@ -69,6 +70,12 @@ public class MessageProcessor implements IMessageProcessor {
                             break;
 
                         case MessageType.SYSTEM_NOTIFY_RECEIPT://系统通知回执  5004
+                            if (contentType == 0) {//0:表示消息
+                            } else if (contentType==1) {//1:表示被踢下线
+                                CEventCenter.dispatchEvent(Events.IM_LOGIN, MessageType.LOGIN_AUTH, IMConstant.LOGIN_AUTH_KICK_OUT, null);//3 :被踢下线
+                                System.out.println("被踢下线了。。。");
+                                IMSClientBootstrap.getInstance().closeImsClient();//关闭ImsClient，否则会进行重连
+                            }
                             break;
                         case MessageType.LOGIN_AUTH_STATUS_REPORT://登录状态变更报告 1000
                             String json = message.getBody().getData();
