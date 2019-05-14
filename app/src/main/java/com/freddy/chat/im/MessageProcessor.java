@@ -69,13 +69,8 @@ public class MessageProcessor implements IMessageProcessor {
                             // TODO: 2019/5/13 将数据库中对应的消息状态改为 成功
                             break;
 
-                        case MessageType.SYSTEM_NOTIFY_RECEIPT://系统通知回执  5004
-                            if (contentType == 0) {//0:表示消息
-                            } else if (contentType==1) {//1:表示被踢下线
-                                CEventCenter.dispatchEvent(Events.IM_LOGIN, MessageType.LOGIN_AUTH, IMConstant.LOGIN_AUTH_KICK_OUT, null);//3 :被踢下线
-                                System.out.println("被踢下线了。。。");
-                                IMSClientBootstrap.getInstance().closeImsClient();//关闭ImsClient，否则会进行重连
-                            }
+                        case MessageType.SYSTEM_NOTIFY_RECEIPT://系统通知回执  5004 无需处理
+
                             break;
                         case MessageType.LOGIN_AUTH_STATUS_REPORT://登录状态变更报告 1000
                             String json = message.getBody().getData();
