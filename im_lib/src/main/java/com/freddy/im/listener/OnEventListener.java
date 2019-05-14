@@ -83,7 +83,7 @@ public interface OnEventListener {
      *
      * @return
      */
-    int getClientReceivedReportMsgType();
+    int getClientReceivedReportMsgType(MessageProtobuf.Msg msg);
 
     /**
      * 获取应用层消息发送超时重发次数

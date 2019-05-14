@@ -42,7 +42,7 @@ public class MsgTimeoutTimerManager {
 
         int loginAuthMsgType = -1;
         int heartbeatMsgType = -1;
-        int clientReceivedReportMsgType = imsClient.getClientReceivedReportMsgType();
+        int clientReceivedReportMsgType = imsClient.getClientReceivedReportMsgType(msg);
         MessageProtobuf.Msg loginAuthMsg = imsClient.getLoginAuthMsg();
         if (loginAuthMsg != null && loginAuthMsg.getHead() != null) {
             loginAuthMsgType = loginAuthMsg.getHead().getType();
@@ -54,13 +54,7 @@ public class MsgTimeoutTimerManager {
 
         int msgType = msg.getHead().getType();
         // 登录认证消息、心跳消息、客户端返回的回执消息，不用重发。
-        if (msgType == loginAuthMsgType || msgType == heartbeatMsgType || msgType == clientReceivedReportMsgType
-                ||msgType==5001
-                ||msgType==5002
-                ||msgType==5003
-                ||msgType==5004
-                ||msgType==5005
-                ||msgType==5006) {
+        if (msgType == loginAuthMsgType || msgType == heartbeatMsgType || msgType == clientReceivedReportMsgType) {
             return;
         }
 

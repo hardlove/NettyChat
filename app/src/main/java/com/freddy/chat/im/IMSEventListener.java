@@ -192,8 +192,50 @@ public class IMSEventListener implements OnEventListener {
      * @return
      */
     @Override
-    public int getClientReceivedReportMsgType() {
-        return 0;
+    public int getClientReceivedReportMsgType(MessageProtobuf.Msg msg) {
+        if (msg == null || msg.getHead() == null) {
+            return -1;
+        }
+        MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
+        MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
+        int type = msg.getHead().getType();
+        int newType = -1;
+        switch (type) {
+            case MessageType.SINGLE_CHAT:
+                //单聊消息回执
+                newType = MessageType.SINGLE_CHAT_RECEIPT;
+                break;
+            case MessageType.GROUP_CHAT:
+                //群聊消息回执
+                newType = MessageType.GROUP_CHAT_RECEIPT;
+                break;
+            case MessageType.MOMENTS:
+                //朋友圈消息回执
+                newType = MessageType.MOMENTS_RECEIPT;
+                break;
+            case MessageType.SYSTEM_NOTIFY:
+                //系统通知回执
+                newType = MessageType.SYSTEM_NOTIFY_RECEIPT;
+                break;
+            case MessageType.ADD_FRIEND:
+                //好友添加回执
+                newType = MessageType.ADD_FRIEND_RECEIPT;
+                break;
+            case MessageType.GROUP_INVITE:
+                //群邀请回执
+                newType = MessageType.GROUP_INVITE_RECEIPT;
+                break;
+            case MessageType.PC_LOGIN:
+                //pc登陆回执
+                newType = MessageType.PC_LOGIN_RECEIPT;
+                break;
+            case MessageType.PC_KICK_OUT:
+                //pc强退回执
+                newType = MessageType.PC_KICK_OUT_RECEIPT;
+                break;
+        }
+
+        return newType;
     }
 
     /**

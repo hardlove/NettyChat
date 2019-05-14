@@ -96,7 +96,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         }
 
         System.out.println("====================================");
-        System.out.println("收到服务端发送过来的消息：" + Utils.format(message));
+        System.out.println("收到服务端发送过来的消息：" + message.getHead().getMessageId());
         System.out.println("====================================");
         int msgType = message.getHead().getType();
         switch (msgType) {
@@ -119,9 +119,11 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
             default:
                 // 收到消息后，立马给服务端回一条消息接收状态报告
                 MessageProtobuf.Msg receivedReportMsg = buildReceivedReportMsg(message);
-                System.out.println("收到服务端发送过来的消息,type:" + msgType + "  ,发送消息回执：" + receivedReportMsg.getHead().getType());
                 if (receivedReportMsg != null) {
+                    System.out.println("收到服务端发送过来的消息,type:" + msgType + " contentType:" + message.getHead().getContentType() + "  messageId:" + message.getHead().getMessageId() + "  ,发送消息回执：" + receivedReportMsg.getHead().getType());
                     imsClient.sendMsg(receivedReportMsg, false);
+                } else {
+                    System.err.println("收到服务端发送过来的消息,type:" + msgType + " contentType:" + message.getHead().getContentType() + "  messageId:" + message.getHead().getMessageId() + "   ,未找到对应的回执消息类型,无法发送消息回执！");
                 }
                 // 接收消息，由消息转发器转发到应用层
                 imsClient.getMsgDispatcher().receivedMsg(message);
@@ -142,15 +144,11 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         }
         MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
         MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
-        if (msg.getHead().getType() == 1) {
-            headBuilder.setType(5001);
-        } else if (msg.getHead().getType() == 2) {
-            headBuilder.setType(5002);
-        } else if (msg.getHead().getType() == 3) {
-            headBuilder.setType(5003);
-        } else if (msg.getHead().getType() == 4) {
-            headBuilder.setType(5004);
+        int newType = imsClient.getClientReceivedReportMsgType(msg);//IMSEventListener.getClientReceivedReportMsgType(MessageProtobuf.Msg msg)中实现
+        if (newType == -1) {
+            return null;
         }
+        headBuilder.setType(newType);
         headBuilder.setId(msg.getHead().getId());
         headBuilder.setToken(msg.getHead().getToken());
         headBuilder.setMessageId(msg.getHead().getMessageId());

@@ -410,9 +410,9 @@ public class NettyTcpClient implements IMSClientInterface {
      * @return
      */
     @Override
-    public int getClientReceivedReportMsgType() {
+    public int getClientReceivedReportMsgType(MessageProtobuf.Msg msg) {
         if (mOnEventListener != null) {
-            return mOnEventListener.getClientReceivedReportMsgType();
+            return mOnEventListener.getClientReceivedReportMsgType(msg);
         }
 
         return 0;
