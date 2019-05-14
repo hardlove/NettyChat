@@ -16,6 +16,7 @@ import java.util.Map;
 /**
  * @author CL
  * 系统通知消息处理帮助类
+ * 当type为4的时候，contentType 0表示消息，1表示踢下线
  */
 public class SystemNotifyMessageHandler extends AbstractMessageHandler {
 

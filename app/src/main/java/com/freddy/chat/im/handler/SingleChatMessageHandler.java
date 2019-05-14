@@ -13,6 +13,7 @@ import java.util.Map;
 /**
  * @author CL
  * 单聊消息处理帮助类
+ * type为1，2的时候，contentType 0表示撤回，1表示文本，2表示音频，3表示视频
  */
 public class SingleChatMessageHandler extends AbstractMessageHandler {
 
@@ -21,6 +22,22 @@ public class SingleChatMessageHandler extends AbstractMessageHandler {
     @Override
     protected void action(AppMessage message) {
         Log.d(TAG, "action: 收到单聊消息：" + message);
+
+        int contentType = message.getHead().getContentType();
+        switch (contentType) {
+            case 0:
+                Log.d(TAG, "action: 撤销单聊消息");
+                break;
+            case 1:
+                Log.d(TAG, "action: 文本单聊消息");
+                break;
+            case 2:
+                Log.d(TAG, "action: 音频单聊消息");
+                break;
+            case 3:
+                Log.d(TAG, "action: 视频单聊消息");
+                break;
+        }
 
         //需要去重
         Map<String, AppMessage> msgContainer = NettyChatApp.instance.getMsgContainer();
