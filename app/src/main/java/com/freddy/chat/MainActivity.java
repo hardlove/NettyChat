@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
             IMSClientBootstrap.getInstance().closeImsClient();
         }
         IMSClientBootstrap.getInstance().closeImsClient();
-        IMSClientBootstrap.getInstance().init(fromUserId, fromUserToken, hosts, IMSConfig.APP_STATUS_FOREGROUND,this );
+        IMSClientBootstrap.getInstance().init(fromUserId, fromUserToken, hosts, IMSConfig.APP_STATUS_FOREGROUND, this);
         CEventCenter.registerEventListener(this, EVENTS);
 
     }
@@ -157,7 +157,6 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         closeInputMethod();
 
     }
-
 
 
     public void sendMultiMsg(View view) {
@@ -209,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
         body.setPrk("私钥123");
         String sendContent = mEditContent.getText().toString().trim() + "  " + signMsgSendCount;
-        body.setData("Android  "+sendContent);
+        body.setData("Android  " + sendContent);
         appMessage.setHead(head);
         appMessage.setBody(body);
         MessageProcessor.getInstance().sendMsg(appMessage);
@@ -217,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
         mTvSendMsgCount = findViewById(R.id.tvSingleMsgSendCount);
         mTvSendMsgCount.setText("已发单聊消息总数：" + signMsgSendCount);
-        mTextSendMsg.append(sendContent+"\n");
+        mTextSendMsg.append(sendContent + "\n");
 
     }
 
@@ -250,11 +249,14 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                 CThreadPoolExecutor.runOnMainThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (resultCode==1) {
+                        if (resultCode == IMConstant.LOGIN_AUTH_SUCCEED) {
                             mtvLoginStatusText.setText("登录成功");
-                        } else if (msgCode == 0) {
+                        } else if (msgCode == IMConstant.LOGIN_AUTH_PROGRESSING) {
+                            mtvLoginStatusText.setText("正在登录");
+                        } else if (msgCode == IMConstant.LOGIN_AUTH_FAILED) {
                             mtvLoginStatusText.setText("登录失败");
                         }
+
                     }
                 });
                 break;
