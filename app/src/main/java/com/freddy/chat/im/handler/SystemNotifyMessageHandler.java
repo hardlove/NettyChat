@@ -12,11 +12,11 @@ import java.util.Map;
 
 /**
  * @author CL
- * 单聊消息处理帮助类
+ * 系统通知消息处理帮助类
  */
-public class SingleChatMessageHandler extends AbstractMessageHandler {
+public class SystemNotifyMessageHandler extends AbstractMessageHandler {
 
-    private static final String TAG = SingleChatMessageHandler.class.getSimpleName();
+    private static final String TAG = SystemNotifyMessageHandler.class.getSimpleName();
 
     @Override
     protected void action(AppMessage message) {
