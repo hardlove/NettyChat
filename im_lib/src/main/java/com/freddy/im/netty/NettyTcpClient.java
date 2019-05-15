@@ -255,7 +255,7 @@ public class NettyTcpClient implements IMSClientInterface {
     @Override
     public void sendMsg(MessageProtobuf.Msg msg, boolean isJoinTimeoutManager) {
         if (msg == null || msg.getHead() == null) {
-            System.out.println("发送消息失败，消息为空\tmessage=" + msg);
+            System.out.println("[发送消息失败，消息为空\tmessage=" + msg + "]");
             return;
         }
 
@@ -266,13 +266,16 @@ public class NettyTcpClient implements IMSClientInterface {
         }
 
         if (channel == null) {
-            System.out.println("发送消息失败，channel为空\tmessage=" + msg);
+            System.out.println("[发送消息失败，channel为空\tmessage=" + msg + "]");
         }
 
         try {
+            System.out.println("===========================");
+            System.out.println("[发送消息：" + Utils.format(msg) + "]");
+            System.out.println("===========================");
             channel.writeAndFlush(msg);
         } catch (Exception ex) {
-            System.out.println("发送消息失败，reason:" + ex.getMessage() + "\tmessage=" + msg);
+            System.out.println("[发送消息失败，reason:" + ex.getMessage() + "\tmessage=" + msg + "]");
         }
     }
 

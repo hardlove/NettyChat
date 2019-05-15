@@ -75,7 +75,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
                     return;
                 }
                 System.out.println("发送心跳消息，message=" + Utils.format(heartbeatMsg) + "当前心跳间隔为：" + imsClient.getHeartbeatInterval() + "ms\n");
-                imsClient.sendMsg(heartbeatMsg, false);
+                imsClient.sendMsg(heartbeatMsg,false);
 
             }
         }

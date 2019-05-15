@@ -159,19 +159,15 @@ public class IMSEventListener implements OnEventListener {
     public MessageProtobuf.Msg getHeartbeatMsg() {
         MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
         MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
-        headBuilder.setMessageId(UUID.randomUUID().toString());
 
-        headBuilder.setType(MessageType.HEARTBEAT);
         headBuilder.setId(userId);
         headBuilder.setToken(token);
-        headBuilder.setTime(System.currentTimeMillis());
+        headBuilder.setType(MessageType.HEARTBEAT);
         headBuilder.setSource(IMConstant.SOURCE);
 
         builder.setHead(headBuilder.build());
 
         MessageProtobuf.Body.Builder bodyBuilder = MessageProtobuf.Body.newBuilder();
-        bodyBuilder.setPrk("私钥");
-        bodyBuilder.setData("消息体");
         builder.setBody(bodyBuilder.build());
         return builder.build();
     }

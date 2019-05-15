@@ -123,7 +123,7 @@ public class MessageProcessor implements IMessageProcessor {
                 if (isActive) {
                     IMSClientBootstrap.getInstance().sendMessage(MessageBuilder.getProtoBufMessageBuilderByAppMessage(message).build());
                 } else {
-                    Log.e(TAG, "发送消息失败");
+                    Log.e(TAG, "发送消息失败,imsClient未启动。");
                 }
             }
         });

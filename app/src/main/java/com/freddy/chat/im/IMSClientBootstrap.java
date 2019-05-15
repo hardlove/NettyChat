@@ -98,12 +98,9 @@ public class IMSClientBootstrap {
     public void sendMessage(MessageProtobuf.Msg msg) {
         if (isActive) {
             imsClient.sendMsg(msg);
-            System.err.println("===========================");
-            System.err.println("[发送消息：" + Utils.format(msg) + "]");
-            System.err.println("===========================");
         } else {
             System.err.println("===========================");
-            System.err.println("发送消息失败,service 断开");
+            System.err.println("无法发送消息,ImsClient已关闭,msg:" + Utils.format(msg));
             System.err.println("===========================");
         }
     }

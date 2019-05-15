@@ -109,7 +109,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
             case MessageType.GROUP_INVITE_RECEIPT://群邀请回执  5009
             case MessageType.PC_LOGIN_RECEIPT://pc登陆回执  5010
             case MessageType.PC_KICK_OUT_RECEIPT://pc强退回执  5011
-                System.out.println("消息发送成功，收到服务端消息发送状态报告,msyType:" + msgType + "  ，message=" + Utils.format(message) + "，从超时管理器移除");
+                System.out.println("收到服务器消息回执，消息已发送成功。msyType:" + msgType + "  ，message=" + Utils.format(message) + "，从超时管理器移除");
                 imsClient.getMsgTimeoutTimerManager().remove(message.getHead().getMessageId());
                 // 接收消息，由消息转发器转发到应用层
                 imsClient.getMsgDispatcher().receivedMsg(message);
