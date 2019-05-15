@@ -128,10 +128,9 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
     public void loginIm(View view) {
         mtvLoginStatusText.setText("正在登录");
 
-        if (!IMSClientBootstrap.getInstance().isActive()) {
+        if (IMSClientBootstrap.getInstance().isActive()) {
             IMSClientBootstrap.getInstance().closeImsClient();
         }
-        IMSClientBootstrap.getInstance().closeImsClient();
         IMSClientBootstrap.getInstance().init(fromUserId, fromUserToken, hosts, IMSConfig.APP_STATUS_FOREGROUND, this);
         CEventCenter.registerEventListener(this, EVENTS);
 
@@ -139,7 +138,9 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
     public void btnlogOut(View view) {
         mtvLoginStatusText.setText("已退出登录");
-        IMSClientBootstrap.getInstance().closeImsClient();
+        if (IMSClientBootstrap.getInstance().isActive()) {
+            IMSClientBootstrap.getInstance().closeImsClient();
+        }
 
     }
 
