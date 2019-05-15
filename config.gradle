@@ -24,6 +24,6 @@ ext {
             test_espresso                : "com.android.support.test.espresso:espresso-core:3.0.2",
             multidex                     : "com.android.support:multidex:1.0.1",
             fastjson                     : "com.alibaba:fastjson:1.2.49",
-            protobuf                     : "com.google.protobuf:protobuf-java:3.5.0",
+            protobuf                     : "com.google.protobuf:protobuf-java:3.7.1",
     ]
 }
