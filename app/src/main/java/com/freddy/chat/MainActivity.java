@@ -255,6 +255,8 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                             mtvLoginStatusText.setText("正在登录");
                         } else if (msgCode == IMConstant.LOGIN_AUTH_FAILED) {
                             mtvLoginStatusText.setText("登录失败");
+                        } else if (resultCode == IMConstant.LOGIN_AUTH_KICK_OUT) {
+                            mtvLoginStatusText.setText("你已被踢下线");
                         }
 
                     }
