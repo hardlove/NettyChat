@@ -11,6 +11,7 @@ import com.freddy.im.interf.IMSClientInterface;
 import com.freddy.im.listener.IMSConnectStatusCallback;
 import com.freddy.im.listener.OnEventListener;
 import com.freddy.im.protobuf.MessageProtobuf;
+import com.freddy.im.protobuf.Utils;
 
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +43,7 @@ public class NettyTcpClient implements IMSClientInterface {
     private Bootstrap bootstrap;
     private Channel channel;
 
-    private boolean isClosed = false;// 标识ims是否已关闭
+    private boolean isClosed = true;// 标识ims是否已关闭
     private Vector<String> serverUrlList;// ims服务器地址组
     private OnEventListener mOnEventListener;// 与应用层交互的listener
     private IMSConnectStatusCallback mIMSConnectStatusCallback;// ims连接状态回调监听器
@@ -143,7 +144,7 @@ public class NettyTcpClient implements IMSClientInterface {
 
         // 只有第一个调用者才能赋值并调用重连
         synchronized (this) {//多个线程同时调用时会出现安全问题，必须同步
-            System.out.println("=========resetConnect(boolean isFirst) isFirst:" + isFirst + " ================");
+            System.out.println("=========resetConnect(boolean isFirst) 第一次连接:" + isFirst + " ================");
             if (!isFirst) {//不是第一次连接，睡一段时间后开始连接
                 try {
                     Thread.sleep(IMSConfig.DEFAULT_RECONNECT_INTERVAL);
@@ -530,12 +531,12 @@ public class NettyTcpClient implements IMSClientInterface {
 
 
                 // ims连接成功，马上先发送一条心跳消息，至于心跳机制管理，交由HeartbeatHandler
-                MessageProtobuf.Msg heartbeatMsg = instance.getHeartbeatMsg();
+                MessageProtobuf.Msg heartbeatMsg = getHeartbeatMsg();
                 if (heartbeatMsg == null) {
                     return;
                 }
-                System.out.println("ims连接成功======》发送心跳消息：" + heartbeatMsg + "当前心跳间隔为：" + instance.getHeartbeatInterval() + "ms\n");
-                instance.sendMsg(heartbeatMsg);
+                System.out.println("ims连接成功======》发送心跳消息：" + Utils.format(heartbeatMsg) + " 当前心跳间隔为：" + instance.getHeartbeatInterval() + "ms\n");
+                instance.sendMsg(heartbeatMsg, false);
                 // 添加心跳消息管理handler
                 instance.addHeartbeatHandler();
 
@@ -574,6 +575,7 @@ public class NettyTcpClient implements IMSClientInterface {
         }
 
         try {
+            System.out.println("添加心跳消息管理handler");
             // 之前存在的读写超时handler，先移除掉，再重新添加
             if (channel.pipeline().get(IdleStateHandler.class.getSimpleName()) != null) {
                 channel.pipeline().remove(IdleStateHandler.class.getSimpleName());
@@ -620,6 +622,8 @@ public class NettyTcpClient implements IMSClientInterface {
                 System.out.println("关闭channel～～～～～～");
                 channel.close();
                 channel.eventLoop().shutdownGracefully();
+            } else {
+                System.out.println("channel已关闭");
             }
         } catch (Exception e) {
             System.err.println("关闭channel出错，reason:" + e.getMessage());
