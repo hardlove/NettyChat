@@ -26,6 +26,8 @@ public class Head {
     private Long time;
     /*来源, android，ios，windowPc, macPc*/
     private String source;
+    /*消息发送状态标志（客户端自己扩展字段）*/
+    private int status;// 1：正在发送；2：发送成功；3：发送失败
 
 
     public int getType() {
@@ -99,6 +101,13 @@ public class Head {
     public void setSource(String source) {
         this.source = source;
     }
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
     @Override
     public String toString() {
@@ -112,6 +121,7 @@ public class Head {
                 ", messageId='" + messageId + '\'' +
                 ", time=" + time +
                 ", source='" + source + '\'' +
+                ", status=" + status +
                 '}';
     }
 }
