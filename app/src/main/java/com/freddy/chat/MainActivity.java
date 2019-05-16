@@ -1,7 +1,6 @@
 package com.freddy.chat;
 
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -9,16 +8,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.RadioGroup;
-import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,8 +56,8 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
     private static int SEND_MSG_COUNT = 100;//设置消息发送的数量
     boolean loginAuth = false;//是否登录成功
 
-    //    String hosts = "[{\"host\":\"192.168.0.147\", \"port\":54321}]";
-    String hosts = "[{\"host\":\"47.52.255.159\", \"port\":54321}]";
+    String hosts = "[{\"host\":\"192.168.0.147\", \"port\":54321}]";
+//    String hosts = "[{\"host\":\"47.52.255.159\", \"port\":54321}]";
 
     private String[] userIds;
     private String[] tokens;
@@ -238,6 +234,9 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         NettyChatApp.instance.getMsgContainer().clear();
         singleChatReceiveMap.clear();
         groupChatReceiveMap.clear();
+        singleChatSendMap.clear();
+        groupChatSendMap.clear();
+
         clearUI();
 
 
@@ -253,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
             Toast.makeText(this, "请登录！", Toast.LENGTH_SHORT).show();
             return;
         }
-        sendSingleMsg();
+        sendMsg();
         closeInputMethod();
 
 
@@ -293,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (signgleMsgSendCount < SEND_MSG_COUNT) {
-                sendSingleMsg();
+                sendMsg();
                 handler.sendEmptyMessageDelayed(1, 300);
             }
 
@@ -304,16 +303,19 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
     /**
      * 发送单条消息
      */
-    private void sendSingleMsg() {
+    private void sendMsg() {
         StringBuilder sb = new StringBuilder();
         if (type == 1) {
             signgleMsgSendCount++;
             sb.append("单聊【" + mEditContent.getText().toString().trim() + "】" + signgleMsgSendCount);
+            addSingleChatSendCount(toUserId);
         } else if (type == 2) {
             groupMsgSendCount++;
             sb.append("群聊【" + mEditContent.getText().toString().trim() + "】" + groupMsgSendCount);
+            addGroupChatSendCount(toUserId);
         }
         refreshMsgCount();
+
         mTextSendMsg.append(sb.toString() + "\n");
 
         AppMessage appMessage = new AppMessage();
@@ -336,6 +338,59 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         appMessage.setBody(body);
         MessageProcessor.getInstance().sendMsg(appMessage);
 
+    }
+
+    /**
+     * 添加发送群聊消息计数
+     *
+     * @param toUserId
+     */
+
+    private void addGroupChatSendCount(String toUserId) {
+        if (groupChatSendMap.containsKey(toUserId)) {
+            groupChatSendMap.put(toUserId, groupChatSendMap.get(toUserId) + 1);
+        } else {
+            groupChatSendMap.put(toUserId, 1);
+        }
+    }
+
+    /**
+     * 添加发送单聊消息计数
+     *
+     * @param toUserId
+     */
+    private void addSingleChatSendCount(String toUserId) {
+        if (singleChatSendMap.containsKey(toUserId)) {
+            singleChatSendMap.put(toUserId, singleChatSendMap.get(toUserId) + 1);
+        } else {
+            singleChatSendMap.put(toUserId, 1);
+        }
+    }
+
+    /**
+     * 添加收到单聊消息计数
+     *
+     * @param fromUserId
+     */
+    private void addSingleChatReceiveCount(String fromUserId) {
+        if (singleChatReceiveMap.containsKey(fromUserId)) {
+            singleChatReceiveMap.put(fromUserId, singleChatReceiveMap.get(fromUserId) + 1);
+        } else {
+            singleChatReceiveMap.put(fromUserId, 1);
+        }
+    }
+
+    /**
+     * 添加收到群聊消息计数
+     *
+     * @param fromUserId
+     */
+    private void addGroupReceiveCount(String fromUserId) {
+        if (groupChatReceiveMap.containsKey(fromUserId)) {
+            groupChatReceiveMap.put(fromUserId, groupChatReceiveMap.get(fromUserId) + 1);
+        } else {
+            groupChatReceiveMap.put(fromUserId, 1);
+        }
     }
 
     /**
@@ -455,6 +510,8 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         mTvReciveSignleMsgCount.setText("收到单聊消息总数：" + singleMsgReciveCount);
         mTvReciveGroupMsgCount.setText("收到群聊消息总数：" + groupMsgReciveCount);
         mTvReciveAllMsgCount.setText("收到单聊|群聊消息总数：" + (singleMsgReciveCount + groupMsgReciveCount));
+
+
     }
 
 
@@ -473,6 +530,16 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      */
     Map<String, Integer> groupChatReceiveMap = new HashMap<>();
 
+    /**
+     * 记录发送到某个人的单聊消息的数量
+     */
+    Map<String, Integer> singleChatSendMap = new HashMap<>();
+    /**
+     * 记录发送到某个群消息的数量
+     */
+    Map<String, Integer> groupChatSendMap = new HashMap<>();
+
+
     @Override
 
     public void onCEvent(final String topic, final int msgCode, final int resultCode, final Object obj) {
@@ -485,11 +552,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                         final SingleMessage singleMessage = (SingleMessage) obj;
                         mTvReciceMsg.append(singleMessage.getContent());
 
-                        if (singleChatReceiveMap.containsKey(singleMessage.getFromId())) {
-                            singleChatReceiveMap.put(singleMessage.getFromId(), singleChatReceiveMap.get(singleMessage.getFromId()) + 1);
-                        } else {
-                            singleChatReceiveMap.put(singleMessage.getFromId(), 1);
-                        }
+                        addSingleChatReceiveCount(singleMessage.getFromId());
 
 
                         refreshMsgCount();
@@ -502,11 +565,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                         final GroupMessage groupMessage = (GroupMessage) obj;
                         mTvReciceMsg.append(groupMessage.getContent());
 
-                        if (groupChatReceiveMap.containsKey(groupMessage.getFromId())) {
-                            groupChatReceiveMap.put(groupMessage.getFromId(), groupChatReceiveMap.get(groupMessage.getFromId()) + 1);
-                        } else {
-                            groupChatReceiveMap.put(groupMessage.getFromId(), 1);
-                        }
+                        addGroupReceiveCount(groupMessage.getFromId());
 
                         refreshMsgCount();
                         break;
@@ -534,6 +593,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
             }
         });
     }
+
 
     @Override
     public void onConnecting() {
