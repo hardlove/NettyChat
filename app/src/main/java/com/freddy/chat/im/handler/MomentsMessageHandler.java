@@ -13,10 +13,11 @@ public class MomentsMessageHandler extends AbstractMessageHandler {
 
     private static final String TAG = MomentsMessageHandler.class.getSimpleName();
 
+
     @Override
-    protected void action(AppMessage message) {
-        Log.d(TAG, "action: 收到朋友圈消息："+message);
-        int contentType = message.getHead().getContentType();
+    protected void handleNewMessageReceive(AppMessage appMessage) {
+        Log.d(TAG, "action: 收到朋友圈消息："+appMessage);
+        int contentType = appMessage.getHead().getContentType();
         switch (contentType) {
             case 0:
                 Log.d(TAG, "action: 点赞消息");
@@ -26,5 +27,10 @@ public class MomentsMessageHandler extends AbstractMessageHandler {
                 break;
 
         }
+    }
+
+    @Override
+    protected void handleMessageStatusChange(AppMessage appMessage, int status) {
+
     }
 }

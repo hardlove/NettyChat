@@ -5,8 +5,13 @@ import com.freddy.im.interf.IMSClientInterface;
 import com.freddy.im.protobuf.MessageProtobuf;
 import com.freddy.im.protobuf.Utils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Timer;
 import java.util.TimerTask;
+
+import io.netty.channel.ChannelOutboundBuffer;
 
 /**
  * <p>@ProjectName:     NettyChat</p>
@@ -53,29 +58,12 @@ public class MsgTimeoutTimer extends Timer {
             if (currentResendCount > imsClient.getResendCount()) {
                 // 重发次数大于可重发次数，直接标识为发送失败，并通过消息转发器通知应用层
                 try {
-                    MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
-                    MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
-                    headBuilder.setType(imsClient.getServerSentReportMsgType());//消息发送失败
-                    headBuilder.setId(msg.getHead().getId());
-                    headBuilder.setMessageId(msg.getHead().getMessageId());
-                    headBuilder.setToken(msg.getHead().getToken());
-                    headBuilder.setContentType(msg.getHead().getContentType());
-                    headBuilder.setTime(System.currentTimeMillis());
-                    headBuilder.setSource(IMConstant.SOURCE);
-                    builder.setHead(headBuilder.build());
-
-                    MessageProtobuf.Body.Builder bodyBuilder = MessageProtobuf.Body.newBuilder();
-                    bodyBuilder.setData(msg.getBody().getData());
-                    bodyBuilder.setPrk(msg.getBody().getPrk());
-                    builder.setBody(bodyBuilder.build());
-
                     System.err.println("消息发送3次都失败，msg：" + Utils.format(msg));
                     // 通知应用层消息发送失败
-                    imsClient.getMsgDispatcher().receivedMsg(builder.build());
+                    imsClient.getMsgDispatcher().receivedMsg(getClientSendReportMsg(msg));
                 } catch (Error error) {
                     System.err.println("重发消息异常，断开连接。。。。，msg：" + Utils.format(msg) + "   error:" + error.getLocalizedMessage());
                 } finally {
-
                     // 从消息发送超时管理器移除该消息
                     imsClient.getMsgTimeoutTimerManager().remove(msg.getHead().getMessageId());
                     // 执行到这里，认为连接已断开或不稳定，触发重连
@@ -107,5 +95,35 @@ public class MsgTimeoutTimer extends Timer {
         }
 
         super.cancel();
+    }
+
+    /**
+     * 构建消息发送失败的通知消息
+     * @param message 客户端发送的消息
+     * @return
+     */
+    private MessageProtobuf.Msg getClientSendReportMsg(MessageProtobuf.Msg message)  {
+        int type = imsClient.getClientSendReportMsgType();
+        MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
+        MessageProtobuf.Head.Builder headerBuilder = MessageProtobuf.Head.newBuilder();
+        MessageProtobuf.Body.Builder bodyBuilder = MessageProtobuf.Body.newBuilder();
+        headerBuilder.setType(type);
+        builder.setHead(headerBuilder.build());
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put(IMConstant.STATUS, IMConstant.SEND_MSG_SUCCEED);
+            jsonObject.put(IMConstant.TYPE, message.getHead().getType());
+            jsonObject.put(IMConstant.CONTENT_TYPE, message.getHead().getContentType());
+            jsonObject.put(IMConstant.MESSAGE_ID, message.getHead().getMessageId());
+            jsonObject.put(IMConstant.ID, message.getHead().getId());
+            bodyBuilder.setData(jsonObject.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            System.err.println("getClientSendReportMsg（），构建Json消息失败，message:" + Utils.format(message));
+
+        }
+        builder.setBody(bodyBuilder.build());
+        return builder.build();
+
     }
 }

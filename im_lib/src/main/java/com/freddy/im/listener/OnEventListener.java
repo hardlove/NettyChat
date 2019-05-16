@@ -76,7 +76,7 @@ public interface OnEventListener {
      *
      * @return
      */
-    int getServerSentReportMsgType();
+    int getClientSendReportMsgType();
 
     /**
      * 获取应用层消息接收状态报告消息类型

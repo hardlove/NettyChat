@@ -12,8 +12,12 @@ import com.freddy.chat.bean.AppMessage;
 
 public class AddFriendMessageHandler extends AbstractMessageHandler {
     private static final String TAG = AddFriendMessageHandler.class.getSimpleName();
+
     @Override
-    protected void action(AppMessage message) {
-        Log.d(TAG, "action: 收到好友添加通知消息：" + message);
+    protected void handleNewMessageReceive(AppMessage appMessage) {
+        Log.d(TAG, "action: 收到好友添加通知消息：" + appMessage);
+
     }
+
+
 }

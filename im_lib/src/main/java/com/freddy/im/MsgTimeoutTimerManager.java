@@ -86,7 +86,7 @@ public class MsgTimeoutTimerManager {
             timer = null;
         }
 
-        System.out.println("从发送消息管理器移除消息，message=" + msg);
+        System.out.println("从发送消息管理器移除消息，message=" + Utils.format(msg));
     }
 
     /**

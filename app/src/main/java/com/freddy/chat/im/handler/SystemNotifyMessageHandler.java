@@ -22,8 +22,13 @@ public class SystemNotifyMessageHandler extends AbstractMessageHandler {
 
     private static final String TAG = SystemNotifyMessageHandler.class.getSimpleName();
 
-    @Override
-    protected void action(AppMessage message) {
+
+
+    /**
+     * 处理其他系统通知消息
+     * @param message
+     */
+    private void handleSystemNotify(AppMessage message) {
         Log.d(TAG, "action: 收到系统通知消息：" + message);
         int contentType = message.getHead().getContentType();
         if (contentType == 0) {//0:表示消息
@@ -35,11 +40,18 @@ public class SystemNotifyMessageHandler extends AbstractMessageHandler {
         }
     }
 
-    /**
-     * 处理其他系统通知消息
-     * @param message
-     */
-    private void handleSystemNotify(AppMessage message) {
-
+    @Override
+    protected void handleNewMessageReceive(AppMessage appMessage) {
+        Log.d(TAG, "action: 收到系统通知消息：" + appMessage);
+        int contentType = appMessage.getHead().getContentType();
+        if (contentType == 0) {//0:表示消息
+            handleSystemNotify(appMessage);
+        } else if (contentType==1) {//1:表示被踢下线
+            CEventCenter.dispatchEvent(Events.IM_LOGIN, MessageType.LOGIN_AUTH, IMConstant.LOGIN_AUTH_KICK_OUT, null);//3 :被踢下线
+            System.out.println("被踢下线了。。。");
+            IMSClientBootstrap.getInstance().closeImsClient();//关闭ImsClient，否则会进行重连
+        }
     }
+
+
 }

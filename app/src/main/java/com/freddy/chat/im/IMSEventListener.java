@@ -14,8 +14,6 @@ import com.freddy.im.protobuf.MessageProtobuf;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.UUID;
-
 /**
  * <p>@ProjectName:     NettyChat</p>
  * <p>@ClassName:       IMSEventListener.java</p>
@@ -178,8 +176,8 @@ public class IMSEventListener implements OnEventListener {
      * @return
      */
     @Override
-    public int getServerSentReportMsgType() {
-        return 0;
+    public int getClientSendReportMsgType() {
+        return MessageType.MSG_SENT_STATUS_REPORT;
     }
 
     /**

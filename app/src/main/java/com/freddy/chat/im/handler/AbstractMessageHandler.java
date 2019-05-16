@@ -1,6 +1,7 @@
 package com.freddy.chat.im.handler;
 
 import com.freddy.chat.bean.AppMessage;
+import com.freddy.im.constant.IMConstant;
 
 /**
  * <p>@ProjectName:     NettyChat</p>
@@ -16,9 +17,37 @@ import com.freddy.chat.bean.AppMessage;
 public abstract class AbstractMessageHandler implements IMessageHandler {
 
     @Override
-    public void execute(AppMessage message) {
-        action(message);
+    public void execute(AppMessage appMessage) {
+        action(appMessage);
     }
 
-    protected abstract void action(AppMessage message);
+    protected  void action(AppMessage message) {
+        int status = message.getHead().getStatus();
+        switch (status) {
+            case IMConstant.SEND_MSG_PROGRESSING:
+            case IMConstant.SEND_MSG_SUCCEED:
+            case IMConstant.SEND_MSG_FAILED:
+                handleMessageStatusChange(message,status);
+                break;
+
+            default:
+                handleNewMessageReceive(message);
+
+        }
+
+    }
+
+    /***
+     * 处理消息状态变更通知
+     */
+    protected abstract void handleNewMessageReceive(AppMessage appMessage);
+
+    /**
+     * 处理收到新消息的通知
+     *
+     * @param status
+     */
+    protected  void handleMessageStatusChange(AppMessage appMessage, int status){
+
+    };
 }

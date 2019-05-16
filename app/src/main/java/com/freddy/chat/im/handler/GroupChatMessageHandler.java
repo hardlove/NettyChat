@@ -15,10 +15,12 @@ public class GroupChatMessageHandler extends AbstractMessageHandler {
 
     private static final String TAG = GroupChatMessageHandler.class.getSimpleName();
 
+
+
     @Override
-    protected void action(AppMessage message) {
-        Log.d(TAG, "action: 收到群聊消息：" + message);
-        int contentType = message.getHead().getContentType();
+    protected void handleNewMessageReceive(AppMessage appMessage) {
+        Log.d(TAG, "action: 收到群聊消息：" + appMessage);
+        int contentType = appMessage.getHead().getContentType();
         switch (contentType) {
             case 0:
                 Log.d(TAG, "action: 撤销群聊消息");
@@ -33,5 +35,10 @@ public class GroupChatMessageHandler extends AbstractMessageHandler {
                 Log.d(TAG, "action: 视频群聊消息");
                 break;
         }
+    }
+
+    @Override
+    protected void handleMessageStatusChange(AppMessage appMessage, int status) {
+
     }
 }

@@ -100,14 +100,11 @@ public interface MessageType {
 
 
     //=========================消息状态报告======================
+
     /*
-     * 消息发送成功的报告
-     */
-    int MSG_SENT_SUCCEED_REPORT = 1010;
-    /*
-    * 消息发送失败的报告
+    * 消息发送状态的报告 status：true 成功；false 失败
     */
-    int MSG_SENT_FAILED_REPORT = 1011;
+    int MSG_SENT_STATUS_REPORT = 1011;
     /**
      * 登录状态报告（status：0 正在登录，1 登录成功，2 登录失败）
      */
@@ -117,11 +114,14 @@ public interface MessageType {
 
     /**
      * 内容类型
+     * ype为1，2的时候，contentType 0表示撤回，1表示文本，2表示音频，3表示视频
      */
     interface MessageContentType {
+        int REMOVE = 0;
         int TEXT = 1;
         int IMAGE = 2;
         int VOICE = 3;
+        int VIDEO = 4;
 
 
     }

@@ -148,7 +148,7 @@ public interface IMSClientInterface {
      *
      * @return
      */
-    int getServerSentReportMsgType();
+    int getClientSendReportMsgType();
 
     /**
      * 获取应用层消息 接收 状态报告消息类型

@@ -1,10 +1,13 @@
 package com.freddy.chat.im;
 
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 import com.freddy.chat.bean.AppMessage;
 import com.freddy.chat.bean.BaseMessage;
 import com.freddy.chat.bean.ContentMessage;
+import com.freddy.chat.bean.Head;
 import com.freddy.chat.event.CEventCenter;
 import com.freddy.chat.event.Events;
 import com.freddy.chat.im.handler.IMessageHandler;
@@ -12,10 +15,10 @@ import com.freddy.chat.im.handler.MessageHandlerFactory;
 import com.freddy.chat.utils.CThreadPoolExecutor;
 import com.freddy.im.MessageType;
 import com.freddy.im.constant.IMConstant;
-import com.freddy.im.netty.NettyTcpClient;
 import com.freddy.im.protobuf.MessageProtobuf;
-import com.freddy.im.protobuf.Utils;
+import com.googlecode.protobuf.format.JsonFormat;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -47,58 +50,32 @@ public class MessageProcessor implements IMessageProcessor {
 
     /**
      * 接收消息
-     * @param message
+     *
+     * @param appMessage
      */
     @Override
-    public void receiveMsg(final AppMessage message) {
+    public void receiveMsg(final AppMessage appMessage) {
         CThreadPoolExecutor.runInBackground(new Runnable() {
 
             @Override
             public void run() {
                 try {
-                    String messageId = message.getHead().getMessageId();
 
-                    int msgType = message.getHead().getType();
-                    int contentType = message.getHead().getContentType();
-                    switch (msgType) {
-                        //接收到回执（代表客户端发送的消息已经发送成功）
-                        case MessageType.SINGLE_CHAT_RECEIPT://单聊消息回执 5001
-                        case MessageType.GROUP_CHAT_RECEIPT://群聊消息回执  5002
-                        case MessageType.MOMENTS_RECEIPT://朋友圈消息回  5003
-                            Log.e(TAG, "收到服务器消息回执，消息发送成功,message:" + message);
-                            // TODO: 2019/5/13 将数据库中对应的消息状态改为 成功
-                            break;
-
-                        case MessageType.SYSTEM_NOTIFY_RECEIPT://系统通知回执  5004 无需处理
-
-                            break;
+                    int type = appMessage.getHead().getType();
+                    int contentType = -1;
+                    String messageId = null;
+                    IMessageHandler messageHandler = null;
+                    switch (type) {
                         case MessageType.LOGIN_AUTH_STATUS_REPORT://登录状态变更报告 1000
-                            String json = message.getBody().getData();
-                            JSONObject jsonObject = new JSONObject(json);
-                            //登录状态报告（status：0 正在登录，1 登录成功，2 登录失败）
-                            int status = jsonObject.getInt(IMConstant.STATUS);
-                            CEventCenter.dispatchEvent(Events.IM_LOGIN, MessageType.LOGIN_AUTH, status, null);//0 :登录失败
+                            handleLoginStatusChange(appMessage);
                             break;
-                        case MessageType.ADD_FRIEND_RECEIPT://好友添加回执  5008
-                        case MessageType.GROUP_INVITE_RECEIPT://群邀请回执  5009
+                        //消息发送状态报告（单聊、群聊、朋友圈）
+                        case MessageType.MSG_SENT_STATUS_REPORT:
+                            handleMessageRecipt(type, contentType, messageId, appMessage);
                             break;
-                        case MessageType.PC_LOGIN_RECEIPT://pc登陆回执  5010
-                        case MessageType.PC_KICK_OUT_RECEIPT://pc强退回执  5011
-                            break;
-
-                        case MessageType.MSG_SENT_FAILED_REPORT://消息发送失败
-                            Log.e(TAG, "消息发送失败,message:" + message);
-                            // TODO: 2019/5/13 将数据库中对应的消息状态改为 失败
-                            break;
-
-                        // 接收到消息
+                        // 接收到新消息
                         default:
-                            IMessageHandler messageHandler = MessageHandlerFactory.getHandlerByMsgType(message.getHead().getType());
-                            if (messageHandler != null) {
-                                messageHandler.execute(message);
-                            } else {
-                                Log.e(TAG, "未找到消息处理handler，msgType=" + message.getHead().getType());
-                            }
+                            handleNewMessageReceive(appMessage);
                     }
 
                 } catch (Exception e) {
@@ -106,6 +83,87 @@ public class MessageProcessor implements IMessageProcessor {
                 }
             }
         });
+    }
+
+    /**
+     *处理收到的新消息（（单聊、群聊、朋友圈等）
+     * @param appMessage
+     */
+    private void handleNewMessageReceive(AppMessage appMessage) {
+        IMessageHandler messageHandler;
+        messageHandler = MessageHandlerFactory.getHandlerByMsgType(appMessage.getHead().getType());
+        if (messageHandler != null) {
+            messageHandler.execute(appMessage);
+        } else {
+            Log.e(TAG, "未找到消息处理handler，msgType=" + appMessage.getHead().getType());
+        }
+    }
+
+    /**
+     * 处理消息回执
+     * @param type
+     * @param contentType
+     * @param messageId
+     * @param appMessage
+     * @throws JSONException
+     */
+    private void handleMessageRecipt(int type, int contentType, String messageId, AppMessage appMessage) throws JSONException {
+        IMessageHandler messageHandler;
+        String json = appMessage.getBody().getData();
+        JSONObject reportObj = new JSONObject(json);
+
+        int status = -1;
+        String id = null;
+        if (reportObj.has(IMConstant.STATUS))
+            status = reportObj.getInt(IMConstant.STATUS);
+        if (reportObj.has(IMConstant.TYPE))
+            type = reportObj.getInt(IMConstant.TYPE);//更换type
+        if (reportObj.has(IMConstant.CONTENT_TYPE))
+            contentType = reportObj.getInt(IMConstant.CONTENT_TYPE);
+        if (reportObj.has(IMConstant.MESSAGE_ID))
+            messageId = reportObj.getString(IMConstant.MESSAGE_ID);
+        if (reportObj.has(IMConstant.ID))
+            id = reportObj.getString(IMConstant.ID);
+
+        String statusTip = "【Unknown】";
+        if (status == IMConstant.SEND_MSG_SUCCEED) {
+            statusTip = "【发送成功】";
+        } else if (status == IMConstant.SEND_MSG_FAILED) {
+            statusTip = "【发送失败】";
+        } else if (status == IMConstant.SEND_MSG_PROGRESSING) {
+            statusTip = "【正在发送】";
+        }
+        Log.d(TAG, String.format("接收都消息发送状态报告" + statusTip + "【type:%s  contentType:%s  messageId:%s】", type, contentType, messageId));
+        // TODO: 2019/5/13 更新数据库中对应的消息状态改为
+        Log.d(TAG, "更新数据库中对应的消息状态 ");
+
+        AppMessage newAppMessage = new AppMessage();
+        Head head = new Head();
+        head.setStatus(status);////添加消息发送状态标示
+        head.setType(type);
+        head.setContentType(contentType);
+        head.setMessageId(messageId);
+        head.setId(id);
+        newAppMessage.setHead(head);
+
+        messageHandler = MessageHandlerFactory.getHandlerByMsgType(type);
+        if (messageHandler != null) {//更新消息状态
+            messageHandler.execute(newAppMessage);
+        } else {
+            Log.e(TAG, "未找到消息处理handler，msgType=" + newAppMessage.getHead().getType());
+        }
+    }
+
+    /**
+     * 处理登录状态变更
+     * @param appMessage
+     * @throws JSONException
+     */
+    private void handleLoginStatusChange(AppMessage appMessage) throws JSONException {
+        JSONObject loginObj = new JSONObject(appMessage.getBody().getData());
+        //登录状态报告（status：0 正在登录，1 登录成功，2 登录失败）
+        int loginStatus = loginObj.getInt(IMConstant.STATUS);
+        CEventCenter.dispatchEvent(Events.IM_LOGIN, MessageType.LOGIN_AUTH, loginStatus, null);//0 :登录失败
     }
 
     /**
