@@ -538,10 +538,10 @@ public class NettyTcpClient implements IMSClientInterface {
                 if (heartbeatMsg == null) {
                     return;
                 }
-                System.out.println("ims连接成功======》发送心跳消息：" + Utils.format(heartbeatMsg) + " 当前心跳间隔为：" + instance.getHeartbeatInterval() + "ms\n");
-                instance.sendMsg(heartbeatMsg, false);
+                System.out.println("ims连接成功======》发送心跳消息：" + Utils.format(heartbeatMsg) + " 当前心跳间隔为：" + getHeartbeatInterval() + "ms\n");
+                sendMsg(heartbeatMsg, false);
                 // 添加心跳消息管理handler
-                instance.addHeartbeatHandler();
+                addHeartbeatHandler();
 
                 // 连接成功，发送登录认证消息
                 MessageProtobuf.Msg loginAuthMsg = getLoginAuthMsg();
