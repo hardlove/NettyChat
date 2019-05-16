@@ -65,7 +65,7 @@ public class GroupChatMessageHandler extends AbstractMessageHandler {
         msg.setContent(appMessage.getBody().toString());
 
 
-        CEventCenter.dispatchEvent(Events.CHAT_SINGLE_MESSAGE, 0, 0, msg);
+        CEventCenter.dispatchEvent(Events.CHAT_GROUP_MESSAGE, 0, 0, msg);
     }
 
     @Override

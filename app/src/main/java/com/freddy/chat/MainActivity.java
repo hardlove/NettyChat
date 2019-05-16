@@ -257,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         String[] address = vector.get(0).split(" ");
         mEdtIp.setText(address[0]);
         mEdtPort.setText(address[1]);
+        logout();
     }
 
     /**
@@ -311,11 +312,15 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void btnlogOut(View view) {
+        logout();
+
+    }
+
+    private void logout() {
         mtvLoginStatusText.setText("已退出登录");
         if (IMSClientBootstrap.getInstance().isActive()) {
             IMSClientBootstrap.getInstance().closeImsClient();
         }
-
     }
 
     /**
