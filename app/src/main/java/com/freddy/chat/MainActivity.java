@@ -44,8 +44,8 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
     private String toUserId;
     private static int SEND_MSG_COUNT = 100;//设置消息发送的数量
 
-    //        String hosts = "[{\"host\":\"192.168.0.145\", \"port\":54321}]";
-    String hosts = "[{\"host\":\"47.52.255.159\", \"port\":54321}]";//10001    1475ae4964f9497c85f63f22c5a255ee
+            String hosts = "[{\"host\":\"192.168.0.147\", \"port\":54321}]";
+//    String hosts = "[{\"host\":\"47.52.255.159\", \"port\":54321}]";//10001
 
     private String[] userIds;
     private String[] tokens;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
     };
     private EditText mEditToUser;
     private TextView mtvLoginStatusText;
-    private EditText mEdtSendMsgCount;
+    private EditText mEdtSendMutilMsgCount;
     private TextView mTextSendMsg;
     private TextView mTvSendMsgCount;
 
@@ -72,9 +72,10 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         mBtnLogin = findViewById(R.id.btnLogin);
         mTvReciveMsgCount = findViewById(R.id.tvSingleMsgCount);
         mtvLoginStatusText = findViewById(R.id.tvLoginStatus);
-        mEdtSendMsgCount = findViewById(R.id.edtSendMsgCount);
+        mEdtSendMutilMsgCount = findViewById(R.id.edtSendMsgCount);
         mTextSendMsg = findViewById(R.id.tv_sendMsg);
-        mEdtSendMsgCount.setText("100");
+        mTvSendMsgCount = findViewById(R.id.tvSingleMsgSendCount);
+        mEdtSendMutilMsgCount.setText("100");//设置默认批量发送的消息数量
 
         Spinner loginUser = findViewById(R.id.spinner_login_user);
         Spinner toUser = findViewById(R.id.spinner_to_user);
@@ -161,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
 
     public void sendMultiMsg(View view) {
-        String count = mEdtSendMsgCount.getText().toString().replace(" ", "");
+        String count = mEdtSendMutilMsgCount.getText().toString().replace(" ", "");
 
         try {
             SEND_MSG_COUNT = Integer.valueOf(count);
@@ -215,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         MessageProcessor.getInstance().sendMsg(appMessage);
 
 
-        mTvSendMsgCount = findViewById(R.id.tvSingleMsgSendCount);
+
         mTvSendMsgCount.setText("已发单聊消息总数：" + signMsgSendCount);
         mTextSendMsg.append(sendContent + "\n");
 
