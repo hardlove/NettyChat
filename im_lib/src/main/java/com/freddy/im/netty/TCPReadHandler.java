@@ -100,30 +100,22 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        System.out.println("====================================");
-        System.out.println("[收到消息：" + message + "]");
-        System.out.println("====================================");
         int msgType = message.getHead().getType();
-        int newType = -1;
+        System.out.println("====================================");
+        System.out.println(String.format("[收到 %s 消息  " + Utils.format(message) + "]", Utils.getMessageTypeName(msgType)));
+        System.out.println("====================================");
+
         switch (msgType) {
             //接收到回执（代表客户端发送的消息已经发送成功）
             case MessageType.SINGLE_CHAT_RECEIPT://单聊消息回执 5001
-                newType = MessageType.SINGLE_CHAT;
             case MessageType.GROUP_CHAT_RECEIPT://群聊消息回执  5002
-                newType = MessageType.GROUP_CHAT;
             case MessageType.MOMENTS_RECEIPT://朋友圈消息回  5003
-                newType = MessageType.MOMENTS;
             case MessageType.SYSTEM_NOTIFY_RECEIPT://系统通知回执  5004:
-                newType = MessageType.SYSTEM_NOTIFY;
             case MessageType.ADD_FRIEND_RECEIPT://好友添加回执  5008
-                newType = MessageType.ADD_FRIEND;
             case MessageType.GROUP_INVITE_RECEIPT://群邀请回执  5009
-                newType = MessageType.GROUP_INVITE;
             case MessageType.PC_LOGIN_RECEIPT://pc登陆回执  5010
-                newType = MessageType.PC_LOGIN;
             case MessageType.PC_KICK_OUT_RECEIPT://pc强退回执  5011
-                newType = MessageType.PC_KICK_OUT;
-                System.out.println("收到服务器消息回执，消息已发送成功。type:" + msgType + "  ，message=" + Utils.format(message) + "，从超时管理器移除");
+                System.out.println("收到消息回执，消息已发送成功。type:" + msgType + "  ，" + "从超时管理器移除:" + message.getHead().getMessageId());
                 imsClient.getMsgTimeoutTimerManager().remove(message.getHead().getMessageId());
                 // 接收消息，由消息转发器转发到应用层
                 MessageProtobuf.Msg reportMsg = getClientSendReportMsg(message);

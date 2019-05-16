@@ -64,7 +64,7 @@ public class MsgTimeoutTimerManager {
             mMsgTimeoutMap.put(msgId, timer);
         }
         System.out.println("=============================");
-        System.out.println("添加消息到发送超时管理器，message=" + Utils.format(msg) + "\t当前管理器消息数：" + mMsgTimeoutMap.size());
+        System.out.println("添加消息到发送超时管理器，messageId=" + msgId + "\t当前管理器消息数：" + mMsgTimeoutMap.size());
         System.out.println("=============================");
     }
 
@@ -84,16 +84,17 @@ public class MsgTimeoutTimerManager {
             msg = timer.getMsg();
             timer.cancel();
             timer = null;
+            System.out.println("从发送消息管理器移除消息，messageId=" + msgId);
         }
 
-        System.out.println("从发送消息管理器移除消息，message=" + Utils.format(msg));
+
     }
 
     /**
      * 重连成功回调，重连并登录认证成功时，重发消息发送超时管理器中所有的消息
      */
     public synchronized void onResetConnected() {
-        for(Iterator<Map.Entry<String, MsgTimeoutTimer>> it = mMsgTimeoutMap.entrySet().iterator(); it.hasNext();) {
+        for (Iterator<Map.Entry<String, MsgTimeoutTimer>> it = mMsgTimeoutMap.entrySet().iterator(); it.hasNext(); ) {
             it.next().getValue().sendMsg();
         }
     }

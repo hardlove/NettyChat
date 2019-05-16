@@ -42,7 +42,6 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 
                 case WRITER_IDLE: {//写超时. 即当在指定的事件间隔内没有数据写入到 Channel 时, 会触发一个 WRITER_IDLE 的 IdleStateEvent 事件.
                     // 规定时间内没向服务端发送心跳包，即发送一个心跳包
-                    System.out.println("规定时间内没向服务端发送心跳包，即将发送一个心跳包");
                     if (heartbeatTask == null) {
                         heartbeatTask = new HeartbeatTask(ctx);
                     }
@@ -74,7 +73,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
                 if (heartbeatMsg == null) {
                     return;
                 }
-                System.out.println("发送心跳消息，message=" + Utils.format(heartbeatMsg) + "当前心跳间隔为：" + imsClient.getHeartbeatInterval() + "ms\n");
+
                 imsClient.sendMsg(heartbeatMsg,false);
 
             }

@@ -1,6 +1,8 @@
 package com.freddy.im.netty;
 
 
+import android.text.TextUtils;
+
 import com.freddy.im.ExecutorServiceFactory;
 import com.freddy.im.HeartbeatHandler;
 import com.freddy.im.IMSConfig;
@@ -82,7 +84,6 @@ public class NettyTcpClient implements IMSClientInterface {
     public void setAutoReconnect(boolean autoReconnect) {
         isAutoReconnect = autoReconnect;
     }
-
 
 
     private NettyTcpClient() {
@@ -217,6 +218,7 @@ public class NettyTcpClient implements IMSClientInterface {
             bootstrap = null;
         }
     }
+
     /**
      * 关闭连接，同时释放资源
      */
@@ -237,7 +239,8 @@ public class NettyTcpClient implements IMSClientInterface {
 
     /**
      * 发送消息
-     *默认加入发送超时管理器
+     * 默认加入发送超时管理器
+     *
      * @param msg
      */
     @Override
@@ -259,8 +262,8 @@ public class NettyTcpClient implements IMSClientInterface {
             return;
         }
 
-        if(!StringUtil.isNullOrEmpty(msg.getHead().getMessageId())) {
-            if(isJoinTimeoutManager) {
+        if (!StringUtil.isNullOrEmpty(msg.getHead().getMessageId())) {
+            if (isJoinTimeoutManager) {
                 msgTimeoutTimerManager.add(msg);
             }
         }
@@ -270,8 +273,16 @@ public class NettyTcpClient implements IMSClientInterface {
         }
 
         try {
+            int type = msg.getHead().getType();
+            String messageId = msg.getHead().getMessageId();
+            String typeName = Utils.getMessageTypeName(type);
             System.out.println("===========================");
-            System.out.println("[发送消息：" + Utils.format(msg) + "]");
+            if (TextUtils.isEmpty(messageId)) {
+                System.out.println(String.format("[发送 %s 消息]", typeName));
+            } else {
+                System.out.println(String.format("[发送 %s 消息 messageId:%s][%s]", typeName, messageId, Utils.format(msg)));
+
+            }
             System.out.println("===========================");
             channel.writeAndFlush(msg);
         } catch (Exception ex) {
@@ -368,6 +379,7 @@ public class NettyTcpClient implements IMSClientInterface {
 
     /**
      * 获取登录状态报告的消息
+     *
      * @param status 0:正在登录；1：登录成功；2：登录失败
      * @return
      */
@@ -690,7 +702,7 @@ public class NettyTcpClient implements IMSClientInterface {
                 loopGroup.destroyWorkLoopGroup();
 
                 while (!isClosed) {
-                    if(!isNetworkAvailable()) {//检查网络，如果网络不可用，一直等待，直到网络可用时才执行后面的代码
+                    if (!isNetworkAvailable()) {//检查网络，如果网络不可用，一直等待，直到网络可用时才执行后面的代码
                         try {
                             Thread.sleep(2000);
                         } catch (InterruptedException e) {
@@ -706,7 +718,7 @@ public class NettyTcpClient implements IMSClientInterface {
                         // 连接成功，跳出循环
                         break;
                     }
-                    System.out.println("ims连接。。。status："+status);
+                    System.out.println("ims连接。。。status：" + status);
                     if (status == IMSConfig.CONNECT_STATE_FAILURE) {
                         onConnectStatusCallback(status);
                         try {
