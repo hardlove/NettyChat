@@ -109,13 +109,19 @@
             android:onClick="sendMultiMsg"
             android:text="批发" />
 
+        <Button
+            android:onClick="onStatistics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="统计" />
+
     </LinearLayout>
 
     <EditText
         android:id="@+id/et_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:hint="请输入发送的消息内容" />
 
     <LinearLayout
@@ -135,6 +141,7 @@
 
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -147,8 +154,7 @@
         <TextView
             android:id="@+id/tvSendGroupId"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content" />
 
 
     </LinearLayout>
@@ -202,17 +208,17 @@
 
             <TextView
                 android:id="@+id/tvReceiveAllCount"
-                android:text="收到单聊|群聊消息总数："
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="收到单聊|群聊消息总数：" />
 
             <TextView
                 android:id="@+id/tvSendAllCount"
-                android:text="已发单聊|群聊消息总数："
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="已发单聊|群聊消息总数：" />
         </LinearLayout>
     </LinearLayout>
 

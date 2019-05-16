@@ -10,6 +10,16 @@ import com.freddy.chat.utils.StringUtil;
 
 public class GroupMessage extends ContentMessage implements Cloneable {
 
+    /*表示该条群消息是谁发送的*/
+    private String sendUserId;
+
+    public String getSendUserId() {
+        return sendUserId;
+    }
+
+    public void setSendUserId(String sendUserId) {
+        this.sendUserId = sendUserId;
+    }
 
     @Override
     public boolean equals(Object obj) {

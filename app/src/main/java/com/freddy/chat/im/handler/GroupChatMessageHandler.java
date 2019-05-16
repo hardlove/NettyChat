@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.freddy.chat.NettyChatApp;
 import com.freddy.chat.bean.AppMessage;
+import com.freddy.chat.bean.GroupMessage;
 import com.freddy.chat.bean.SingleMessage;
 import com.freddy.chat.event.CEventCenter;
 import com.freddy.chat.event.Events;
@@ -52,12 +53,14 @@ public class GroupChatMessageHandler extends AbstractMessageHandler {
         Log.e(TAG, "添加群聊消息到msgContainer,messageId:" + appMessage.getHead().getMessageId() + " 消息总数：" + msgContainer.size());
 
 
-        SingleMessage msg = new SingleMessage();
+        GroupMessage msg = new GroupMessage();
         msg.setMsgId(appMessage.getHead().getMessageId());
         msg.setMsgType(appMessage.getHead().getType());
         msg.setMsgContentType(appMessage.getHead().getContentType());
-        msg.setFromId(appMessage.getHead().getSendUserId());
-        msg.setToId(appMessage.getHead().getId());
+
+        msg.setFromId(appMessage.getHead().getId());//获取该消息是重哪个群发过来的
+        msg.setSendUserId(appMessage.getHead().getSendUserId());//获取该条消息是群中哪个成员发送的
+        msg.setToId(appMessage.getHead().getToken());//token:接收消息时表示接收者
         msg.setTimestamp(appMessage.getHead().getTime());
         msg.setContent(appMessage.getBody().toString());
 

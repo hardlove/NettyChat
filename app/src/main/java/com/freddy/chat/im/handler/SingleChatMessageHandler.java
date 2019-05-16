@@ -53,8 +53,8 @@ public class SingleChatMessageHandler extends AbstractMessageHandler {
         msg.setMsgId(appMessage.getHead().getMessageId());
         msg.setMsgType(appMessage.getHead().getType());
         msg.setMsgContentType(appMessage.getHead().getContentType());
-        msg.setFromId(appMessage.getHead().getSendUserId());
-        msg.setToId(appMessage.getHead().getId());
+        msg.setFromId(appMessage.getHead().getId());//id:接收消息时，表示发送者id
+        msg.setToId(appMessage.getHead().getToken());//token:接收消息时表示接收者
         msg.setTimestamp(appMessage.getHead().getTime());
         msg.setContent(appMessage.getBody().toString());
 

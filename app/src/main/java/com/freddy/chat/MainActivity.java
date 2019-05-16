@@ -1,16 +1,24 @@
 package com.freddy.chat;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.RadioGroup;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +38,10 @@ import com.freddy.im.IMSConfig;
 import com.freddy.im.constant.IMConstant;
 import com.freddy.im.listener.IMSConnectStatusCallback;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements I_CEventListener, IMSConnectStatusCallback {
@@ -79,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
     private TextView mTvReciveAllMsgCount;//显示已收到的单聊|群聊消息数量
 
     private TextView mTvSendGroupId;//显示发送给的群
+    private ArrayList<Item> datas;
 
 
     @Override
@@ -223,6 +236,8 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         groupMsgReciveCount = 0;
         groupMsgSendCount = 0;
         NettyChatApp.instance.getMsgContainer().clear();
+        singleChatReceiveMap.clear();
+        groupChatReceiveMap.clear();
         clearUI();
 
 
@@ -324,6 +339,111 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
     }
 
     /**
+     * 统计
+     *
+     * @param view
+     */
+    public void onStatistics(View view) {
+        CThreadPoolExecutor.runInBackground(new Runnable() {
+            @Override
+            public void run() {
+                datas = getDatas();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(MainActivity.this).setTitle("统计结果")
+                                .setCancelable(false)
+                                .setAdapter(getAdapter(), null)
+                                .setPositiveButton("确定", null)
+                                .create().show();
+
+                    }
+                });
+            }
+        });
+
+    }
+
+    public static class Item {
+        public String fromUserId;
+        public int msgCount;
+        public boolean isTitle;
+
+        public Item(String fromUserId, int msgCount) {
+            this.fromUserId = fromUserId;
+            this.msgCount = msgCount;
+        }
+
+        @Override
+        public String toString() {
+            if (isTitle) {
+                return fromUserId + "   总数：" + msgCount;
+            } else {
+                return "fromUserId='" + fromUserId + '\'' + ", msgCount=" + msgCount;
+
+            }
+        }
+
+        public String getFromUserId() {
+            return fromUserId;
+        }
+
+        public void setFromUserId(String fromUserId) {
+            this.fromUserId = fromUserId;
+        }
+
+        public int getMsgCount() {
+            return msgCount;
+        }
+
+        public void setMsgCount(int msgCount) {
+            this.msgCount = msgCount;
+        }
+
+        public boolean isTitle() {
+            return isTitle;
+        }
+
+        public void setTitle(boolean title) {
+            isTitle = title;
+        }
+    }
+
+    public ArrayList<Item> getDatas() {
+        ArrayList<Item> datas = new ArrayList<>();
+
+
+        int singleCount = 0;
+        int groupCount = 0;
+
+        Set<Map.Entry<String, Integer>> entries = singleChatReceiveMap.entrySet();
+        Set<Map.Entry<String, Integer>> groupEntries = groupChatReceiveMap.entrySet();
+        for (Map.Entry<String, Integer> entry : entries) {
+            datas.add(new Item(entry.getKey(), entry.getValue()));
+            singleCount += entry.getValue();
+        }
+        Item singleCountItem = new Item("单聊统计", singleCount);
+        singleCountItem.setTitle(true);
+
+        datas.add(0, singleCountItem);
+
+        int index = datas.size();
+        for (Map.Entry<String, Integer> entry : groupEntries) {
+            datas.add(new Item(entry.getKey(), entry.getValue()));
+            groupCount += entry.getValue();
+        }
+        Item groupCountItem = new Item("群聊统计", groupCount);
+        groupCountItem.setTitle(true);
+        datas.add(index, groupCountItem);
+        return datas;
+    }
+
+    @NonNull
+    private ListAdapter getAdapter() {
+        return new ArrayAdapter(this, android.R.layout.simple_list_item_1, datas);
+    }
+
+    /**
      * 刷新消息数量
      */
     private void refreshMsgCount() {
@@ -344,7 +464,17 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         CEventCenter.unregisterEventListener(this, EVENTS);
     }
 
+    /**
+     * 记录收到某个人发来的单聊消息的数量
+     */
+    Map<String, Integer> singleChatReceiveMap = new HashMap<>();
+    /**
+     * 记录收到某个群发来的群聊聊消息的数量
+     */
+    Map<String, Integer> groupChatReceiveMap = new HashMap<>();
+
     @Override
+
     public void onCEvent(final String topic, final int msgCode, final int resultCode, final Object obj) {
         CThreadPoolExecutor.runOnMainThread(new Runnable() {
             @Override
@@ -355,6 +485,13 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                         final SingleMessage singleMessage = (SingleMessage) obj;
                         mTvReciceMsg.append(singleMessage.getContent());
 
+                        if (singleChatReceiveMap.containsKey(singleMessage.getFromId())) {
+                            singleChatReceiveMap.put(singleMessage.getFromId(), singleChatReceiveMap.get(singleMessage.getFromId()) + 1);
+                        } else {
+                            singleChatReceiveMap.put(singleMessage.getFromId(), 1);
+                        }
+
+
                         refreshMsgCount();
 
                         break;
@@ -364,6 +501,12 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                         groupMsgReciveCount++;
                         final GroupMessage groupMessage = (GroupMessage) obj;
                         mTvReciceMsg.append(groupMessage.getContent());
+
+                        if (groupChatReceiveMap.containsKey(groupMessage.getFromId())) {
+                            groupChatReceiveMap.put(groupMessage.getFromId(), groupChatReceiveMap.get(groupMessage.getFromId()) + 1);
+                        } else {
+                            groupChatReceiveMap.put(groupMessage.getFromId(), 1);
+                        }
 
                         refreshMsgCount();
                         break;

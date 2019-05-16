@@ -101,7 +101,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         }
 
         System.out.println("====================================");
-        System.out.println("收到服务端发送过来的消息：" + message);
+        System.out.println("[收到消息：" + message + "]");
         System.out.println("====================================");
         int msgType = message.getHead().getType();
         int newType = -1;
