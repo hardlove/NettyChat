@@ -2,7 +2,13 @@ package com.freddy.chat.im.handler;
 
 import android.util.Log;
 
+import com.freddy.chat.NettyChatApp;
 import com.freddy.chat.bean.AppMessage;
+import com.freddy.chat.bean.SingleMessage;
+import com.freddy.chat.event.CEventCenter;
+import com.freddy.chat.event.Events;
+
+import java.util.Map;
 
 /**
  * /**
@@ -35,6 +41,28 @@ public class GroupChatMessageHandler extends AbstractMessageHandler {
                 Log.d(TAG, "action: 视频群聊消息");
                 break;
         }
+
+        //需要去重
+        Map<String, AppMessage> msgContainer = NettyChatApp.instance.getMsgContainer();
+        if (msgContainer.containsKey(appMessage.getHead().getMessageId())) {
+            Log.e(TAG, "收到重复群聊消息，messageId：" + appMessage.getHead().getMessageId());
+            return;
+        }
+        msgContainer.put(appMessage.getHead().getMessageId(), appMessage);
+        Log.e(TAG, "添加群聊消息到msgContainer,messageId:" + appMessage.getHead().getMessageId() + " 消息总数：" + msgContainer.size());
+
+
+        SingleMessage msg = new SingleMessage();
+        msg.setMsgId(appMessage.getHead().getMessageId());
+        msg.setMsgType(appMessage.getHead().getType());
+        msg.setMsgContentType(appMessage.getHead().getContentType());
+        msg.setFromId(appMessage.getHead().getSendUserId());
+        msg.setToId(appMessage.getHead().getId());
+        msg.setTimestamp(appMessage.getHead().getTime());
+        msg.setContent(appMessage.getBody().toString());
+
+
+        CEventCenter.dispatchEvent(Events.CHAT_SINGLE_MESSAGE, 0, 0, msg);
     }
 
     @Override

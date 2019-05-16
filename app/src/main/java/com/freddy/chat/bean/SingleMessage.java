@@ -16,17 +16,6 @@ import com.freddy.chat.utils.StringUtil;
 public class SingleMessage extends ContentMessage implements Cloneable {
 
     @Override
-    public int hashCode() {
-        try {
-            return this.msgId.hashCode();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return 1;
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;

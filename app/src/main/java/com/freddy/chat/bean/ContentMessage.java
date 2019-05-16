@@ -72,8 +72,8 @@ public class ContentMessage extends BaseMessage {
     public int hashCode() {
         try {
             return this.msgId.hashCode();
-        }catch (NullPointerException e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
         return 1;

@@ -45,6 +45,27 @@
         android:layout_height="wrap_content"
         android:hint="Token" />
 
+    <!--选择单聊|群聊-->
+    <RadioGroup
+        android:id="@+id/radioGroup_ChatType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/btnSingleChat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="单聊" />
+
+        <RadioButton
+            android:id="@+id/btnGroupChat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="群聊" />
+    </RadioGroup>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -114,23 +135,85 @@
 
 
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="发送给群：" />
+
+        <TextView
+            android:id="@+id/tvSendGroupId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvSingleMsgCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="收到单聊消息总数：" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tvSingleMsgSendCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="已发单聊消息总数：" />
+            <TextView
+                android:id="@+id/tvSingleMsgReceiveCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="收到单聊消息总数：" />
+
+            <TextView
+                android:id="@+id/tvSingleMsgSendCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="已发单聊消息总数：" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvGroupMsgReceiveCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="收到群聊消息总数：" />
+
+            <TextView
+                android:id="@+id/tvGroupMsgSendCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="已发群聊消息总数：" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvReceiveAllCount"
+                android:text="收到单聊|群聊消息总数："
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/tvSendAllCount"
+                android:text="已发单聊|群聊消息总数："
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+        </LinearLayout>
     </LinearLayout>
 
     <ScrollView
