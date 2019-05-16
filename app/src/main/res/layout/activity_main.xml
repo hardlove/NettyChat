@@ -8,6 +8,52 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edt_Ip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="请输入IP" />
+
+        <EditText
+            android:id="@+id/edt_port"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="请输入端口" />
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:onClick="onTestSetting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试" />
+        <Button
+            android:onClick="onLocalSetting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="本地" />
+        <Button
+            android:onClick="onChangeSetting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="修改" />
+
+        <Button
+            android:onClick="onConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="确定" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <Spinner
@@ -110,10 +156,10 @@
             android:text="批发" />
 
         <Button
-            android:onClick="onStatistics"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="onStatistics"
             android:text="统计" />
 
     </LinearLayout>

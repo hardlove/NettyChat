@@ -19,6 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
 import com.freddy.chat.bean.AppMessage;
 import com.freddy.chat.bean.Body;
 import com.freddy.chat.bean.GroupMessage;
@@ -34,11 +35,15 @@ import com.freddy.im.IMSConfig;
 import com.freddy.im.constant.IMConstant;
 import com.freddy.im.listener.IMSConnectStatusCallback;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity implements I_CEventListener, IMSConnectStatusCallback {
 
@@ -88,12 +93,17 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
     private TextView mTvSendGroupId;//显示发送给的群
     private ArrayList<Item> datas;
+    private EditText mEdtIp;//输入IP
+    private EditText mEdtPort;//输入端口
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mEdtIp = findViewById(R.id.edt_Ip);
+        mEdtPort = findViewById(R.id.edt_port);
 
         mEditContent = findViewById(R.id.et_content);
         mEditToken = findViewById(R.id.edtToken);
@@ -176,8 +186,91 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
             }
         });
 
+        refreshHost();
+
 
     }
+
+    private Vector<String> convertHosts(String hosts) {
+        if (hosts != null && hosts.length() > 0) {
+            com.alibaba.fastjson.JSONArray hostArray = com.alibaba.fastjson.JSONArray.parseArray(hosts);
+            if (null != hostArray && hostArray.size() > 0) {
+                Vector<String> serverUrlList = new Vector<String>();
+                com.alibaba.fastjson.JSONObject host;
+                for (int i = 0; i < hostArray.size(); i++) {
+                    host = JSON.parseObject(hostArray.get(i).toString());
+                    serverUrlList.add(host.getString("host") + " "
+                            + host.getInteger("port"));
+                }
+                return serverUrlList;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 修改服务器配置
+     *
+     * @param view
+     */
+    public void onChangeSetting(View view) {
+        mEdtIp.setEnabled(true);
+        mEdtPort.setEnabled(true);
+    }
+
+    /**
+     * 确认修改服务器配置
+     *
+     * @param view
+     */
+    public void onConfirm(View view) {
+        mEdtIp.setEnabled(false);
+        mEdtPort.setEnabled(false);
+        String ip = mEdtIp.getText().toString().trim();
+
+        String port = mEdtPort.getText().toString().trim();
+
+        hosts = "[{\"host\":\"" + ip + "\", \"port\":" + port + "}]";
+        System.out.println("配置：" + hosts);
+
+    }
+
+    /**
+     * 修改为测试服务器地址
+     *
+     * @param view
+     */
+    public void onTestSetting(View view) {
+        hosts = "[{\"host\":\"47.52.255.159\", \"port\":54321}]";
+
+        refreshHost();
+    }
+
+    /**
+     * 刷新Host
+     */
+    private void refreshHost() {
+        mEdtIp.setEnabled(false);
+        mEdtPort.setEnabled(false);
+
+        Vector<String> vector = convertHosts(hosts);
+        String[] address = vector.get(0).split(" ");
+        mEdtIp.setText(address[0]);
+        mEdtPort.setText(address[1]);
+    }
+
+    /**
+     * 修改为本地服务器地址
+     *
+     * @param view
+     */
+    public void onLocalSetting(View view) {
+        hosts = "[{\"host\":\"192.168.0.147\", \"port\":54321}]";
+
+        refreshHost();
+
+    }
+
 
     /**
      * 重置UI
@@ -198,6 +291,10 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void loginIm(View view) {
+        if (mEdtIp.isEnabled() || mEdtPort.isEnabled()) {
+            Toast.makeText(this, "请确认当前环境配置！", Toast.LENGTH_SHORT).show();
+            return;
+        }
         mtvLoginStatusText.setText("正在登录");
 
         if (IMSClientBootstrap.getInstance().isActive()) {
