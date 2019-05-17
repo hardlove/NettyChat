@@ -1,6 +1,7 @@
 package com.freddy.im.netty;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.freddy.im.MessageType;
 import com.freddy.im.constant.IMConstant;
@@ -74,6 +75,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         super.handlerRemoved(ctx);
+        System.out.println("handlerRemoved: ctx:" + ctx);
 
     }
 
@@ -104,6 +106,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         System.out.println("====================================");
         System.out.println(String.format("[收到 %s 消息  " + Utils.format(message) + "]", Utils.getMessageTypeName(msgType)));
         System.out.println("====================================");
+
 
         switch (msgType) {
             //接收到回执（代表客户端发送的消息已经发送成功）

@@ -39,7 +39,7 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        if (MessageType.LOGIN_AUTH_SUCCEED_RECEIPT == loginAuthMsg.getHead().getType()) {
+        if (MessageType.LOGIN_AUTH_SUCCEED_RECEIPT == loginAuthMsg.getHead().getType()||5==loginAuthMsg.getHead().getType()) {
             System.out.println("收到服务端登录认证响应消息，登录成功。");
 
             // 登录认证成功，检查消息发送超时管理器里是否有发送超时的消息，如果有，则全部重发

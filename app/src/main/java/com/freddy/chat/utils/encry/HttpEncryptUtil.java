@@ -15,6 +15,77 @@ import javax.crypto.SecretKey;
 
 public class HttpEncryptUtil {
 
+    /**
+     * APP端的AES秘钥加密data部分内容
+     * @param aesKeyStr Base64编码后的AES秘钥
+     * @param data 加密的数据
+     * @return
+     */
+    public static String encrprtyData(String aesKeyStr, String data) throws Exception {
+        SecretKey aesKey = AESUtil.loadKeyAES(aesKeyStr);
+        byte[] bytes = AESUtil.encryptAES(data.getBytes(), aesKey);
+        return RSAUtil.byte2Base64(bytes);
+    }
+
+    /**
+     * 用服务端提供的AES秘钥加密App端的AES秘钥
+     * @param serverAesKey
+     * @param appAesKey 自己app生成的AES秘钥
+     * @return
+     * @throws Exception
+     */
+    public static String encrptyAppAeskey(String serverAesKey,String appAesKey) throws Exception {
+        SecretKey aesKey = AESUtil.loadKeyAES(serverAesKey);
+        byte[] bytes = AESUtil.encryptAES(appAesKey.getBytes(), aesKey);
+        return RSAUtil.byte2Base64(bytes);
+    }
+
+    /**
+     * 用服务端提供的AES秘钥解密APP端的AES秘钥（即解密收到的消息中的AES秘钥，然后再用该AES秘钥解密消息data）
+     * @param serverAesKey
+     * @param appAesKe  prk内容
+     * @return
+     * @throws Exception
+     */
+    public static String decrptyAppAesKey(String serverAesKey,String appAesKe) throws Exception {
+        SecretKey aesKey = AESUtil.loadKeyAES(serverAesKey);
+        byte[] bytes = AESUtil.decryptAES(appAesKe.getBytes(), aesKey);
+        return RSAUtil.byte2Base64(bytes);
+    }
+
+    //========================================================
+
+
+    /**
+     * App 公钥加密AES秘钥
+     * @param aesKeyStr AES秘钥
+     * @param publicKeyStr App公钥
+     * @return
+     */
+    public static String encrptyAesKey(String aesKeyStr,String publicKeyStr) throws Exception {
+        //用App公钥加密AES秘钥
+        PublicKey publicKey = RSAUtil.string2PublicKey(publicKeyStr);
+        byte[] encryptAesKey = RSAUtil.publicEncrypt(aesKeyStr.getBytes(), publicKey);
+        return RSAUtil.byte2Base64(encryptAesKey);
+
+    }
+
+    /**
+     * App 秘钥解密AES秘钥
+     * @param encryptAesKey 加密后的AES秘钥
+     * @param privateKeyStr App私钥
+     *
+     * @return
+     */
+    public static String decrprtAesKey(String encryptAesKey,String privateKeyStr) throws Exception {
+        //用App秘钥解密AES秘钥
+        PrivateKey privateKey = RSAUtil.string2PrivateKey(privateKeyStr);
+        byte[] decryptAesKey = RSAUtil.privateDecrypt(encryptAesKey.getBytes(), privateKey);
+        return RSAUtil.byte2Base64(decryptAesKey);
+
+    }
+
+
 
     //APP加密请求内容
     public static String appEncrypt(String appPublicKeyStr, String content) throws Exception{

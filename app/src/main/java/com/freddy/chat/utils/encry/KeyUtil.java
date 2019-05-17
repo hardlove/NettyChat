@@ -39,5 +39,10 @@ public class KeyUtil {
             + "6L6jUL9dFwKqMncAdVOYI/V0oVoa8wgCHQ6b4S55dWMYhd3hSg8+8mUdxw6oOFL7rpRYduX1KxKc"
             + "8Y4OuB7RsQgdKlT/sEBDEFdS/w==";
 
+    public static final String APP_AES_KEY = "J14vIlnzYT3hBaTs3C0THA==";
+    public static final String SERVER_AES_KEY = "ZW5+rAbLXU7QniZzUbRRbg==";
+
+
+
 //    public final static String SERVER_PUBLIC_KEY = "ZW5+rAbLXU7QniZzUbRRbg==";
 }

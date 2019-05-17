@@ -1,9 +1,7 @@
 package com.freddy.chat.im;
 
-import android.text.TextUtils;
 import android.util.Log;
 
-import com.alibaba.fastjson.JSON;
 import com.freddy.chat.bean.AppMessage;
 import com.freddy.chat.bean.BaseMessage;
 import com.freddy.chat.bean.ContentMessage;
@@ -13,11 +11,13 @@ import com.freddy.chat.event.Events;
 import com.freddy.chat.im.handler.IMessageHandler;
 import com.freddy.chat.im.handler.MessageHandlerFactory;
 import com.freddy.chat.utils.CThreadPoolExecutor;
+import com.freddy.chat.utils.encry.AESUtil;
+import com.freddy.chat.utils.encry.HttpEncryptUtil;
+import com.freddy.chat.utils.encry.KeyUtil;
 import com.freddy.im.MessageType;
 import com.freddy.im.constant.IMConstant;
-import com.freddy.im.protobuf.MessageProtobuf;
-import com.googlecode.protobuf.format.JsonFormat;
 
+import org.apache.commons.codec.binary.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -86,10 +86,26 @@ public class MessageProcessor implements IMessageProcessor {
     }
 
     /**
-     *处理收到的新消息（（单聊、群聊、朋友圈等）
+     * 处理收到的新消息（（单聊、群聊、朋友圈等）
+     *
      * @param appMessage
      */
-    private void handleNewMessageReceive(AppMessage appMessage) {
+    private void handleNewMessageReceive(AppMessage appMessage) throws Exception {
+
+        String serverAesKey = "ZW5+rAbLXU7QniZzUbRRbg==";
+        //解密app生成的AES秘钥
+        byte[] decryptAES = AESUtil.decryptAES(Base64.decodeBase64(appMessage.getBody().getPrk()), AESUtil.loadKeyAES(serverAesKey));
+
+        //解密data
+        String encrpytData = appMessage.getBody().getData();
+        byte[] decrpytBytes = AESUtil.decryptAES(encrpytData.getBytes(), AESUtil.loadKeyAES(Base64.encodeBase64String(decryptAES)));
+
+        Log.d(TAG, "解密前的消息：" + appMessage);
+        appMessage.getBody().setPrk(Base64.encodeBase64String(decryptAES));//设置解密后的AES
+        appMessage.getBody().setData(new String(decrpytBytes));//设置解密后的数据
+        Log.d(TAG, "解密后的消息：" + appMessage);
+
+
         IMessageHandler messageHandler;
         messageHandler = MessageHandlerFactory.getHandlerByMsgType(appMessage.getHead().getType());
         if (messageHandler != null) {
@@ -101,6 +117,7 @@ public class MessageProcessor implements IMessageProcessor {
 
     /**
      * 处理消息回执
+     *
      * @param type
      * @param contentType
      * @param messageId
@@ -156,6 +173,7 @@ public class MessageProcessor implements IMessageProcessor {
 
     /**
      * 处理登录状态变更
+     *
      * @param appMessage
      * @throws JSONException
      */
@@ -177,6 +195,26 @@ public class MessageProcessor implements IMessageProcessor {
 
             @Override
             public void run() {
+
+
+                try {
+                    String serverAesKey = "ZW5+rAbLXU7QniZzUbRRbg==";
+                    //加密app生成的AES秘钥
+                    String prk = Base64.encodeBase64String(AESUtil.encryptAES(Base64.decodeBase64(KeyUtil.APP_AES_KEY), AESUtil.loadKeyAES(serverAesKey)));
+                    String data = Base64.encodeBase64String(AESUtil.encryptAES(message.getBody().getData().getBytes(), AESUtil.loadKeyAES(KeyUtil.APP_AES_KEY)));
+
+                    Log.d(TAG, "加密前的app aes：" + KeyUtil.APP_AES_KEY);
+                    Log.d(TAG, "加密后的prk base64String:" + prk);
+                    Log.d(TAG, "加密后的data base64String:" + data);
+                    Log.d(TAG, "加密前的消息：" + message);
+                    message.getBody().setPrk(prk);
+                    message.getBody().setData(data);
+                    Log.e(TAG, "加密后的消息：" + message);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 boolean isActive = IMSClientBootstrap.getInstance().isActive();
                 if (isActive) {
                     IMSClientBootstrap.getInstance().sendMessage(MessageBuilder.getProtoBufMessageBuilderByAppMessage(message).build());
