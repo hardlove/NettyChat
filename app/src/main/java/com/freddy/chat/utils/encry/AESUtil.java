@@ -42,50 +42,6 @@ public class AESUtil {
 
 
 
-    /**
-     *
-     * @param
-     * @return 获取AES加密后的Prk
-     */
-    public static String getEncrptyAESPrk() throws Exception {
-        //加密app生成的AES秘钥
-        return Base64.encodeBase64String(AESUtil.encryptAES(Base64.decodeBase64(KeyUtil.APP_AES_KEY), AESUtil.loadKeyAES(KeyUtil.SERVER_AES_KEY)));
-
-    }
-
-    /**
-     * 加密
-     * @param content
-     * @return
-     * @throws Exception
-     */
-    public static String encrptyAESData(String content) throws Exception {
-        return  Base64.encodeBase64String(AESUtil.encryptAES(content.getBytes(), AESUtil.loadKeyAES(KeyUtil.APP_AES_KEY)));
-    }
-
-    public static String getDecrptyAESPrk(String prk) throws Exception {
-        //解密app生成的AES秘钥
-        byte[] decryptAES = AESUtil.decryptAES(Base64.decodeBase64(prk), AESUtil.loadKeyAES(KeyUtil.SERVER_AES_KEY));
-        return Base64.encodeBase64String(decryptAES);
-
-    }
-
-    /**
-     * 解密data
-     * @param prk
-     * @param data
-     * @return
-     * @throws Exception
-     */
-    public static String decrptyAESData(String prk,String data) throws Exception {
-        //解密data
-        byte[] decrpytBytes = AESUtil.decryptAES(Base64.decodeBase64(data), AESUtil.loadKeyAES(getDecrptyAESPrk(prk)));
-        return new String(decrpytBytes);
-    }
-
-
-
-
     //解密
     public static byte[] decryptAES(byte[] source, SecretKey key) throws Exception{
         Cipher cipher = Cipher.getInstance("AES");

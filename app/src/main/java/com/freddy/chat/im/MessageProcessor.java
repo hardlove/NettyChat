@@ -92,17 +92,11 @@ public class MessageProcessor implements IMessageProcessor {
      */
     private void handleNewMessageReceive(AppMessage appMessage) throws Exception {
 
-        String serverAesKey = "ZW5+rAbLXU7QniZzUbRRbg==";
-        //解密app生成的AES秘钥
-        byte[] decryptAES = AESUtil.decryptAES(Base64.decodeBase64(appMessage.getBody().getPrk()), AESUtil.loadKeyAES(serverAesKey));
-
-        //解密data
-        String encrpytData = appMessage.getBody().getData();
-        byte[] decrpytBytes = AESUtil.decryptAES(encrpytData.getBytes(), AESUtil.loadKeyAES(Base64.encodeBase64String(decryptAES)));
-
         Log.d(TAG, "解密前的消息：" + appMessage);
-        appMessage.getBody().setPrk(Base64.encodeBase64String(decryptAES));//设置解密后的AES
-        appMessage.getBody().setData(new String(decrpytBytes));//设置解密后的数据
+        String prk = HttpEncryptUtil.getDecrptyPrk(appMessage.getBody().getPrk());
+        String data = HttpEncryptUtil.decrptyData(prk, appMessage.getBody().getData());
+        appMessage.getBody().setPrk(prk);//设置解密后的AES
+        appMessage.getBody().setData(data);//设置解密后的数据
         Log.d(TAG, "解密后的消息：" + appMessage);
 
 
@@ -198,14 +192,8 @@ public class MessageProcessor implements IMessageProcessor {
 
 
                 try {
-                    String serverAesKey = "ZW5+rAbLXU7QniZzUbRRbg==";
-                    //加密app生成的AES秘钥
-                    String prk = Base64.encodeBase64String(AESUtil.encryptAES(Base64.decodeBase64(KeyUtil.APP_AES_KEY), AESUtil.loadKeyAES(serverAesKey)));
-                    String data = Base64.encodeBase64String(AESUtil.encryptAES(message.getBody().getData().getBytes(), AESUtil.loadKeyAES(KeyUtil.APP_AES_KEY)));
-
-                    Log.d(TAG, "加密前的app aes：" + KeyUtil.APP_AES_KEY);
-                    Log.d(TAG, "加密后的prk base64String:" + prk);
-                    Log.d(TAG, "加密后的data base64String:" + data);
+                    String prk = HttpEncryptUtil.getEncrptyPrk();
+                    String data = HttpEncryptUtil.encrptyData(message.getBody().getData());
                     Log.d(TAG, "加密前的消息：" + message);
                     message.getBody().setPrk(prk);
                     message.getBody().setData(data);
