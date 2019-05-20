@@ -665,8 +665,8 @@ public class NettyTcpClient implements IMSClientInterface {
      */
     private void toServer() {
         try {
-            channel = bootstrap.connect(currentHost, currentPort).sync().channel();
             System.out.println("服务器连接中。。。");
+            channel = bootstrap.connect(currentHost, currentPort).sync().channel();
         } catch (Exception e) {
             try {
                 Thread.sleep(500);

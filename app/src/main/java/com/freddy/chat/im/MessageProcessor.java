@@ -17,7 +17,6 @@ import com.freddy.chat.utils.encry.KeyUtil;
 import com.freddy.im.MessageType;
 import com.freddy.im.constant.IMConstant;
 
-import org.apache.commons.codec.binary.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -93,8 +92,8 @@ public class MessageProcessor implements IMessageProcessor {
     private void handleNewMessageReceive(AppMessage appMessage) throws Exception {
 
         Log.d(TAG, "解密前的消息：" + appMessage);
-        String prk = HttpEncryptUtil.getDecrptyPrk(appMessage.getBody().getPrk());
-        String data = HttpEncryptUtil.decrptyData(prk, appMessage.getBody().getData());
+        String prk = HttpEncryptUtil.getDecrptyPrk(appMessage.getBody().getPrk()).replaceAll("\r\n", "");
+        String data = HttpEncryptUtil.decrptyData(prk, appMessage.getBody().getData()).replaceAll("\r\n", "");
         appMessage.getBody().setPrk(prk);//设置解密后的AES
         appMessage.getBody().setData(data);//设置解密后的数据
         Log.d(TAG, "解密后的消息：" + appMessage);
@@ -192,8 +191,8 @@ public class MessageProcessor implements IMessageProcessor {
 
 
                 try {
-                    String prk = HttpEncryptUtil.getEncrptyPrk();
-                    String data = HttpEncryptUtil.encrptyData(message.getBody().getData());
+                    String prk = HttpEncryptUtil.getEncrptyPrk().replaceAll("\r\n", "");
+                    String data = HttpEncryptUtil.encrptyData(message.getBody().getData()).replaceAll("\r\n", "");
                     Log.d(TAG, "加密前的消息：" + message);
                     message.getBody().setPrk(prk);
                     message.getBody().setData(data);

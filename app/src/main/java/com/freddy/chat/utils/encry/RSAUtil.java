@@ -1,6 +1,5 @@
 package com.freddy.chat.utils.encry;
 
-import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;
 import java.security.KeyFactory;
@@ -76,15 +75,15 @@ public class RSAUtil {
         return bytes;
     }
 
+
     //字节数组转Base64编码
     public static String byte2Base64(byte[] bytes){
-        return Base64.encodeBase64String(bytes);
-
+        return android.util.Base64.encodeToString(bytes, android.util.Base64.DEFAULT);
     }
 
     //Base64编码转字节数组
     public static byte[] base642Byte(String base64Key) throws IOException {
-        return Base64.decodeBase64(base64Key);
+        return android.util.Base64.decode(base64Key, android.util.Base64.DEFAULT);
     }
 
 }

@@ -4,7 +4,6 @@ import com.freddy.chat.utils.encry.AESUtil;
 import com.freddy.chat.utils.encry.HttpEncryptUtil;
 import com.freddy.chat.utils.encry.KeyUtil;
 
-import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 /**
