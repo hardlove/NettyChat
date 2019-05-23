@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * @author CL
  *单聊消息处理帮助类
- *type为1，2的时候，contentType 0表示撤回，1表示文本，2表示音频，3表示视频
+ * type为1，2的时候，contentType 0表示撤回，1表示文本，2表示图片，3表示音频，4表示视频
  */
 public class SingleChatMessageHandler extends AbstractMessageHandler {
 
@@ -32,9 +32,12 @@ public class SingleChatMessageHandler extends AbstractMessageHandler {
                 Log.d(TAG, "action: 文本单聊消息");
                 break;
             case 2:
-                Log.d(TAG, "action: 音频单聊消息");
+                Log.d(TAG, "action:图片单聊消息");
                 break;
             case 3:
+                Log.d(TAG, "action: 音频单聊消息");
+                break;
+            case 4:
                 Log.d(TAG, "action: 视频单聊消息");
                 break;
         }

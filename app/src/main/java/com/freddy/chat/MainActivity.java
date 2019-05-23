@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
     private static int SEND_MSG_COUNT = 100;//设置消息发送的数量
     boolean loginAuth = false;//是否登录成功
 
-    String hosts = "[{\"host\":\"192.168.0.147\", \"port\":54321}]";
+    String hosts = "[{\"host\":\"47.75.218.21\", \"port\":54321}]";
 //    String hosts = "[{\"host\":\"47.52.255.159\", \"port\":54321}]";
 
     private String[] userIds;
@@ -266,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void onLocalSetting(View view) {
-        hosts = "[{\"host\":\"192.168.0.147\", \"port\":54321}]";
+        hosts = "[{\"host\":\"47.75.218.21\", \"port\":54321}]";
 
         refreshHost();
 

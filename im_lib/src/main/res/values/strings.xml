@@ -12,6 +12,7 @@
         <item>10008</item>
         <item>10009</item>
         <item>10010</item>
+        <item>60000</item>
     </string-array>
     <string-array name="userTokens" >
         <item>1475ae4964f9497c85f63f22c5a255ee</item>
@@ -24,6 +25,7 @@
         <item>0c68c971673a4fcfa9434f76519ae4f3</item>
         <item>331e5e6449e24337883f975cc679be43</item>
         <item>22a7a900f0c54278b048c2f1932fd6e1</item>
+        <item>cdffcca4be7242bb81b2e5c9a004b98d</item>
     </string-array>
 
 </resources>
