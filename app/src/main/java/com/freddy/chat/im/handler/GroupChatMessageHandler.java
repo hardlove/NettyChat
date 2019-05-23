@@ -47,12 +47,12 @@ public class GroupChatMessageHandler extends AbstractMessageHandler {
         }
 
         //需要去重
-        Map<String, AppMessage> msgContainer = NettyChatApp.instance.getMsgContainer();
+        Map<String, String> msgContainer = NettyChatApp.instance.getMsgContainer();
         if (msgContainer.containsKey(appMessage.getHead().getMessageId())) {
             Log.e(TAG, "收到重复群聊消息，messageId：" + appMessage.getHead().getMessageId());
             return;
         }
-        msgContainer.put(appMessage.getHead().getMessageId(), appMessage);
+        msgContainer.put(appMessage.getHead().getMessageId(), appMessage.getHead().getMessageId());
         Log.e(TAG, "添加群聊消息到msgContainer,messageId:" + appMessage.getHead().getMessageId() + " 消息总数：" + msgContainer.size());
 
 

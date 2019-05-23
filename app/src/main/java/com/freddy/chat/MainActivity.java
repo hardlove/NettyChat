@@ -652,10 +652,9 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                     case Events.CHAT_SINGLE_MESSAGE: {
                         singleMsgReciveCount++;
                         final SingleMessage singleMessage = (SingleMessage) obj;
-                        mTvReciceMsg.append(singleMessage.getContent());
-
+//                        mTvReciceMsg.append(singleMessage.getContent());
+                        mTvReciceMsg.append(singleMessage.getMsgId() + "\n");
                         addSingleChatReceiveCount(singleMessage.getFromId());
-
 
                         refreshMsgCount();
 
@@ -665,8 +664,8 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                     case Events.CHAT_GROUP_MESSAGE:
                         groupMsgReciveCount++;
                         final GroupMessage groupMessage = (GroupMessage) obj;
-                        mTvReciceMsg.append(groupMessage.getContent());
-
+//                        mTvReciceMsg.append(groupMessage.getContent());
+                        mTvReciceMsg.append(groupMessage.getMsgId() + "\n");
                         addGroupReceiveCount(groupMessage.getFromId());
 
                         refreshMsgCount();

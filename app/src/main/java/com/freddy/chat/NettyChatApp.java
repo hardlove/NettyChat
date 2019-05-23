@@ -46,8 +46,8 @@ public class NettyChatApp extends Application {
     }
 
     //消息容器
-    private   Map<String, AppMessage> msgContainer;
-    public  Map<String, AppMessage> getMsgContainer(){
+    private   Map<String, String> msgContainer;
+    public  Map<String, String> getMsgContainer(){
         return msgContainer;
     };
 
