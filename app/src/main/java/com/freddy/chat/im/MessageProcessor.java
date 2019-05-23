@@ -1,5 +1,6 @@
 package com.freddy.chat.im;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.freddy.chat.bean.AppMessage;
@@ -90,13 +91,16 @@ public class MessageProcessor implements IMessageProcessor {
      * @param appMessage
      */
     private void handleNewMessageReceive(AppMessage appMessage) throws Exception {
+        String receivePrk = appMessage.getBody().getPrk();
+        if (!TextUtils.isEmpty(receivePrk)) {
+            Log.d(TAG, "解密前的消息：" + appMessage);
+            String prk = HttpEncryptUtil.getDecrptyPrk(appMessage.getBody().getPrk()).replaceAll("\r\n", "");
+            String data = HttpEncryptUtil.decrptyData(prk, appMessage.getBody().getData()).replaceAll("\r\n", "");
+            appMessage.getBody().setPrk(prk);//设置解密后的AES
+            appMessage.getBody().setData(data);//设置解密后的数据
+            Log.d(TAG, "解密后的消息：" + appMessage);
 
-        Log.d(TAG, "解密前的消息：" + appMessage);
-        String prk = HttpEncryptUtil.getDecrptyPrk(appMessage.getBody().getPrk()).replaceAll("\r\n", "");
-        String data = HttpEncryptUtil.decrptyData(prk, appMessage.getBody().getData()).replaceAll("\r\n", "");
-        appMessage.getBody().setPrk(prk);//设置解密后的AES
-        appMessage.getBody().setData(data);//设置解密后的数据
-        Log.d(TAG, "解密后的消息：" + appMessage);
+        }
 
 
         IMessageHandler messageHandler;
