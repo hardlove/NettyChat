@@ -13,6 +13,20 @@ import org.junit.Test;
  */
 
 public class IMessageEncrpty {
+    @Test
+    public void testGreateAES() throws Exception {
+//        OUQyOTc5QjAtRjc0Ny00QTUwLUJGMUMtREEwOTQ4OTVBQUNF
+        String ase = AESUtil.genKeyAES();
+        System.out.println("App AES:" + ase);
+
+    }
+
+    @Test
+    public void testBase64() {
+        String source = "OUQyOTc5QjAtRjc0Ny00QTUwLUJGMUMtREEwOTQ4OTVBQUNF";
+        String base64String = AESUtil.byte2Base64(source.getBytes());
+        System.out.println("base64String:" + base64String);
+    }
 
     @Test
     public void tesEncrpty() throws Exception {
