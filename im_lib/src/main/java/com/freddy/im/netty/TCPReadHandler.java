@@ -62,7 +62,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
             channel.close();
             ctx.close();
         }
-        if (imsClient.isAutoReConnect()) {
+        if (!imsClient.isClosed()) {
             System.err.println("链路断开，自动重启连接。。。");
             // 触发重连
             imsClient.resetConnect(false);

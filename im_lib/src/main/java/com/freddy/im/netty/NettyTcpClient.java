@@ -76,6 +76,7 @@ public class NettyTcpClient implements IMSClientInterface {
 
     private MsgTimeoutTimerManager msgTimeoutTimerManager;
     private boolean isAutoReconnect = true;//链路断开后是否需要自动重连;
+    private ResetConnectRunnable resetConnectRunnable;
 
     public boolean isAutoReconnect() {
         return isAutoReconnect;
@@ -162,7 +163,12 @@ public class NettyTcpClient implements IMSClientInterface {
                 // 回调ims连接状态
                 onConnectStatusCallback(IMSConfig.CONNECT_STATE_CONNECTING);
                 // 执行重连任务
-                loopGroup.execBossTask(new ResetConnectRunnable(isFirst));
+                if (resetConnectRunnable != null) {
+                    resetConnectRunnable.stopTask();
+                    resetConnectRunnable = null;
+                }
+                resetConnectRunnable = new ResetConnectRunnable(isFirst);
+                loopGroup.execBossTask(resetConnectRunnable);
             }
         }
 
@@ -684,9 +690,14 @@ public class NettyTcpClient implements IMSClientInterface {
     private class ResetConnectRunnable implements Runnable {
 
         private boolean isFirst;
+        private boolean stop = false;
 
         public ResetConnectRunnable(boolean isFirst) {
             this.isFirst = isFirst;
+        }
+
+        public void stopTask() {
+            stop = true;
         }
 
         @Override
@@ -701,7 +712,7 @@ public class NettyTcpClient implements IMSClientInterface {
                 // 重连时，释放工作线程组，也就是停止心跳
                 loopGroup.destroyWorkLoopGroup();
 
-                while (!isClosed) {
+                while (!isClosed && !stop) {
                     if (!isNetworkAvailable()) {//检查网络，如果网络不可用，一直等待，直到网络可用时才执行后面的代码
                         try {
                             Thread.sleep(2000);
@@ -816,5 +827,7 @@ public class NettyTcpClient implements IMSClientInterface {
             // 执行到这里，代表连接失败
             return IMSConfig.CONNECT_STATE_FAILURE;
         }
+
+
     }
 }

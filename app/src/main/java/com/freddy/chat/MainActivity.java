@@ -675,10 +675,10 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                         if (resultCode == IMConstant.LOGIN_AUTH_SUCCEED) {
                             loginAuth = true;
                             mtvLoginStatusText.setText("登录成功");
-                        } else if (msgCode == IMConstant.LOGIN_AUTH_PROGRESSING) {
+                        } else if (resultCode == IMConstant.LOGIN_AUTH_PROGRESSING) {
                             loginAuth = false;
                             mtvLoginStatusText.setText("正在登录");
-                        } else if (msgCode == IMConstant.LOGIN_AUTH_FAILED) {
+                        } else if (resultCode == IMConstant.LOGIN_AUTH_FAILED) {
                             loginAuth = false;
                             mtvLoginStatusText.setText("登录失败");
                         } else if (resultCode == IMConstant.LOGIN_AUTH_KICK_OUT) {
