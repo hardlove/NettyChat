@@ -214,6 +214,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void onChangeSetting(View view) {
+        Log.d(TAG, "onChangeSetting: ~~~~~");
         mEdtIp.setEnabled(true);
         mEdtPort.setEnabled(true);
     }
@@ -224,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void onConfirm(View view) {
+        Log.d(TAG, "onConfirm: ~~~~~~~~~");
         mEdtIp.setEnabled(false);
         mEdtPort.setEnabled(false);
         String ip = mEdtIp.getText().toString().trim();
@@ -241,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void onTestSetting(View view) {
+        Log.d(TAG, "onTestSetting: ~~~~~~~");
         hosts = "[{\"host\":\"47.52.255.159\", \"port\":54321}]";
 
         refreshHost();
@@ -266,6 +269,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void onLocalSetting(View view) {
+        Log.d(TAG, "onLocalSetting: ~~~~~~~~~");
         hosts = "[{\"host\":\"47.75.218.21\", \"port\":54321}]";
 
         refreshHost();
@@ -292,6 +296,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void loginIm(View view) {
+        Log.d(TAG, "loginIm: ~~~~~~~~~~~~");
         if (mEdtIp.isEnabled() || mEdtPort.isEnabled()) {
             Toast.makeText(this, "请确认当前环境配置！", Toast.LENGTH_SHORT).show();
             return;
@@ -312,6 +317,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void btnlogOut(View view) {
+        Log.d(TAG, "btnlogOut: ~~~~~~~~~`");
         logout();
 
     }
@@ -329,6 +335,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void ClearMsg(View view) {
+        Log.d(TAG, "ClearMsg: ~~~~~~~~");
         singleMsgReciveCount = 0;
         signgleMsgSendCount = 0;
         groupMsgReciveCount = 0;
@@ -350,6 +357,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void sendMsg(View view) {
+        Log.d(TAG, "sendMsg: ~~~~~~~~~");
         if (!loginAuth) {
             Toast.makeText(this, "请登录！", Toast.LENGTH_SHORT).show();
             return;
@@ -367,6 +375,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void sendMultiMsg(View view) {
+        Log.d(TAG, "sendMultiMsg: ~~~~~~~~~~~~");
         if (!loginAuth) {
             Toast.makeText(this, "请登录！", Toast.LENGTH_SHORT).show();
             return;
@@ -501,6 +510,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void onStatistics(View view) {
+        Log.d(TAG, "onStatistics: ~~~~~~~");
         CThreadPoolExecutor.runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -619,6 +629,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "onDestroy: ~~~~~~~~~~");
         super.onDestroy();
         CEventCenter.unregisterEventListener(this, EVENTS);
     }
@@ -680,8 +691,10 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                             mtvLoginStatusText.setText("正在登录");
                         } else if (resultCode == IMConstant.LOGIN_AUTH_FAILED) {
                             loginAuth = false;
+                            IMSClientBootstrap.getInstance().closeImsClient();
                             mtvLoginStatusText.setText("登录失败");
                         } else if (resultCode == IMConstant.LOGIN_AUTH_KICK_OUT) {
+                            IMSClientBootstrap.getInstance().closeImsClient();
                             loginAuth = false;
                             mtvLoginStatusText.setText("你已被踢下线");
                         }
@@ -698,6 +711,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
     @Override
     public void onConnecting() {
+        Log.d(TAG, "onConnecting: ~~~~~~");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -710,6 +724,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
     @Override
     public void onConnected() {
+        Log.d(TAG, "onConnected: ~~~~~~~~");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -723,6 +738,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
     @Override
     public void onConnectFailed() {
+        Log.d(TAG, "onConnectFailed: ~~~~~~~~");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

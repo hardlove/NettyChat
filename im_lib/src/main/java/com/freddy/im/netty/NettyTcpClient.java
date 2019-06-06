@@ -725,11 +725,12 @@ public class NettyTcpClient implements IMSClientInterface {
                     // 网络可用才进行连接
                     int status;
                     if ((status = reConnect()) == IMSConfig.CONNECT_STATE_SUCCESSFUL) {
+                        System.out.println("ims连接成功..跳出循环。");
                         onConnectStatusCallback(status);
                         // 连接成功，跳出循环
                         break;
                     }
-                    System.out.println("ims连接。。。status：" + status);
+                    System.out.println("ims连接......status：" + status);
                     if (status == IMSConfig.CONNECT_STATE_FAILURE) {
                         onConnectStatusCallback(status);
                         try {
@@ -753,7 +754,7 @@ public class NettyTcpClient implements IMSClientInterface {
         private int reConnect() {
             System.out.println("======reConnect===========");
             // 未关闭才去连接
-            if (!isClosed) {
+            if (!isClosed && !stop) {
                 try {
                     // 先释放EventLoop线程组
                     if (bootstrap != null) {
@@ -783,7 +784,7 @@ public class NettyTcpClient implements IMSClientInterface {
                 return IMSConfig.CONNECT_STATE_FAILURE;
             }
 
-            for (int i = 0; (!isClosed && i < serverUrlList.size()); i++) {
+            for (int i = 0; (!isClosed && !stop && i < serverUrlList.size()); i++) {
                 String serverUrl = serverUrlList.get(i);
                 // 如果服务器地址无效，直接回调连接状态，不再进行连接
                 if (StringUtil.isNullOrEmpty(serverUrl)) {
