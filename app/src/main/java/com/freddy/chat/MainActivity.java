@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
     boolean loginAuth = false;//是否登录成功
 
     String hosts = "[{\"host\":\"47.75.218.21\", \"port\":54321}]";
-//    String hosts = "[{\"host\":\"47.52.255.159\", \"port\":54321}]";
+//    String hosts = "[{\"host\":\"47.52.31.105\", \"port\":54321}]";
 
     private String[] userIds;
     private String[] tokens;
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      */
     public void onTestSetting(View view) {
         Log.d(TAG, "onTestSetting: ~~~~~~~");
-        hosts = "[{\"host\":\"47.52.255.159\", \"port\":54321}]";
+        hosts = "[{\"host\":\"47.52.31.105\", \"port\":54321}]";
 
         refreshHost();
     }
