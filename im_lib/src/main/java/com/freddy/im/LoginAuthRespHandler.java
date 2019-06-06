@@ -51,13 +51,12 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
             imsClient.getMsgDispatcher().receivedMsg(imsClient.getLoginAuthStatusReportMsg(IMConstant.LOGIN_AUTH_SUCCEED));
         } else if (MessageType.LOGIN_AUTH_FAILED_RECEIPT == loginAuthMsg.getHead().getType()) {
             System.out.println("收到服务端登录认证响应消息，登录失败。 message=" + loginAuthMsg);
-
             //通知应用层登录失败
             System.out.println("通知应用层登录失败。");
             imsClient.getMsgDispatcher().receivedMsg(imsClient.getLoginAuthStatusReportMsg(IMConstant.LOGIN_AUTH_FAILED));
 
-            System.out.println("登录认证失败，触发重连");
-            imsClient.resetConnect(false);// 登录认证失败，触发重连
+            System.out.println("登录认证失败，close Client");
+            imsClient.close();
         } else {
             // 消息透传
             ctx.fireChannelRead(msg);

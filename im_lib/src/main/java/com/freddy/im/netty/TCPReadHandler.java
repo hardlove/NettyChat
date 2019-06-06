@@ -41,7 +41,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
-        System.out.println(String.format("当前链路[%s]已经 激活 了。", ctx.channel() != null ? ctx.channel().id() : "-1"));
+        System.out.println(String.format("当前链路[%s]已经 激活 了。", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
 
 
     }
@@ -56,7 +56,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
         System.err.println("====================================");
-        System.err.println(String.format("当前链路[%s]已经 断开 了。", ctx.channel() != null ? ctx.channel().id() : "-1"));
+        System.err.println(String.format("当前链路[%s]已经 断开 了。", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
         Channel channel = ctx.channel();
         if (channel != null) {
             channel.close();
@@ -75,7 +75,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         super.handlerRemoved(ctx);
-        System.out.println("handlerRemoved: ctx:" + ctx);
+        System.out.println(String.format("移除链路[%s]:", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
 
     }
 
@@ -83,7 +83,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
         System.err.println("====================================");
-        System.err.println(String.format("当前链路[%s]出现异常了。 error:%s", ctx.channel() != null ? ctx.channel().id() : "-1", cause.getMessage()));
+        System.err.println(String.format("当前链路[%s]出现异常了。 error:%s", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown", cause.getMessage()));
         Channel channel = ctx.channel();
         if (channel != null) {
             channel.close();
@@ -104,7 +104,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
 
         int msgType = message.getHead().getType();
         System.out.println("====================================");
-        System.out.println(String.format("[收到 %s 消息  " + Utils.format(message) + "]", Utils.getMessageTypeName(msgType)));
+        System.out.println(String.format("[channel:%s]-[收到 %s 消息  " + Utils.format(message) + "]", ctx.channel().id().asLongText(), Utils.getMessageTypeName(msgType)));
         System.out.println("====================================");
 
 
@@ -127,13 +127,14 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
 
             // 接收到消息
             default:
+                String chanel = ctx.channel().id().asLongText();
                 // 收到消息后，立马给服务端回一条消息接收状态报告
                 MessageProtobuf.Msg receivedReportMsg = buildReceivedReportMsg(message);
                 if (receivedReportMsg != null) {
-                    System.out.println("收到服务端发送过来的消息,type:" + msgType + " contentType:" + message.getHead().getContentType() + "  messageId:" + message.getHead().getMessageId() + "  ,发送消息回执：" + receivedReportMsg.getHead().getType());
+                    System.out.println("收到服务端发送过来的消息,type:" + msgType + " contentType:" + message.getHead().getContentType() + "  messageId:" + message.getHead().getMessageId() + "  ,发送消息回执：" + receivedReportMsg.getHead().getType() + " [chanel:" + chanel + "]");
                     imsClient.sendMsg(receivedReportMsg, false);
                 } else {
-                    System.err.println("收到服务端发送过来的消息,type:" + msgType + " contentType:" + message.getHead().getContentType() + "  messageId:" + message.getHead().getMessageId() + "   ,未找到对应的回执消息类型,无法发送消息回执！");
+                    System.err.println("收到服务端发送过来的消息,type:" + msgType + " contentType:" + message.getHead().getContentType() + "  messageId:" + message.getHead().getMessageId() + "   ,未找到对应的回执消息类型,无法发送消息回执！" + " [chanel:" + chanel + "]");
                 }
                 // 接收消息，由消息转发器转发到应用层
                 imsClient.getMsgDispatcher().receivedMsg(message);

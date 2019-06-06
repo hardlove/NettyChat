@@ -792,9 +792,9 @@ public class NettyTcpClient implements IMSClientInterface {
                 }
 
                 String[] address = serverUrl.split(" ");
-                for (int j = 1; j <= IMSConfig.DEFAULT_RECONNECT_COUNT; j++) {
+                for (int j = 1; (!isClosed && !stop && j <= IMSConfig.DEFAULT_RECONNECT_COUNT); j++) {
                     // 如果ims已关闭，或网络不可用，直接回调连接状态，不再进行连接
-                    if (isClosed || !isNetworkAvailable()) {
+                    if (isClosed || stop || !isNetworkAvailable()) {
                         return IMSConfig.CONNECT_STATE_FAILURE;
                     }
 
@@ -804,23 +804,21 @@ public class NettyTcpClient implements IMSClientInterface {
                     }
                     System.out.println(String.format("正在进行『%s』的第『%d』次连接，当前重连延时时长为『%dms』", serverUrl, j, j * getReconnectInterval()));
 
-                    try {
-                        currentHost = address[0];// 获取host
-                        currentPort = Integer.parseInt(address[1]);// 获取port
-                        toServer();// 连接服务器
+                    currentHost = address[0];// 获取host
+                    currentPort = Integer.parseInt(address[1]);// 获取port
+                    toServer();// 连接服务器
 
-                        // channel不为空，即认为连接已成功
-                        if (channel != null) {
-                            return IMSConfig.CONNECT_STATE_SUCCESSFUL;
-                        } else {
-                            // 连接失败，则线程休眠n * 重连间隔时长
-                            System.out.println("连接失败，线程休眠后重连");
+                    // channel不为空，即认为连接已成功
+                    if (channel != null) {
+                        return IMSConfig.CONNECT_STATE_SUCCESSFUL;
+                    } else {
+                        // 连接失败，则线程休眠n * 重连间隔时长
+                        System.out.println("连接失败，线程休眠后重连");
+                        try {
                             Thread.sleep(j * getReconnectInterval());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                    } catch (InterruptedException e) {
-                        System.out.println("=====关闭连接，同时释放资源======");
-                        close();
-                        break;// 线程被中断，则强制关闭
                     }
                 }
             }
