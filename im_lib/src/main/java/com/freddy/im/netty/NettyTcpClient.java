@@ -620,6 +620,8 @@ public class NettyTcpClient implements IMSClientInterface {
             if (channel.pipeline().get(TCPReadHandler.class.getSimpleName()) != null) {
                 channel.pipeline().addBefore(TCPReadHandler.class.getSimpleName(), HeartbeatHandler.class.getSimpleName(),
                         new HeartbeatHandler(this));
+            } else {
+                channel.pipeline().addLast(HeartbeatHandler.class.getSimpleName(), new HeartbeatHandler(this));
             }
         } catch (Exception e) {
             System.err.println("添加心跳消息管理handler失败，reason：" + e.getMessage());
