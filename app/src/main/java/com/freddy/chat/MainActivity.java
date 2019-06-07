@@ -220,6 +220,8 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         Log.d(TAG, "onChangeSetting: ~~~~~");
         mEdtIp.setEnabled(true);
         mEdtPort.setEnabled(true);
+        loginAuth = false;
+
     }
 
     /**
@@ -288,6 +290,8 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         Log.d(TAG, "onReConnect: ~~~~~");
         mtvLoginStatusText.setText("开始重连");
         NettyTcpClient.getInstance().resetConnect(false);
+        loginAuth = false;
+
 
     }
 
@@ -308,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void loginIm(View view) {
+        loginAuth = false;
         Log.d(TAG, "loginIm: ~~~~~~~~~~~~");
         if (mEdtIp.isEnabled() || mEdtPort.isEnabled()) {
             Toast.makeText(this, "请确认当前环境配置！", Toast.LENGTH_SHORT).show();
@@ -335,6 +340,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
     }
 
     private void logout() {
+        loginAuth = false;
         mtvLoginStatusText.setText("已退出登录");
         if (IMSClientBootstrap.getInstance().isActive()) {
             IMSClientBootstrap.getInstance().closeImsClient();
@@ -400,10 +406,16 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
             e.printStackTrace();
         }
 
-        handler.sendEmptyMessage(1);
+        handler.sendEmptyMessageDelayed(1, 300);
+
         closeInputMethod();
 
 
+    }
+
+    public void onStopSend(View view) {
+        Log.d(TAG, "onStopSend: ~~~~~");
+        handler.removeMessages(1);
     }
 
     private void closeInputMethod() {
@@ -418,7 +430,9 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
             if (signgleMsgSendCount < SEND_MSG_COUNT) {
                 if (loginAuth) {
                     sendMsg();
-                    handler.sendEmptyMessage(1);
+                    handler.sendEmptyMessageDelayed(1, 300);
+                } else {
+                    System.out.println("====未登录。。。，无法发送消息");
                 }
 
             }
@@ -443,7 +457,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         }
         refreshMsgCount();
 
-        mTextSendMsg.append(sb.toString() + "\n");
+//        mTextSendMsg.append(sb.toString() + "\n");
 
         AppMessage appMessage = new AppMessage();
         Head head = new Head();
@@ -679,8 +693,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                     case Events.CHAT_SINGLE_MESSAGE: {
                         singleMsgReciveCount++;
                         final SingleMessage singleMessage = (SingleMessage) obj;
-//                        mTvReciceMsg.append(singleMessage.getContent());
-                        mTvReciceMsg.append(singleMessage.getMsgId() + "\n");
+//                        mTvReciceMsg.append(singleMessage.getMsgId() + "\n");
                         addSingleChatReceiveCount(singleMessage.getFromId());
 
                         refreshMsgCount();
@@ -691,8 +704,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                     case Events.CHAT_GROUP_MESSAGE:
                         groupMsgReciveCount++;
                         final GroupMessage groupMessage = (GroupMessage) obj;
-//                        mTvReciceMsg.append(groupMessage.getContent());
-                        mTvReciceMsg.append(groupMessage.getMsgId() + "\n");
+//                        mTvReciceMsg.append(groupMessage.getMsgId() + "\n");
                         addGroupReceiveCount(groupMessage.getFromId());
 
                         refreshMsgCount();
@@ -709,7 +721,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                             loginAuth = false;
                             ConnectivityManager cm = (ConnectivityManager) NettyChatApp.sharedInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
                             NetworkInfo info = cm.getActiveNetworkInfo();
-                            boolean connected =  info != null && info.isConnected();
+                            boolean connected = info != null && info.isConnected();
                             if (connected) {
                                 mtvLoginStatusText.setText("登录失败");
                             } else {

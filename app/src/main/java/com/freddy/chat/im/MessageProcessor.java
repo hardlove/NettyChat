@@ -147,7 +147,7 @@ public class MessageProcessor implements IMessageProcessor {
         } else if (status == IMConstant.SEND_MSG_PROGRESSING) {
             statusTip = "【正在发送】";
         }
-        Log.d(TAG, String.format("接收都消息发送状态报告" + statusTip + "【type:%s  contentType:%s  messageId:%s】", type, contentType, messageId));
+        Log.d(TAG, String.format("接收到消息发送状态报告" + statusTip + "【type:%s  contentType:%s  messageId:%s】", type, contentType, messageId));
         // TODO: 2019/5/13 更新数据库中对应的消息状态改为
         Log.d(TAG, "更新数据库中对应的消息状态 ");
 

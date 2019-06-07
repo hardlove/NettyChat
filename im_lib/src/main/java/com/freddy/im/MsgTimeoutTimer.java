@@ -58,7 +58,7 @@ public class MsgTimeoutTimer extends Timer {
             if (currentResendCount > imsClient.getResendCount()) {
                 // 重发次数大于可重发次数，直接标识为发送失败，并通过消息转发器通知应用层
                 try {
-                    System.err.println("消息发送3次都失败，msg：" + Utils.format(msg));
+                    System.err.println("消息发送3次都失败，通知应用层，msg：" + Utils.format(msg));
                     // 通知应用层消息发送失败
                     imsClient.getMsgDispatcher().receivedMsg(getClientSendReportMsg(msg));
                 } catch (Error error) {
@@ -67,8 +67,8 @@ public class MsgTimeoutTimer extends Timer {
                     // 从消息发送超时管理器移除该消息
                     imsClient.getMsgTimeoutTimerManager().remove(msg.getHead().getMessageId());
                     // 执行到这里，认为连接已断开或不稳定，触发重连
-                    System.err.println("从发送消息管理器移除消息, close Channel,触发重连。。。。");
-                    imsClient.resetConnect(false);
+                    System.err.println("重发失败，从发送消息管理器移除消息, close Channel,触发重连。。。。");
+//                    imsClient.resetConnect(false);
                     currentResendCount = 0;
                 }
             } else {

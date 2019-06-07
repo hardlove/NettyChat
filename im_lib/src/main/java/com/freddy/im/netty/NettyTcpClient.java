@@ -169,6 +169,8 @@ public class NettyTcpClient implements IMSClientInterface {
                 }
                 resetConnectRunnable = new ResetConnectRunnable(isFirst);
                 loopGroup.execBossTask(resetConnectRunnable);
+            } else {
+                System.out.println("无法重连，isClosed：" + isClosed + "  isReconnecting：" + isReconnecting);
             }
         }
 
@@ -754,6 +756,7 @@ public class NettyTcpClient implements IMSClientInterface {
             } finally {
                 // 标识重连任务停止
                 isReconnecting = false;
+                System.out.println("重连结束。");
             }
         }
 

@@ -17,6 +17,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import io.netty.util.internal.StringUtil;
 
 /**
@@ -68,6 +70,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
         System.err.println(String.format("链路[%s]出现异常了。 error:%s", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown", cause.getLocalizedMessage()));
+        ctx.close().sync();
         imsClient.resetConnect(false);
     }
 
