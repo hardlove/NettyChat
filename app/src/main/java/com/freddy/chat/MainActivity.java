@@ -416,8 +416,11 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (signgleMsgSendCount < SEND_MSG_COUNT) {
-                sendMsg();
-                handler.sendEmptyMessage(1);
+                if (loginAuth) {
+                    sendMsg();
+                    handler.sendEmptyMessage(1);
+                }
+
             }
 
 
