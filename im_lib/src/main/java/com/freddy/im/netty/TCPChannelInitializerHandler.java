@@ -40,13 +40,9 @@ public class TCPChannelInitializerHandler extends ChannelInitializer<Channel> {
     protected void initChannel(Channel channel) throws Exception {
         ChannelPipeline pipeline = channel.pipeline();
 
-
         // netty提供的自定义长度解码器，解决TCP拆包/粘包问题
         channel.pipeline().addLast(new ProtobufVarint32FrameDecoder());
         channel.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
-
-//        channel.pipeline().addLast(
-//                new IdleStateHandler(60, 60, 75, TimeUnit.SECONDS));
 
         // 增加protobuf编解码支持
         channel.pipeline().addLast(new ProtobufEncoder());
