@@ -1,6 +1,8 @@
 package com.freddy.chat;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -702,10 +704,15 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                             mtvLoginStatusText.setText("正在登录");
                         } else if (resultCode == IMConstant.LOGIN_AUTH_FAILED) {
                             loginAuth = false;
-                            IMSClientBootstrap.getInstance().closeImsClient();
-                            mtvLoginStatusText.setText("登录失败");
+                            ConnectivityManager cm = (ConnectivityManager) NettyChatApp.sharedInstance().getSystemService(Context.CONNECTIVITY_SERVICE);
+                            NetworkInfo info = cm.getActiveNetworkInfo();
+                            boolean connected =  info != null && info.isConnected();
+                            if (connected) {
+                                mtvLoginStatusText.setText("登录失败");
+                            } else {
+                                mtvLoginStatusText.setText("网络异常");
+                            }
                         } else if (resultCode == IMConstant.LOGIN_AUTH_KICK_OUT) {
-                            IMSClientBootstrap.getInstance().closeImsClient();
                             loginAuth = false;
                             mtvLoginStatusText.setText("你已被踢下线");
                         }

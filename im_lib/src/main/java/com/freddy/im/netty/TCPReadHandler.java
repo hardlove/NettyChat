@@ -41,7 +41,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
-        System.out.println(String.format("当前链路[%s]已经 激活 了。", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
+        System.err.println(String.format("当前链路[%s]已经 激活 了。", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
 
 
     }
@@ -60,7 +60,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         super.handlerRemoved(ctx);
-        System.out.println(String.format("移除链路[%s]:", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
+        System.err.println(String.format("移除链路[%s]:", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
 
     }
 
