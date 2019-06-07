@@ -222,7 +222,10 @@ public class NettyTcpClient implements IMSClientInterface {
             isReconnecting = false;
             channel = null;
             bootstrap = null;
+            loopGroup = null;
+            serverUrlList = null;
         }
+
     }
 
     /**
@@ -263,6 +266,15 @@ public class NettyTcpClient implements IMSClientInterface {
      */
     @Override
     public void sendMsg(MessageProtobuf.Msg msg, boolean isJoinTimeoutManager) {
+        if (isClosed) {
+            System.out.println("发送消息失败，IM Client 已关闭。");
+            return;
+        }
+        if (channel == null) {
+            System.out.println("[发送消息失败，channel为空\tmessage=" + msg + "]");
+            return;
+        }
+
         if (msg == null || msg.getHead() == null) {
             System.out.println("[发送消息失败，消息为空\tmessage=" + msg + "]");
             return;
@@ -272,10 +284,6 @@ public class NettyTcpClient implements IMSClientInterface {
             if (isJoinTimeoutManager) {
                 msgTimeoutTimerManager.add(msg);
             }
-        }
-
-        if (channel == null) {
-            System.out.println("[发送消息失败，channel为空\tmessage=" + msg + "]");
         }
 
         try {
@@ -545,7 +553,7 @@ public class NettyTcpClient implements IMSClientInterface {
             }
 
             case IMSConfig.CONNECT_STATE_SUCCESSFUL: {
-                System.out.println(String.format("ims连接成功，host『%s』, port『%s』", currentHost, currentPort));
+                System.out.println(String.format("ims连接成功，host『%s』, port『%s』 [channel:%s]", currentHost, currentPort, channel.id().asLongText()));
                 if (mIMSConnectStatusCallback != null) {
                     mIMSConnectStatusCallback.onConnected();
                 }
@@ -640,7 +648,7 @@ public class NettyTcpClient implements IMSClientInterface {
     private void closeChannel() {
         try {
             if (channel != null) {
-                System.out.println("关闭channel～～～～～～");
+                System.out.println("关闭channel:" + channel.id().asLongText());
                 channel.close();
                 channel.eventLoop().shutdownGracefully();
             } else {
