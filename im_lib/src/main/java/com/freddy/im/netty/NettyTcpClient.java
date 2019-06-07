@@ -599,6 +599,7 @@ public class NettyTcpClient implements IMSClientInterface {
      * 添加心跳消息管理handler
      */
     public void addHeartbeatHandler() {
+        //添加心跳消息管理handler前先判断
         if (channel == null || !channel.isActive() || channel.pipeline() == null) {
             return;
         }
