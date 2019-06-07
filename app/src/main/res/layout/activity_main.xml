@@ -7,7 +7,6 @@
     tools:context=".MainActivity">
 
 
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -16,6 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -36,30 +36,45 @@
 
 
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:onClick="onTestSetting"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="测试" />
+
                 <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:onClick="onLocalSetting"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="本地" />
+
                 <Button
-                    android:onClick="onChangeSetting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onChangeSetting"
                     android:text="修改" />
 
                 <Button
-                    android:onClick="onConfirm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onConfirm"
                     android:text="确定" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onReConnect"
+                    android:text="重连" />
             </LinearLayout>
 
             <LinearLayout

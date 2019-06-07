@@ -34,6 +34,7 @@ import com.freddy.chat.utils.CThreadPoolExecutor;
 import com.freddy.im.IMSConfig;
 import com.freddy.im.constant.IMConstant;
 import com.freddy.im.listener.IMSConnectStatusCallback;
+import com.freddy.im.netty.NettyTcpClient;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -61,8 +62,8 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
     private static int SEND_MSG_COUNT = 100;//设置消息发送的数量
     boolean loginAuth = false;//是否登录成功
 
-    String hosts = "[{\"host\":\"47.75.218.21\", \"port\":54321}]";
-//    String hosts = "[{\"host\":\"47.52.31.105\", \"port\":54321}]";
+    //    String hosts = "[{\"host\":\"47.75.218.21\", \"port\":54321}]";
+    String hosts = "[{\"host\":\"47.52.31.105\", \"port\":54321}]";
 
     private String[] userIds;
     private String[] tokens;
@@ -276,15 +277,24 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
     }
 
+    /**
+     * 测试重连
+     *
+     * @param view
+     */
+    public void onReConnect(View view) {
+        Log.d(TAG, "onReConnect: ~~~~~");
+        mtvLoginStatusText.setText("开始重连");
+        NettyTcpClient.getInstance().resetConnect(false);
+
+    }
+
 
     /**
      * 重置UI
      */
     private void clearUI() {
-        singleMsgReciveCount = 0;
-        signgleMsgSendCount = 0;
-        groupMsgReciveCount = 0;
-        groupMsgSendCount = 0;
+
         mTextSendMsg.setText("");
         mTvReciceMsg.setText("");
         refreshMsgCount();
@@ -336,15 +346,15 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      */
     public void ClearMsg(View view) {
         Log.d(TAG, "ClearMsg: ~~~~~~~~");
-        singleMsgReciveCount = 0;
-        signgleMsgSendCount = 0;
-        groupMsgReciveCount = 0;
-        groupMsgSendCount = 0;
-        NettyChatApp.instance.getMsgContainer().clear();
-        singleChatReceiveMap.clear();
-        groupChatReceiveMap.clear();
-        singleChatSendMap.clear();
-        groupChatSendMap.clear();
+//        singleMsgReciveCount = 0;
+//        signgleMsgSendCount = 0;
+//        groupMsgReciveCount = 0;
+//        groupMsgSendCount = 0;
+//        NettyChatApp.instance.getMsgContainer().clear();
+//        singleChatReceiveMap.clear();
+//        groupChatReceiveMap.clear();
+//        singleChatSendMap.clear();
+//        groupChatSendMap.clear();
 
         clearUI();
 
@@ -388,8 +398,9 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
             e.printStackTrace();
         }
 
-        handler.sendEmptyMessageDelayed(1, 100);
+        handler.sendEmptyMessage(1);
         closeInputMethod();
+
 
     }
 
@@ -404,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
             super.handleMessage(msg);
             if (signgleMsgSendCount < SEND_MSG_COUNT) {
                 sendMsg();
-                handler.sendEmptyMessageDelayed(1, 300);
+                handler.sendEmptyMessage(1);
             }
 
 

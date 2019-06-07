@@ -2,6 +2,8 @@
     <string name="app_name">IMLib</string>
 
     <string-array name="userIds">
+        <item>80001</item>
+        <item>80002</item>
         <item>10001</item>
         <item>10002</item>
         <item>10003</item>
@@ -13,10 +15,11 @@
         <item>10009</item>
         <item>10010</item>
         <item>60000</item>
-        <item>80001</item>
-        <item>80002</item>
+
     </string-array>
     <string-array name="userTokens">
+        <item>fb180f6291f74a65aef4bf136473eb58</item>
+        <item>18ab6bb243f3476089a30d4de1eb939f</item>
         <item>1475ae4964f9497c85f63f22c5a255ee</item>
         <item>8dfee02f76d744ffa9091c03b999a1fc</item>
         <item>de58eeab6ddc433786871cf93e077303</item>
@@ -28,8 +31,7 @@
         <item>331e5e6449e24337883f975cc679be43</item>
         <item>22a7a900f0c54278b048c2f1932fd6e1</item>
         <item>cdffcca4be7242bb81b2e5c9a004b98d</item>
-        <item>fb180f6291f74a65aef4bf136473eb58</item>
-        <item>18ab6bb243f3476089a30d4de1eb939f</item>
+
     </string-array>
 
 </resources>
