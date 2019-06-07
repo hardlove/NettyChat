@@ -49,6 +49,21 @@ public class Utils {
             case 9:
                 msgType = "PC强退";
                 break;
+            case 5001:
+            case 5002:
+            case 5003:
+            case 5004:
+            case 5005:
+            case 5006:
+            case 5007:
+            case 5008:
+            case 5009:
+            case 50010:
+                msgType = "回执";
+                break;
+            default:
+                msgType = "Unknown";
+
         }
         return msgType;
     }
