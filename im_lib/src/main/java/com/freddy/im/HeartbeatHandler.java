@@ -28,6 +28,26 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
     }
 
     @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        MessageProtobuf.Msg heartbeatRespMsg = (MessageProtobuf.Msg) msg;
+        if (heartbeatRespMsg == null || heartbeatRespMsg.getHead() == null) {
+            return;
+        }
+
+        MessageProtobuf.Msg heartbeatMsg = imsClient.getHeartbeatMsg();
+        if (heartbeatMsg == null || heartbeatMsg.getHead() == null) {
+            return;
+        }
+
+        int heartbeatMsgType = heartbeatMsg.getHead().getType();
+        if (heartbeatMsgType == heartbeatRespMsg.getHead().getType()) {
+            System.out.println("收到服务端心跳响应。");
+        } else {
+            // 消息透传
+            ctx.fireChannelRead(msg);
+        }
+    }
+    @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         super.userEventTriggered(ctx, evt);
         if (evt instanceof IdleStateEvent) {
@@ -35,8 +55,8 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
             switch (state) {
                 case READER_IDLE: {//读超时. 即当在指定的事件间隔内没有从 Channel 读取到数据时, 会触发一个 READER_IDLE 的 IdleStateEvent 事件.
                     // 规定时间内没收到服务端心跳包响应，进行重连操作
-                    System.out.println("规定时间内没收到服务端心跳包响应，进行重连操作。。。");
-                    imsClient.resetConnect(false);
+                    System.out.println("指定时间内没收到服务端心跳包响应，close Channel,触发重连");
+                    ctx.channel().close();
                     break;
                 }
 
@@ -51,7 +71,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 
                 }
                 case ALL_IDLE://读/写超时. 即当在指定的事件间隔内没有读或写操作时, 会触发一个 ALL_IDLE 的 IdleStateEvent 事件.
-                    System.out.println("在指定的事件间隔内没有读或写操作时,触发IdleState.ALL_IDLE状态");
+                    System.out.println("指定的时间间隔内没有读或写操作时,触发IdleState.ALL_IDLE状态");
                     break;
             }
         }
