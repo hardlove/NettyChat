@@ -55,23 +55,8 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        System.err.println("====================================");
         System.err.println(String.format("当前链路[%s]已经 断开 了。", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
-        Channel channel = ctx.channel();
-        if (channel != null) {
-            channel.close();
-            ctx.close();
-        }
-        if (!imsClient.isClosed()) {
-            System.err.println("链路断开，自动重启连接。。。");
-            // 触发重连
-            imsClient.resetConnect(false);
-        } else {
-            System.out.println("用户主动断开链路，不需要重连");
-        }
-        System.err.println("====================================");
     }
-
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         super.handlerRemoved(ctx);
@@ -82,16 +67,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
-        System.err.println("====================================");
-        System.err.println(String.format("当前链路[%s]出现异常了。 error:%s", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown", cause.getMessage()));
-        Channel channel = ctx.channel();
-        if (channel != null) {
-            channel.close();
-            ctx.close();
-        }
-        System.err.println("出现异常，重启连接。");
-        System.err.println("====================================");
-        // 触发重连
+        System.err.println(String.format("链路[%s]出现异常了。 error:%s", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown", cause.getLocalizedMessage()));
         imsClient.resetConnect(false);
     }
 
