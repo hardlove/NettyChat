@@ -3,6 +3,9 @@ package com.freddy.im.protobuf;
 import com.google.protobuf.Message;
 import com.googlecode.protobuf.format.JsonFormat;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by CL on 2019/5/8.
  *
@@ -12,7 +15,12 @@ import com.googlecode.protobuf.format.JsonFormat;
 public class Utils {
     public static String format(Message protoMsg) {
         String jsonFormat = JsonFormat.printToString(protoMsg);
-        return jsonFormat;
+        try {
+            return new JSONObject(jsonFormat).toString(1);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return jsonFormat;
+        }
 
     }
 
@@ -67,4 +75,5 @@ public class Utils {
         }
         return msgType;
     }
+
 }

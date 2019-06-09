@@ -569,11 +569,6 @@ public class NettyTcpClient implements IMSClientInterface {
                 if (heartbeatMsg == null) {
                     return;
                 }
-                Logger.d("发送心跳1");
-                Logger.t("TAG").d("发送心跳");
-                Logger.d("发送心跳2");
-                Logger.d(heartbeatMsg);
-
                 Logger.d("ims连接成功======》发送心跳消息：" + Utils.format(heartbeatMsg) + " 当前心跳间隔为：" + getHeartbeatInterval() + "ms\n");
                 sendMsg(heartbeatMsg, false);
                 // 添加心跳消息管理handler

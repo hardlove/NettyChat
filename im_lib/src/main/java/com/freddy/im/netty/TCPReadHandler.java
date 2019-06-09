@@ -83,9 +83,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         }
 
         int msgType = message.getHead().getType();
-        Logger.d("====================================");
         Logger.d(String.format("[channel:%s]-[收到 %s 消息  " + Utils.format(message) + "]", ctx.channel().id().asLongText(), Utils.getMessageTypeName(msgType)));
-        Logger.d("====================================");
 
 
         switch (msgType) {

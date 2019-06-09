@@ -17,6 +17,7 @@ import com.freddy.chat.utils.encry.HttpEncryptUtil;
 import com.freddy.chat.utils.encry.KeyUtil;
 import com.freddy.im.MessageType;
 import com.freddy.im.constant.IMConstant;
+import com.freddy.im.protobuf.MessageProtobuf;
 import com.orhanobut.logger.Logger;
 
 import org.json.JSONException;
@@ -193,25 +194,18 @@ public class MessageProcessor implements IMessageProcessor {
 
             @Override
             public void run() {
-
-
                 try {
                     String prk = HttpEncryptUtil.getEncrptyPrk().replaceAll("\r\n", "");
                     String data = HttpEncryptUtil.encrptyData(message.getBody().getData()).replaceAll("\r\n", "");
-                    Logger.d("加密前的消息：" + message);
+                    //加密消息
                     message.getBody().setPrk(prk);
                     message.getBody().setData(data);
-                    Log.e(TAG, "加密后的消息：" + message);
+                    MessageProtobuf.Msg protoMsg = MessageBuilder.getProtoBufMessageBuilderByAppMessage(message).build();
+                    IMSClientBootstrap.getInstance().sendMessage(protoMsg);
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-
-                boolean isActive = IMSClientBootstrap.getInstance().isActive();
-                if (isActive) {
-                    IMSClientBootstrap.getInstance().sendMessage(MessageBuilder.getProtoBufMessageBuilderByAppMessage(message).build());
-                } else {
-                    Log.e(TAG, "发送消息失败,imsClient未启动。");
+                    Log.e(TAG, "发送消息失败。" + e.getLocalizedMessage());
                 }
             }
         });
