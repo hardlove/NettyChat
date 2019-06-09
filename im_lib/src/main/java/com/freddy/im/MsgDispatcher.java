@@ -2,6 +2,7 @@ package com.freddy.im;
 
 import com.freddy.im.listener.OnEventListener;
 import com.freddy.im.protobuf.MessageProtobuf;
+import com.orhanobut.logger.Logger;
 
 /**
  * <p>@ProjectName:     NettyChat</p>

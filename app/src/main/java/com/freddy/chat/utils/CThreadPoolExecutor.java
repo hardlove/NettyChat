@@ -134,7 +134,7 @@ public class CThreadPoolExecutor {
 
         @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
-            Log.d(TAG, "rejectedExecution:" + r);
+            Logger.d("rejectedExecution:" + r);
             Log.e(TAG, logAllThreadStackTrace().toString());
             //            Tips.showForce("任务被拒绝", 5000);
             if (!pool.isShutdown()) {
@@ -291,7 +291,7 @@ public class CThreadPoolExecutor {
         sb.append(pool.getTaskCount());
         sb.append("\ngetCompletedTaskCount");
         sb.append(pool.getCompletedTaskCount());
-        Log.d(TAG, sb.toString());
+        Logger.d(sb.toString());
     }
 
     public static StringBuilder logAllThreadStackTrace() {

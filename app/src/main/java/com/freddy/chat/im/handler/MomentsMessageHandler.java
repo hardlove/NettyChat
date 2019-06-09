@@ -3,6 +3,7 @@ package com.freddy.chat.im.handler;
 import android.util.Log;
 
 import com.freddy.chat.bean.AppMessage;
+import com.orhanobut.logger.Logger;
 
 /**
  * @author CL
@@ -16,14 +17,14 @@ public class MomentsMessageHandler extends AbstractMessageHandler {
 
     @Override
     protected void handleNewMessageReceive(AppMessage appMessage) {
-        Log.d(TAG, "action: 收到朋友圈消息："+appMessage);
+        Logger.d("action: 收到朋友圈消息："+appMessage);
         int contentType = appMessage.getHead().getContentType();
         switch (contentType) {
             case 0:
-                Log.d(TAG, "action: 点赞消息");
+                Logger.d("action: 点赞消息");
                 break;
             case 1:
-                Log.d(TAG, "action: 评论消息");
+                Logger.d("action: 评论消息");
                 break;
 
         }

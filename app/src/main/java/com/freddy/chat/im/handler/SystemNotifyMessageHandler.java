@@ -30,7 +30,7 @@ public class SystemNotifyMessageHandler extends AbstractMessageHandler {
      * @param message
      */
     private void handleSystemNotify(AppMessage message) {
-        Log.d(TAG, "action: 收到系统通知消息：" + message);
+        Logger.d("action: 收到系统通知消息：" + message);
         int contentType = message.getHead().getContentType();
         if (contentType == 0) {//0:表示消息
             handleSystemNotify(message);
@@ -43,7 +43,7 @@ public class SystemNotifyMessageHandler extends AbstractMessageHandler {
 
     @Override
     protected void handleNewMessageReceive(AppMessage appMessage) {
-        Log.d(TAG, "action: 收到系统通知消息：" + appMessage);
+        Logger.d("action: 收到系统通知消息：" + appMessage);
         int contentType = appMessage.getHead().getContentType();
         if (contentType == 0) {//0:表示消息
             handleSystemNotify(appMessage);

@@ -3,6 +3,7 @@ package com.freddy.im;
 import com.freddy.im.interf.IMSClientInterface;
 import com.freddy.im.protobuf.MessageProtobuf;
 import com.freddy.im.protobuf.Utils;
+import com.orhanobut.logger.Logger;
 
 import java.util.Iterator;
 import java.util.Map;

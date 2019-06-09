@@ -3,6 +3,7 @@ package com.freddy.im;
 import com.freddy.im.constant.IMConstant;
 import com.freddy.im.netty.NettyTcpClient;
 import com.freddy.im.protobuf.MessageProtobuf;
+import com.orhanobut.logger.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;

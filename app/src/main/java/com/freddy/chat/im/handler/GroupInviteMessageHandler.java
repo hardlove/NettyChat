@@ -3,6 +3,7 @@ package com.freddy.chat.im.handler;
 import android.util.Log;
 
 import com.freddy.chat.bean.AppMessage;
+import com.orhanobut.logger.Logger;
 
 /**
  * Created by CL on 2019/5/14.
@@ -15,7 +16,7 @@ public class GroupInviteMessageHandler extends AbstractMessageHandler {
 
     @Override
     protected void handleNewMessageReceive(AppMessage appMessage) {
-        Log.d(TAG, "action: 收到群邀请通知消息：" + appMessage);
+        Logger.d("action: 收到群邀请通知消息：" + appMessage);
 
     }
 

@@ -17,6 +17,7 @@ import com.freddy.chat.utils.encry.HttpEncryptUtil;
 import com.freddy.chat.utils.encry.KeyUtil;
 import com.freddy.im.MessageType;
 import com.freddy.im.constant.IMConstant;
+import com.orhanobut.logger.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -93,12 +94,12 @@ public class MessageProcessor implements IMessageProcessor {
     private void handleNewMessageReceive(AppMessage appMessage) throws Exception {
         String receivePrk = appMessage.getBody().getPrk();
         if (!TextUtils.isEmpty(receivePrk)) {
-            Log.d(TAG, "解密前的消息：" + appMessage);
+            Logger.d("解密前的消息：" + appMessage);
             String prk = HttpEncryptUtil.getDecrptyPrk(appMessage.getBody().getPrk()).replaceAll("\r\n", "");
             String data = HttpEncryptUtil.decrptyData(prk, appMessage.getBody().getData()).replaceAll("\r\n", "");
             appMessage.getBody().setPrk(prk);//设置解密后的AES
             appMessage.getBody().setData(data);//设置解密后的数据
-            Log.d(TAG, "解密后的消息：" + appMessage);
+            Logger.d("解密后的消息：" + appMessage);
 
         }
 
@@ -147,9 +148,9 @@ public class MessageProcessor implements IMessageProcessor {
         } else if (status == IMConstant.SEND_MSG_PROGRESSING) {
             statusTip = "【正在发送】";
         }
-        Log.d(TAG, String.format("接收到消息发送状态报告" + statusTip + "【type:%s  contentType:%s  messageId:%s】", type, contentType, messageId));
+        Logger.d(String.format("接收到消息发送状态报告" + statusTip + "【type:%s  contentType:%s  messageId:%s】", type, contentType, messageId));
         // TODO: 2019/5/13 更新数据库中对应的消息状态改为
-        Log.d(TAG, "更新数据库中对应的消息状态 ");
+        Logger.d("更新数据库中对应的消息状态 ");
 
         AppMessage newAppMessage = new AppMessage();
         Head head = new Head();
@@ -197,7 +198,7 @@ public class MessageProcessor implements IMessageProcessor {
                 try {
                     String prk = HttpEncryptUtil.getEncrptyPrk().replaceAll("\r\n", "");
                     String data = HttpEncryptUtil.encrptyData(message.getBody().getData()).replaceAll("\r\n", "");
-                    Log.d(TAG, "加密前的消息：" + message);
+                    Logger.d("加密前的消息：" + message);
                     message.getBody().setPrk(prk);
                     message.getBody().setData(data);
                     Log.e(TAG, "加密后的消息：" + message);

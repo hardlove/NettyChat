@@ -3,6 +3,7 @@ package com.freddy.im;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.freddy.im.protobuf.MessageProtobuf;
+import com.orhanobut.logger.Logger;
 
 import java.util.Collection;
 import java.util.Map;

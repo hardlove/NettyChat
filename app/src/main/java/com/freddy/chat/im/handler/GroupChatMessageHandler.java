@@ -8,6 +8,7 @@ import com.freddy.chat.bean.GroupMessage;
 import com.freddy.chat.bean.SingleMessage;
 import com.freddy.chat.event.CEventCenter;
 import com.freddy.chat.event.Events;
+import com.orhanobut.logger.Logger;
 
 import java.util.Map;
 
@@ -26,23 +27,23 @@ public class GroupChatMessageHandler extends AbstractMessageHandler {
 
     @Override
     protected void handleNewMessageReceive(AppMessage appMessage) {
-        Log.d(TAG, "action: 收到群聊消息：" + appMessage);
+        Logger.d("action: 收到群聊消息：" + appMessage);
         int contentType = appMessage.getHead().getContentType();
         switch (contentType) {
             case 0:
-                Log.d(TAG, "action: 撤销群聊消息");
+                Logger.d("action: 撤销群聊消息");
                 break;
             case 1:
-                Log.d(TAG, "action: 文本群聊消息");
+                Logger.d("action: 文本群聊消息");
                 break;
             case 2:
-                Log.d(TAG, "action:图片群聊消息");
+                Logger.d("action:图片群聊消息");
                 break;
             case 3:
-                Log.d(TAG, "action: 音频群聊消息");
+                Logger.d("action: 音频群聊消息");
                 break;
             case 4:
-                Log.d(TAG, "action: 视频群聊消息");
+                Logger.d("action: 视频群聊消息");
                 break;
         }
 

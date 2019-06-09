@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                Log.d(TAG, "onCheckedChanged: checkedId:" + checkedId);
+                Logger.d("onCheckedChanged: checkedId:" + checkedId);
                 if (checkedId == R.id.btnSingleChat) {
                     type = 1;
                     toUser.setEnabled(true);
@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void onChangeSetting(View view) {
-        Log.d(TAG, "onChangeSetting: ~~~~~");
+        Logger.d("onChangeSetting: ~~~~~");
         mEdtIp.setEnabled(true);
         mEdtPort.setEnabled(true);
         loginAuth = false;
@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void onConfirm(View view) {
-        Log.d(TAG, "onConfirm: ~~~~~~~~~");
+        Logger.d("onConfirm: ~~~~~~~~~");
         mEdtIp.setEnabled(false);
         mEdtPort.setEnabled(false);
         String ip = mEdtIp.getText().toString().trim();
@@ -249,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void onTestSetting(View view) {
-        Log.d(TAG, "onTestSetting: ~~~~~~~");
+        Logger.d("onTestSetting: ~~~~~~~");
         hosts = "[{\"host\":\"47.52.31.105\", \"port\":54321}]";
 
         refreshHost();
@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void onLocalSetting(View view) {
-        Log.d(TAG, "onLocalSetting: ~~~~~~~~~");
+        Logger.d("onLocalSetting: ~~~~~~~~~");
         hosts = "[{\"host\":\"47.75.218.21\", \"port\":54321}]";
 
         refreshHost();
@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void onReConnect(View view) {
-        Log.d(TAG, "onReConnect: ~~~~~");
+        Logger.d("onReConnect: ~~~~~");
         mtvLoginStatusText.setText("开始重连");
         NettyTcpClient.getInstance().resetConnect(false);
         loginAuth = false;
@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      */
     public void loginIm(View view) {
         loginAuth = false;
-        Log.d(TAG, "loginIm: ~~~~~~~~~~~~");
+        Logger.d("loginIm: ~~~~~~~~~~~~");
         if (mEdtIp.isEnabled() || mEdtPort.isEnabled()) {
             Toast.makeText(this, "请确认当前环境配置！", Toast.LENGTH_SHORT).show();
             return;
@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void btnlogOut(View view) {
-        Log.d(TAG, "btnlogOut: ~~~~~~~~~`");
+        Logger.d("btnlogOut: ~~~~~~~~~`");
         logout();
 
     }
@@ -354,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void ClearMsg(View view) {
-        Log.d(TAG, "ClearMsg: ~~~~~~~~");
+        Logger.d("ClearMsg: ~~~~~~~~");
 //        singleMsgReciveCount = 0;
 //        signgleMsgSendCount = 0;
 //        groupMsgReciveCount = 0;
@@ -376,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void sendMsg(View view) {
-        Log.d(TAG, "sendMsg: ~~~~~~~~~");
+        Logger.d("sendMsg: ~~~~~~~~~");
         if (!loginAuth) {
             Toast.makeText(this, "请登录！", Toast.LENGTH_SHORT).show();
             return;
@@ -394,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void sendMultiMsg(View view) {
-        Log.d(TAG, "sendMultiMsg: ~~~~~~~~~~~~");
+        Logger.d("sendMultiMsg: ~~~~~~~~~~~~");
         if (!loginAuth) {
             Toast.makeText(this, "请登录！", Toast.LENGTH_SHORT).show();
             return;
@@ -415,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
     }
 
     public void onStopSend(View view) {
-        Log.d(TAG, "onStopSend: ~~~~~");
+        Logger.d("onStopSend: ~~~~~");
         handler.removeMessages(1);
     }
 
@@ -541,7 +541,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
      * @param view
      */
     public void onStatistics(View view) {
-        Log.d(TAG, "onStatistics: ~~~~~~~");
+        Logger.d("onStatistics: ~~~~~~~");
         CThreadPoolExecutor.runInBackground(new Runnable() {
             @Override
             public void run() {
@@ -660,7 +660,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy: ~~~~~~~~~~");
+        Logger.d("onDestroy: ~~~~~~~~~~");
         super.onDestroy();
         CEventCenter.unregisterEventListener(this, EVENTS);
     }
@@ -745,7 +745,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
     @Override
     public void onConnecting() {
-        Log.d(TAG, "onConnecting: ~~~~~~");
+        Logger.d("onConnecting: ~~~~~~");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -758,7 +758,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
     @Override
     public void onConnected() {
-        Log.d(TAG, "onConnected: ~~~~~~~~");
+        Logger.d("onConnected: ~~~~~~~~");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -772,7 +772,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
 
     @Override
     public void onConnectFailed() {
-        Log.d(TAG, "onConnectFailed: ~~~~~~~~");
+        Logger.d("onConnectFailed: ~~~~~~~~");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

@@ -6,6 +6,7 @@ import com.freddy.im.constant.IMConstant;
 import com.freddy.im.interf.IMSClientInterface;
 import com.freddy.im.protobuf.MessageProtobuf;
 import com.freddy.im.protobuf.Utils;
+import com.orhanobut.logger.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
