@@ -63,9 +63,9 @@ public class MsgTimeoutTimerManager {
             MsgTimeoutTimer timer = new MsgTimeoutTimer(imsClient, msg);
             mMsgTimeoutMap.put(msgId, timer);
         }
-        System.out.println("=============================");
-        System.out.println("添加消息到发送超时管理器，messageId=" + msgId + "\t当前管理器消息数：" + mMsgTimeoutMap.size());
-        System.out.println("=============================");
+        Logger.d("=============================");
+        Logger.d("添加消息到发送超时管理器，messageId=" + msgId + "\t当前管理器消息数：" + mMsgTimeoutMap.size());
+        Logger.d("=============================");
     }
 
     /**
@@ -84,7 +84,7 @@ public class MsgTimeoutTimerManager {
             msg = timer.getMsg();
             timer.cancel();
             timer = null;
-            System.out.println("从发送消息管理器移除消息，messageId=" + msgId);
+            Logger.d("从发送消息管理器移除消息，messageId=" + msgId);
         }
 
 

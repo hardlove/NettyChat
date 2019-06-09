@@ -10,6 +10,7 @@ import com.freddy.im.interf.IMSClientInterface;
 import com.freddy.im.listener.IMSConnectStatusCallback;
 import com.freddy.im.protobuf.MessageProtobuf;
 import com.freddy.im.protobuf.Utils;
+import com.orhanobut.logger.Logger;
 
 import java.util.Vector;
 
@@ -59,11 +60,11 @@ public class IMSClientBootstrap {
         if (!isActive()) {
             Vector<String> serverUrlList = convertHosts(hosts);
             if (serverUrlList == null || serverUrlList.size() == 0) {
-                System.out.println("init IMLibClientBootstrap error,ims hosts is null");
+                Logger.d("init IMLibClientBootstrap error,ims hosts is null");
                 return;
             }
             isActive = true;
-            System.out.println("init IMLibClientBootstrap, servers=" + hosts);
+            Logger.d("init IMLibClientBootstrap, servers=" + hosts);
             if (null != imsClient) {
                 imsClient.close();
             }
@@ -99,9 +100,9 @@ public class IMSClientBootstrap {
         if (isActive) {
             imsClient.sendMsg(msg);
         } else {
-            System.err.println("===========================");
-            System.err.println("无法发送消息,ImsClient已关闭,msg:" + Utils.format(msg));
-            System.err.println("===========================");
+            Logger.e("===========================");
+            Logger.e("无法发送消息,ImsClient已关闭,msg:" + Utils.format(msg));
+            Logger.e("===========================");
         }
     }
 

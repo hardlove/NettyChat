@@ -79,7 +79,7 @@ public class NettyServerDemo {
 
             //绑定端口
             ChannelFuture future = bootstrap.bind(8855).sync();
-            System.out.println("server start ...... ");
+            Logger.d("server start ...... ");
 
             //等待服务端监听端口关闭
             future.channel().closeFuture().sync();
@@ -101,13 +101,13 @@ class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
-        System.out.println("ServerHandler channelActive()" + ctx.channel().remoteAddress());
+        Logger.d("ServerHandler channelActive()" + ctx.channel().remoteAddress());
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        System.out.println("ServerHandler channelInactive()");
+        Logger.d("ServerHandler channelInactive()");
         // 用户断开连接后，移除channel
         ChannelContainer.getInstance().removeChannelIfConnectNoActive(ctx.channel());
     }
@@ -115,13 +115,13 @@ class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
-        System.out.println("ServerHandler exceptionCaught()");
+        Logger.d("ServerHandler exceptionCaught()");
     }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         super.userEventTriggered(ctx, evt);
-        System.out.println("ServerHandler userEventTriggered()");
+        Logger.d("ServerHandler userEventTriggered()");
     }
 
     @Override
@@ -129,7 +129,7 @@ class ServerHandler extends ChannelInboundHandlerAdapter {
 //
 //
 //        MessageProtobuf.Msg message = (MessageProtobuf.Msg) msg;
-//        System.out.println("收到来自客户端的消息：" + message);
+//        Logger.d("收到来自客户端的消息：" + message);
 //        int msgType = message.getHead().getType();
 //        switch (msgType) {
 //            // 登录认证消息

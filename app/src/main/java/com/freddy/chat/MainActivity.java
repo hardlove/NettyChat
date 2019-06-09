@@ -37,6 +37,7 @@ import com.freddy.im.IMSConfig;
 import com.freddy.im.constant.IMConstant;
 import com.freddy.im.listener.IMSConnectStatusCallback;
 import com.freddy.im.netty.NettyTcpClient;
+import com.orhanobut.logger.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -238,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
         String port = mEdtPort.getText().toString().trim();
 
         hosts = "[{\"host\":\"" + ip + "\", \"port\":" + port + "}]";
-        System.out.println("配置：" + hosts);
+        Logger.d("配置：" + hosts);
 
     }
 
@@ -432,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements I_CEventListener,
                     sendMsg();
                     handler.sendEmptyMessageDelayed(1, 300);
                 } else {
-                    System.out.println("====未登录。。。，无法发送消息");
+                    Logger.d("====未登录。。。，无法发送消息");
                 }
 
             }

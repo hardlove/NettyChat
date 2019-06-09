@@ -3,6 +3,7 @@ package com.freddy.im;
 import com.freddy.im.netty.NettyTcpClient;
 import com.freddy.im.protobuf.MessageProtobuf;
 import com.freddy.im.protobuf.Utils;
+import com.orhanobut.logger.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -41,7 +42,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 
         int heartbeatMsgType = heartbeatMsg.getHead().getType();
         if (heartbeatMsgType == heartbeatRespMsg.getHead().getType()) {
-            System.out.println("收到服务端心跳响应。");
+            Logger.d("收到服务端心跳响应。");
         } else {
             // 消息透传
             ctx.fireChannelRead(msg);
@@ -55,7 +56,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
             switch (state) {
                 case READER_IDLE: {//读超时. 即当在指定的事件间隔内没有从 Channel 读取到数据时, 会触发一个 READER_IDLE 的 IdleStateEvent 事件.
                     // 规定时间内没收到服务端心跳包响应，进行重连操作
-                    System.out.println("指定时间内没收到服务端心跳包响应，close Channel,触发重连");
+                    Logger.d("指定时间内没收到服务端心跳包响应，close Channel,触发重连");
                     ctx.channel().close();
                     break;
                 }
@@ -71,7 +72,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 
                 }
                 case ALL_IDLE://读/写超时. 即当在指定的事件间隔内没有读或写操作时, 会触发一个 ALL_IDLE 的 IdleStateEvent 事件.
-                    System.out.println("指定的时间间隔内没有读或写操作时,触发IdleState.ALL_IDLE状态");
+                    Logger.d("指定的时间间隔内没有读或写操作时,触发IdleState.ALL_IDLE状态");
                     break;
             }
         }

@@ -10,6 +10,7 @@ import com.freddy.chat.event.Events;
 import com.freddy.chat.im.IMSClientBootstrap;
 import com.freddy.im.MessageType;
 import com.freddy.im.constant.IMConstant;
+import com.orhanobut.logger.Logger;
 
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class SystemNotifyMessageHandler extends AbstractMessageHandler {
             handleSystemNotify(message);
         } else if (contentType==1) {//1:表示被踢下线
             CEventCenter.dispatchEvent(Events.IM_LOGIN, MessageType.LOGIN_AUTH, IMConstant.LOGIN_AUTH_KICK_OUT, null);//3 :被踢下线
-            System.out.println("被踢下线了。。。");
+            Logger.d("被踢下线了。。。");
             IMSClientBootstrap.getInstance().closeImsClient();//关闭ImsClient，否则会进行重连
         }
     }
@@ -48,7 +49,7 @@ public class SystemNotifyMessageHandler extends AbstractMessageHandler {
             handleSystemNotify(appMessage);
         } else if (contentType==1) {//1:表示被踢下线
             CEventCenter.dispatchEvent(Events.IM_LOGIN, MessageType.LOGIN_AUTH, IMConstant.LOGIN_AUTH_KICK_OUT, null);//3 :被踢下线
-            System.out.println("被踢下线了。。。");
+            Logger.d("被踢下线了。。。");
             IMSClientBootstrap.getInstance().closeImsClient();//关闭ImsClient，否则会进行重连
         }
     }

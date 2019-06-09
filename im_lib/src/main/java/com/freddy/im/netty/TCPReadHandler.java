@@ -43,7 +43,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
-        System.err.println(String.format("当前链路[%s]已经 激活 了。", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
+        Logger.e(String.format("当前链路[%s]已经 激活 了。", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
 
 
     }
@@ -57,19 +57,19 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        System.err.println(String.format("当前链路[%s]已经 断开 了。", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
+        Logger.e(String.format("当前链路[%s]已经 断开 了。", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
     }
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         super.handlerRemoved(ctx);
-        System.err.println(String.format("移除链路[%s]:", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
+        Logger.e(String.format("移除链路[%s]:", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
 
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
-        System.err.println(String.format("链路[%s]出现异常了。 error:%s", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown", cause.getLocalizedMessage()));
+        Logger.e(String.format("链路[%s]出现异常了。 error:%s", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown", cause.getLocalizedMessage()));
         ctx.close().sync();
         imsClient.resetConnect(false);
     }
@@ -82,9 +82,9 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         }
 
         int msgType = message.getHead().getType();
-        System.out.println("====================================");
-        System.out.println(String.format("[channel:%s]-[收到 %s 消息  " + Utils.format(message) + "]", ctx.channel().id().asLongText(), Utils.getMessageTypeName(msgType)));
-        System.out.println("====================================");
+        Logger.d("====================================");
+        Logger.d(String.format("[channel:%s]-[收到 %s 消息  " + Utils.format(message) + "]", ctx.channel().id().asLongText(), Utils.getMessageTypeName(msgType)));
+        Logger.d("====================================");
 
 
         switch (msgType) {
@@ -97,7 +97,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
             case MessageType.GROUP_INVITE_RECEIPT://群邀请回执  5009
             case MessageType.PC_LOGIN_RECEIPT://pc登陆回执  5010
             case MessageType.PC_KICK_OUT_RECEIPT://pc强退回执  5011
-                System.out.println("收到消息回执，消息已发送成功。type:" + msgType + "  ，" + "从超时管理器移除:" + message.getHead().getMessageId());
+                Logger.d("收到消息回执，消息已发送成功。type:" + msgType + "  ，" + "从超时管理器移除:" + message.getHead().getMessageId());
                 imsClient.getMsgTimeoutTimerManager().remove(message.getHead().getMessageId());
                 // 接收消息，由消息转发器转发到应用层
                 MessageProtobuf.Msg reportMsg = getClientSendReportMsg(message);
@@ -110,10 +110,10 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
                 // 收到消息后，立马给服务端回一条消息接收状态报告
                 MessageProtobuf.Msg receivedReportMsg = buildReceivedReportMsg(message);
                 if (receivedReportMsg != null) {
-                    System.out.println("收到服务端发送过来的消息,type:" + msgType + " contentType:" + message.getHead().getContentType() + "  messageId:" + message.getHead().getMessageId() + "  ,发送消息回执：" + receivedReportMsg.getHead().getType() + " [chanel:" + chanel + "]");
+                    Logger.d("收到服务端发送过来的消息,type:" + msgType + " contentType:" + message.getHead().getContentType() + "  messageId:" + message.getHead().getMessageId() + "  ,发送消息回执：" + receivedReportMsg.getHead().getType() + " [chanel:" + chanel + "]");
                     imsClient.sendMsg(receivedReportMsg, false);
                 } else {
-                    System.err.println("收到服务端发送过来的消息,type:" + msgType + " contentType:" + message.getHead().getContentType() + "  messageId:" + message.getHead().getMessageId() + "   ,未找到对应的回执消息类型,无法发送消息回执！" + " [chanel:" + chanel + "]");
+                    Logger.e("收到服务端发送过来的消息,type:" + msgType + " contentType:" + message.getHead().getContentType() + "  messageId:" + message.getHead().getMessageId() + "   ,未找到对应的回执消息类型,无法发送消息回执！" + " [chanel:" + chanel + "]");
                 }
                 // 接收消息，由消息转发器转发到应用层
                 imsClient.getMsgDispatcher().receivedMsg(message);
@@ -144,7 +144,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
             bodyBuilder.setData(jsonObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
-            System.err.println("getClientSendReportMsg（），构建Json消息失败，message:" + Utils.format(message));
+            Logger.e("getClientSendReportMsg（），构建Json消息失败，message:" + Utils.format(message));
 
         }
         builder.setBody(bodyBuilder.build());
@@ -220,7 +220,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
 //            if (event.state().equals(IdleState.WRITER_IDLE)){//如果写通道处于空闲状态,就发送心跳命令
-//                //System.out.println("发送心跳包");
+//                //Logger.d("发送心跳包");
 ////                String token = ctx.channel().attr(IMConstant.TOKEN).get();
 //                MessageProtobuf.Head head = MessageProtobuf.Head.newBuilder().setType(0).setToken("1475ae4964f9497c85f63f22c5a255ee").build();
 //                MessageProtobuf.Msg msg = MessageProtobuf.Msg.newBuilder().setHead(head).build();

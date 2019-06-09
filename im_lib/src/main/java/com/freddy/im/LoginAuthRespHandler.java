@@ -40,22 +40,22 @@ public class LoginAuthRespHandler extends ChannelInboundHandlerAdapter {
         }
 
         if (MessageType.LOGIN_AUTH_SUCCEED_RECEIPT == loginAuthMsg.getHead().getType()||5==loginAuthMsg.getHead().getType()) {
-            System.out.println("收到服务端登录认证响应消息，登录成功。");
+            Logger.d("收到服务端登录认证响应消息，登录成功。");
 
             // 登录认证成功，检查消息发送超时管理器里是否有发送超时的消息，如果有，则全部重发
-            System.out.println("检查是否有发送超时的消息，如果有，则全部重发");
+            Logger.d("检查是否有发送超时的消息，如果有，则全部重发");
             imsClient.getMsgTimeoutTimerManager().onResetConnected();
 
             //通知应用层登录成
-            System.out.println("通知应用层登录成功。");
+            Logger.d("通知应用层登录成功。");
             imsClient.getMsgDispatcher().receivedMsg(imsClient.getLoginAuthStatusReportMsg(IMConstant.LOGIN_AUTH_SUCCEED));
         } else if (MessageType.LOGIN_AUTH_FAILED_RECEIPT == loginAuthMsg.getHead().getType()) {
-            System.out.println("收到服务端登录认证响应消息，登录失败。 message=" + loginAuthMsg);
+            Logger.d("收到服务端登录认证响应消息，登录失败。 message=" + loginAuthMsg);
             //通知应用层登录失败
-            System.out.println("通知应用层登录失败。");
+            Logger.d("通知应用层登录失败。");
             imsClient.getMsgDispatcher().receivedMsg(imsClient.getLoginAuthStatusReportMsg(IMConstant.LOGIN_AUTH_FAILED));
 
-            System.out.println("登录认证失败，close Client");
+            Logger.d("登录认证失败，close Client");
             imsClient.close();
         } else {
             // 消息透传

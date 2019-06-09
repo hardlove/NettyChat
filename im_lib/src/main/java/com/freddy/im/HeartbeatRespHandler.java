@@ -2,6 +2,7 @@ package com.freddy.im;
 
 import com.freddy.im.netty.NettyTcpClient;
 import com.freddy.im.protobuf.MessageProtobuf;
+import com.orhanobut.logger.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -39,7 +40,7 @@ public class HeartbeatRespHandler extends ChannelInboundHandlerAdapter {
 
         int heartbeatMsgType = heartbeatMsg.getHead().getType();
         if (heartbeatMsgType == heartbeatRespMsg.getHead().getType()) {
-            System.out.println("收到服务端心跳响应消息。");
+            Logger.d("收到服务端心跳响应消息。");
         } else {
             // 消息透传
             ctx.fireChannelRead(msg);

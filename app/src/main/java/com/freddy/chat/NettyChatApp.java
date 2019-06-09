@@ -3,9 +3,10 @@ package com.freddy.chat;
 import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDex;
-import android.support.multidex.MultiDexApplication;
 
-import com.freddy.chat.bean.AppMessage;
+
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class NettyChatApp extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
+        Logger.addLogAdapter(new AndroidLogAdapter());
     }
 
     @Override

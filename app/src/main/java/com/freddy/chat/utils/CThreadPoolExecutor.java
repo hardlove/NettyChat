@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.orhanobut.logger.Logger;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -310,11 +312,11 @@ public class CThreadPoolExecutor {
     public static void main(String[] args) {
         for (int i = 0; i < 10000; i++) {
             final int index = i;
-            System.out.println("index=" + index);
+            Logger.d("index=" + index);
             CThreadPoolExecutor.runInBackground(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("正在运行第[" + (index + 1) + "]个线程.");
+                    Logger.d("正在运行第[" + (index + 1) + "]个线程.");
                 }
             });
             try {

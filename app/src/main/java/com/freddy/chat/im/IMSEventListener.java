@@ -10,6 +10,7 @@ import com.freddy.im.MessageType;
 import com.freddy.im.constant.IMConstant;
 import com.freddy.im.listener.OnEventListener;
 import com.freddy.im.protobuf.MessageProtobuf;
+import com.orhanobut.logger.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -140,7 +141,7 @@ public class IMSEventListener implements OnEventListener {
         try {
             jsonObject.put(IMConstant.STATUS, status);
         } catch (JSONException e) {
-            System.out.println("构建Json数据异常：" + e.getMessage());
+            Logger.d("构建Json数据异常：" + e.getMessage());
         }
         bodyBuilder.setData(jsonObject.toString());
         builder.setBody(bodyBuilder.build());

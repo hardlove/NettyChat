@@ -3,6 +3,7 @@ package com.freddy.chat;
 import com.freddy.chat.utils.encry.AESUtil;
 import com.freddy.chat.utils.encry.HttpEncryptUtil;
 import com.freddy.chat.utils.encry.KeyUtil;
+import com.orhanobut.logger.Logger;
 
 import org.junit.Test;
 
@@ -17,7 +18,7 @@ public class IMessageEncrpty {
     public void testGreateAES() throws Exception {
 //        OUQyOTc5QjAtRjc0Ny00QTUwLUJGMUMtREEwOTQ4OTVBQUNF
         String ase = AESUtil.genKeyAES();
-        System.out.println("App AES:" + ase);
+        Logger.d("App AES:" + ase);
 
     }
 
@@ -25,7 +26,7 @@ public class IMessageEncrpty {
     public void testBase64() {
         String source = "OUQyOTc5QjAtRjc0Ny00QTUwLUJGMUMtREEwOTQ4OTVBQUNF";
         String base64String = AESUtil.byte2Base64(source.getBytes());
-        System.out.println("base64String:" + base64String);
+        Logger.d("base64String:" + base64String);
     }
 
     @Test
@@ -38,8 +39,8 @@ public class IMessageEncrpty {
 //        String data = Base64.encodeBase64String(AESUtil.encryptAES(content.getBytes(), AESUtil.loadKeyAES(KeyUtil.APP_AES_KEY)));
         String prk = HttpEncryptUtil.getEncrptyPrk();
         String data = HttpEncryptUtil.encrptyData(content);
-        System.out.println("加密prk：" + prk);
-        System.out.println("加密data：" + data);
+        Logger.d("加密prk：" + prk);
+        Logger.d("加密data：" + data);
 
     }
 
@@ -56,13 +57,13 @@ public class IMessageEncrpty {
 //        byte[] decrpytBytes = AESUtil.decryptAES(Base64.decodeBase64(data), AESUtil.loadKeyAES(Base64.encodeBase64String(decryptAES)));
 //
 //
-//        System.out.println("prk:" + Base64.encodeBase64String(decryptAES));
-//        System.out.println("data:" + new String(decrpytBytes));
+//        Logger.d("prk:" + Base64.encodeBase64String(decryptAES));
+//        Logger.d("data:" + new String(decrpytBytes));
 
         String desPrk = HttpEncryptUtil.getDecrptyPrk(prk);
         String desData = HttpEncryptUtil.decrptyData(desPrk, data);
-        System.out.println("解密prk:" + desPrk);
-        System.out.println("解密data:" + desData);
+        Logger.d("解密prk:" + desPrk);
+        Logger.d("解密data:" + desData);
 
     }
 }
