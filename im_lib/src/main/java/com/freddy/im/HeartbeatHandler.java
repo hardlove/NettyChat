@@ -57,8 +57,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
                 case READER_IDLE: {//读超时. 即当在指定的事件间隔内没有从 Channel 读取到数据时, 会触发一个 READER_IDLE 的 IdleStateEvent 事件.
                     // 规定时间内没收到服务端心跳包响应，进行重连操作
                     Logger.d("指定时间内没收到服务端心跳包响应，close Channel,触发重连");
-                    ctx.channel().close().sync();
-                    imsClient.resetConnect(false);
+                    ctx.channel().close().sync();//通道关闭后，回在handlerRemoved 回调时自动重连
                     break;
                 }
 

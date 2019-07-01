@@ -64,6 +64,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         super.handlerRemoved(ctx);
         Logger.e(String.format("移除链路[%s]:", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown"));
+        imsClient.resetConnect(false);
 
     }
 
@@ -72,7 +73,7 @@ public class TCPReadHandler extends ChannelInboundHandlerAdapter {
         super.exceptionCaught(ctx, cause);
         Logger.e(String.format("链路[%s]出现异常了。 error:%s", ctx.channel() != null ? ctx.channel().id().asLongText() : "Unknown", cause.getLocalizedMessage()));
         ctx.close().sync();
-        imsClient.resetConnect(false);
+
     }
 
     @Override

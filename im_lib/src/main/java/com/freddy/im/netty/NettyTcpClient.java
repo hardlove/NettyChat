@@ -657,7 +657,8 @@ public class NettyTcpClient implements IMSClientInterface {
         try {
             if (channel != null) {
                 Logger.d("关闭channel:" + channel.id().asLongText());
-                channel.close();
+                channel.close().sync();
+                Thread.sleep(100*3);
                 channel.eventLoop().shutdownGracefully();
             } else {
                 Logger.d("channel已关闭");
