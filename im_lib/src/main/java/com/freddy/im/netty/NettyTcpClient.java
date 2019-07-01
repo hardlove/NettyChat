@@ -295,14 +295,12 @@ public class NettyTcpClient implements IMSClientInterface {
             int type = msg.getHead().getType();
             String messageId = msg.getHead().getMessageId();
             String typeName = Utils.getMessageTypeName(type);
-            Logger.d("===========================");
             if (TextUtils.isEmpty(messageId)) {
                 Logger.d(String.format("[发送 %s 消息]", typeName));
             } else {
                 Logger.d(String.format("[发送 %s 消息 messageId:%s][%s]", typeName, messageId, Utils.format(msg)));
 
             }
-            Logger.d("===========================");
             channel.writeAndFlush(msg);
         } catch (Exception ex) {
             Logger.d("[发送消息失败，reason:" + ex.getMessage() + "\tmessage=" + msg + "]");

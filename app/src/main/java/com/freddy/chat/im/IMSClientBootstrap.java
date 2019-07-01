@@ -100,9 +100,7 @@ public class IMSClientBootstrap {
         if (isActive) {
             imsClient.sendMsg(msg);
         } else {
-            Logger.e("===========================");
             Logger.e("无法发送消息,ImsClient已关闭,msg:" + Utils.format(msg));
-            Logger.e("===========================");
         }
     }
 

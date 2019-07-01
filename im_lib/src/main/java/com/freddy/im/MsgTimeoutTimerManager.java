@@ -64,9 +64,7 @@ public class MsgTimeoutTimerManager {
             MsgTimeoutTimer timer = new MsgTimeoutTimer(imsClient, msg);
             mMsgTimeoutMap.put(msgId, timer);
         }
-        Logger.d("=============================");
         Logger.d("添加消息到发送超时管理器，messageId=" + msgId + "\t当前管理器消息数：" + mMsgTimeoutMap.size());
-        Logger.d("=============================");
     }
 
     /**
