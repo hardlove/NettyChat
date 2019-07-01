@@ -47,8 +47,9 @@ public class IMessageEncrpty {
     @Test
     public void testdecrpty() throws Exception {
 
-        String prk = "R0ljotvF+6GLml9Uwf/mfXm5kbNV7EkR8a0ZdciL6S0=";
-        String data = "30VzqVBXm4aXMsKIty3o6A==";
+
+        String prk = "Bngjx3XObT9asmKO3JCXDHm5kbNV7EkR8a0ZdciL6S0=";
+        String data = "jTjLtyzo+V9amOlYsvzmCIjlV5aCBwfqY4YKBXWomtRmratdnl+ahgYbmlKfHnuoS+/diRnFUN26GevzfaisPZlZBMJZlUmL7P9U2ZRT97+e2RWqF/p5TQwKLfL4fkB0BuJD89oZVE5LmIiSm5hRScI4URcMwVq3hO6JOziXtFKFSHR5CZmy04+Kukczd3gFJOUmlYBarokSA00Aq1zwyQVrWpyWT6IRop+1/DeOQ1Bin0I4ZF/pQ0kTapGlnXY6sazo35adrAOmW+Irb9NJ0A==";
 
 //        String serverAesKey = "ZW5+rAbLXU7QniZzUbRRbg==";
 //        //解密app生成的AES秘钥
@@ -62,8 +63,11 @@ public class IMessageEncrpty {
 
         String desPrk = HttpEncryptUtil.getDecrptyPrk(prk);
         String desData = HttpEncryptUtil.decrptyData(desPrk, data);
-        Logger.d("解密prk:" + desPrk);
-        Logger.d("解密data:" + desData);
+
+        System.out.println("解密prk："+desPrk);
+        System.out.println("解密data："+desData);
+//        Logger.d("解密prk:" + desPrk);
+//        Logger.d("解密data:" + desData);
 
     }
 }
