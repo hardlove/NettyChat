@@ -52,12 +52,14 @@ public class AESUtil {
 
     //字节数组转Base64编码
     public static String byte2Base64(byte[] bytes){
-        return android.util.Base64.encodeToString(bytes, android.util.Base64.DEFAULT);
+//        return android.util.Base64.encodeToString(bytes, android.util.Base64.DEFAULT);
+        return Base64.encodeBase64String(bytes);
     }
 
     //Base64编码转字节数组
     public static byte[] base642Byte(String base64Key) throws IOException {
-        return android.util.Base64.decode(base64Key, android.util.Base64.DEFAULT);
+//        return android.util.Base64.decode(base64Key, android.util.Base64.DEFAULT);
+        return Base64.decodeBase64(base64Key);
     }
 
 }
