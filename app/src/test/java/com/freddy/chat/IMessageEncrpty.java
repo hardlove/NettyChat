@@ -1,10 +1,13 @@
 package com.freddy.chat;
 
+import android.util.Log;
+
 import com.freddy.chat.utils.encry.AESUtil;
 import com.freddy.chat.utils.encry.HttpEncryptUtil;
 import com.freddy.chat.utils.encry.KeyUtil;
 import com.orhanobut.logger.Logger;
 
+import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 /**
@@ -45,11 +48,21 @@ public class IMessageEncrpty {
     }
 
     @Test
+   public void test() throws Exception {
+        String ss = "9zB39ZtsPk2vv5NbQmVXWw==";
+        String dd = "wxeQRQ4PIWrC6ytURY/ggnm5kbNV7EkR8a0ZdciL6S0=";
+                byte[] decryptAES = AESUtil.decryptAES(Base64.decodeBase64(dd), AESUtil.loadKeyAES(ss));
+        String date = new String(decryptAES);
+        System.out.println("data:" + date);
+    }
+
+
+    @Test
     public void testdecrpty() throws Exception {
 
 
-        String prk = "Bngjx3XObT9asmKO3JCXDHm5kbNV7EkR8a0ZdciL6S0=";
-        String data = "jTjLtyzo+V9amOlYsvzmCIjlV5aCBwfqY4YKBXWomtRmratdnl+ahgYbmlKfHnuoS+/diRnFUN26GevzfaisPZlZBMJZlUmL7P9U2ZRT97+e2RWqF/p5TQwKLfL4fkB0BuJD89oZVE5LmIiSm5hRScI4URcMwVq3hO6JOziXtFKFSHR5CZmy04+Kukczd3gFJOUmlYBarokSA00Aq1zwyQVrWpyWT6IRop+1/DeOQ1Bin0I4ZF/pQ0kTapGlnXY6sazo35adrAOmW+Irb9NJ0A==";
+        String prk = "l9OneKO0oiS8qkzyCnDGQHm5kbNV7EkR8a0ZdciL6S0=";
+        String data = "aHCDgtudkiaZjG+TK5uiOSt5qSEMqO0lWrC1k63rdzhZNRSCv4rugVYeP9ao3b/X7iP92OthVGWc3noXwjcho4scoQd0Dn53xyDsn1Tjx4Qcqy8WNm7piLpGiNdpChxN2kFny4Cn7l14rc1HjwDsbd7ZeAcH/eDUpvOoj4xHtj/Vlx3SxuZ+AyZetd48m93W2GXlx8yivHXVIbSfEcENkyEy1FB3MyeqHqKHPsVQQF/mUSAmCja1H6DvyhvgudLdcGLQjpTGGFHDqEytg5MZSg==";
 
 //        String serverAesKey = "ZW5+rAbLXU7QniZzUbRRbg==";
 //        //解密app生成的AES秘钥
